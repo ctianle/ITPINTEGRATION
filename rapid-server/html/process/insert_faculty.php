@@ -6,8 +6,13 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\BSON\ObjectId;
 
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+
+
 // Connect to MongoDB
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+$manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017");
 
 // Specify the database and collection
 $bulk = new MongoDB\Driver\BulkWrite;

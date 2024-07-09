@@ -6,8 +6,12 @@ use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\BSON\ObjectId;
 
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+
 // MongoDB connection string
-$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+$mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
 
 try {
     // Create a new MongoDB Manager instance

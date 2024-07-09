@@ -1,6 +1,11 @@
 <?php
+
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+
 // MongoDB connection
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+$manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017");
 
 if (isset($_FILES['csv'])) {
     $file = $_FILES['csv']['tmp_name'];

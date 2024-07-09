@@ -1,6 +1,11 @@
 <?php
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+
+
 // Connect to MongoDB
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+$manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017");
 
 // Check if file was uploaded
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_POST["uuid"])) {

@@ -19,7 +19,6 @@ services:
     env_file:
       - .env
     
-
   db:
     image: mongo:latest
     container_name: mongodb

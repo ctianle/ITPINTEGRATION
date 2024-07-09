@@ -5,9 +5,12 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\Query;
 use MongoDB\Driver\Exception\Exception as MongoDBException;
 
-// MongoDB connection string
-$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
 
+// MongoDB connection string
+$mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
 try {
     // Create a new MongoDB Manager instance
     $manager = new Manager($mongoConnectionString);
