@@ -1,25 +1,61 @@
-# Use an official PHP image with the desired PHP version
-FROM php:8.0-fpm
+FROM php:8.0-apache
 
-# Install required system packages
+# Install necessary extensions and tools
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
+    libonig-dev \
     libssl-dev \
-    libcurl4-openssl-dev
-
-# Install the MongoDB PHP extension
-RUN pecl install mongodb \
+    libgmp-dev \
+    git \
+    zip \
+    unzip \
+    curl \
+    python3 \
+    python3-pip \
+    && docker-php-ext-install \
+    mbstring \
+    && docker-php-ext-enable \
+    mbstring \ 
+    && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-# Copy your application code into the container
-COPY . /usr/share/nginx/html
 
-# Set the working directory
-WORKDIR /usr/share/nginx/html
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Expose port 9000 to connect to PHP-FPM
-EXPOSE 9000
+# Copy custom Apache configuration
+COPY apache-php/config.conf /etc/apache2/conf-available/custom-config.conf
 
-# Start PHP-FPM server
-CMD ["php-fpm"]
+# Enable the new configuration
+RUN a2enconf custom-config
+
+# Copy custom php.ini file
+COPY apache-php/php.ini /usr/local/etc/php/php.ini
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy the app directory to the container
+COPY ./html /var/www/html
+
+# Install Composer dependencies
+# RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Ensure the web server user can write to the vendor directory
+# RUN chown -R www-data:www-data /var/www/html/vendor
+
+# Set permissions for the app directory
+RUN chown -R www-data:www-data /var/www/html
+
+# Create a directory for storing keys and set permissions
+RUN mkdir -p /var/www/keys \
+    && chown -R www-data:www-data /var/www/keys \
+    && chmod 700 /var/www/keys
+
+# Expose port 80
+EXPOSE 80
+
+# Switch to the www-data user
+USER www-data
+
+# Start Apache in the foreground
+CMD ["apache2-foreground"]

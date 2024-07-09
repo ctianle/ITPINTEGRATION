@@ -1,0 +1,12 @@
+[ v3_ca ]
+basicConstraints = CA:TRUE
+keyUsage = keyCertSign, cRLSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+
+[ v3_req ]
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = example.com
