@@ -30,7 +30,13 @@
 //=============================================
 //     MongoDB Connection & Credentials Setup
 //=============================================
-$mongoDBConnectionString = "mongodb://myuser:mypassword@db:27017";
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
 $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 //=============================================
@@ -40,7 +46,7 @@ $filter = [];
 $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
 $query = new MongoDB\Driver\Query($filter, $options);
-$rows = $manager->executeQuery('rapid.proctoring', $query);
+$rows = $manager->executeQuery("$dbName.proctoring", $query);
 
 ?>
 
