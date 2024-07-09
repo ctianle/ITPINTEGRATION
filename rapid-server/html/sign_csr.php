@@ -2,10 +2,14 @@
 require 'vendor/autoload.php';
 require_once("Fernet/Fernet.php");
 use Fernet\Fernet;
-use MongoDB\Client as MongoDBClient;
 
 define('PRIVATE_KEY_PATH', '/var/www/keys/private_rsa.key');
 define('CERT_PATH', '/var/www/keys/root_ca.crt');
+
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
 function respond($status, $message, $cert = null) {
     $response = ['status' => $status, 'message' => $message];
@@ -16,10 +20,6 @@ function respond($status, $message, $cert = null) {
     exit;
 }
 
-// MongoDB connection
-$mongoClient = new MongoDBClient("mongodb://mongodb:27017");
-$database = $mongoClient->selectDatabase(getenv('MONGO_DB'));
-$collection = $database->selectCollection('cert_data');
 
 // Fetch the CA key passphrase from environment variable
 $ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
@@ -144,20 +144,24 @@ if (!openssl_x509_export($signed_cert, $signed_cert_out)) {
 $time = new DateTime('now', new DateTimeZone('Asia/Singapore'));
 $timeString = $time->format('Y-m-d H:i:s');
 
+// MongoDB connection using native driver
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+
 // Save the UUID and certificate to MongoDB
+$bulk = new MongoDB\Driver\BulkWrite;
 $document = [
     'uuid' => $uuid,
     'certificate' => $signed_cert_out,
     'created_at' => $timeString,
     'revoked' => false
 ];
+$bulk->insert($document);
 
-$insertResult = $collection->insertOne($document);
-if (!$insertResult->isAcknowledged()) {
-    error_log('Failed to save certificate data to MongoDB.');
-    respond('error', 'Failed to save certificate data to MongoDB.');
-}
+$manager->executeBulkWrite($dbName . '.cert_data', $bulk);
 
 // Respond with the signed certificate
 respond('success', 'Certificate signed successfully.', base64_encode($signed_cert_out));
 ?>
+
+

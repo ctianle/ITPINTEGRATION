@@ -38,10 +38,10 @@ WORKDIR /var/www/html
 COPY ./html /var/www/html
 
 # Install Composer dependencies
-# RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Ensure the web server user can write to the vendor directory
-# RUN chown -R www-data:www-data /var/www/html/vendor
+RUN chown -R www-data:www-data /var/www/html/vendor
 
 # Set permissions for the app directory
 RUN chown -R www-data:www-data /var/www/html

@@ -26,10 +26,10 @@
         $OW = $_POST['OW'] ?? '';
 
         // Sanitize input data
-        $AWD = htmlspecialchars($AWD);
-        $AMD = htmlspecialchars($AMD);
-        $PL = htmlspecialchars($PL);
-        $OW = htmlspecialchars($OW);
+        $AWD = (int)htmlspecialchars($AWD);
+        $AMD = (int)htmlspecialchars($AMD);
+        $PL = (int)htmlspecialchars($PL);
+        $OW = (int)htmlspecialchars($OW);
 
         // Update 'defaults' in MongoDB
         $bulk = new MongoDB\Driver\BulkWrite;
@@ -41,7 +41,7 @@
                 'PL' => $PL,
                 'OW' => $OW
             ]],
-            ['multi' => false, 'upsert' => false]
+            ['multi' => false, 'upsert' => true]  // Change 'upsert' to true
         );
 
         try {

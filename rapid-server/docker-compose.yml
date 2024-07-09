@@ -11,7 +11,7 @@ services:
       - ./keys:/var/www/keys
       - ./ssl/openssl_myapp.cnf:/etc/ssl/openssl_myapp.cnf
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - db
     networks:

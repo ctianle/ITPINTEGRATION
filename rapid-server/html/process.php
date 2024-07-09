@@ -1,4 +1,46 @@
 <?php
+require 'vendor/autoload.php';
+
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Query;
+use MongoDB\Driver\Command;
+use MongoDB\Driver\BulkWrite;
+// Function to decode and verify JWT token
+function Verify_Token($jwt_token) {
+    // Get the secret key from environment variables
+    $secret_key = getenv('JWT_SECRET');
+    if (!$secret_key) {
+        error_log('JWT secret key is not set in environment variables.');
+        exit;
+    }
+
+    try {
+        // Decode the JWT token
+        $decoded = JWT::decode($jwt_token, new Key($secret_key, 'HS256'));
+
+        // Convert the decoded object to an array
+        $decoded_array = (array) $decoded;
+
+        // Get the current timestamp
+        $current_time = time();
+
+        // Check the validity of the timestamp
+        if ($current_time < $decoded_array['iat'] || $current_time > $decoded_array['exp']) {
+            // Invalid timestamp, stop processing
+            respond('error', "Invalid Token Timestamp");
+            exit;
+        }
+        // Token is valid
+        return true;
+
+    } catch (Exception $e) {
+        // Handle errors
+        error_log('JWT decode error: ' . $e->getMessage());
+        exit;
+    }
+}
 
 //====================================
 //     Troubleshooting Parameters
@@ -36,6 +78,8 @@ $rawdata = json_decode($json, true); //String To JSON Format
 $array = json_decode($rawdata, true); // JSON Format to Array
 //var_dump($array); //Testing & Troubleshooting Purposes
 
+
+
 //====================================
 //          JSON Data Format
 //====================================
@@ -61,11 +105,26 @@ $array = json_decode($rawdata, true); // JSON Format to Array
 // RSA Encryption (Decrypting Fernet Key)
 //========================================
 
-//Decoding Fernet Key (BASE64) & Decrypting Fernet Key with our generated Private Key (RSA)
-$RSA_privatekey = file_get_contents("RSA/private_rsa.key");
+// Fetch the CA key passphrase from environment variable
+$ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
+if (!$ca_key_passphrase) {
+    error_log('CA key passphrase environment variable is not set.');
+}
+
+// Load the CA private key
+$ca_private_key = file_get_contents("/var/www/keys/private_rsa.key");
+if (!$ca_private_key) {
+    error_log('Failed to read CA private key.');
+}
+
+// Parse the CA private key
+$RSA_privatekey = openssl_pkey_get_private($ca_private_key, $ca_key_passphrase);
+if (!$RSA_privatekey) {
+    error_log('Failed to parse CA private key: ' . openssl_error_string());
+}
+
 $encryptedfernetkey = base64_decode($array[5]);
 openssl_private_decrypt($encryptedfernetkey, $fernetkey, $RSA_privatekey);
-
 //========================================
 //     Fernet (Symmetric Encryption)
 //  Decrypting the rest of the JSON Data
@@ -82,12 +141,13 @@ $trigger = $fernet->decode($array[2]);
 $category = $fernet->decode($array[3]);
 $data = $fernet->decode($array[4]);
 $UUID = $fernet->decode($array[6]);
-
+$JwT_Token = $fernet->decode($array[7]);
+Verify_Token($JwT_Token);
 //=============================================
 //             Logging Parameters
 //=============================================
 date_default_timezone_set('Asia/Singapore');
-$date_time = new UTCDateTime((new DateTime())->getTimestamp() * 1000);
+$date_time = date('d-m-Y H:i:s');
 $date = date('d-m-Y');
 
 //===================================================

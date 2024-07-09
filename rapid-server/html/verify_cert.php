@@ -1,7 +1,6 @@
 <?php
 require_once("Fernet/Fernet.php");
-require 'vendor/autoload.php'; // Ensure MongoDB library is loaded
-use MongoDB\Client as MongoDBClient;
+require 'vendor/autoload.php';
 use Fernet\Fernet;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -76,15 +75,25 @@ $signed_message = $combined_data['signed_message'];
 $cert_data = $combined_data['cert_data'];
 $original_message = $combined_data['message'];
 
+
+
 // MongoDB connection
-$mongoClient = new MongoDBClient("mongodb://mongodb:27017");
-$database = $mongoClient->selectDatabase(getenv('MONGO_DB'));
-$collection = $database->selectCollection('cert_data');
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection using native driver
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 // Check if the certificate has been revoked
-$cert_document = $collection->findOne(['certificate' => $cert_data]);
+$query = new MongoDB\Driver\Query(['certificate' => $cert_data]);
+$cursor = $manager->executeQuery($dbName . '.cert_data', $query);
+$cert_document = current($cursor->toArray());
 
-if ($cert_document && isset($cert_document['revoked']) && $cert_document['revoked']) {
+// Check if certificate revoked
+if ($cert_document && isset($cert_document->revoked) && $cert_document->revoked) {
     respond('error', 'Certificate has been revoked.');
 }
 
