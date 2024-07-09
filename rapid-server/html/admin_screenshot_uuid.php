@@ -28,12 +28,18 @@
         </thead>
         <tbody>
         <?php
-        // Connect to MongoDB
-        $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+        // Initialise DB Variables.
+        $db_user = getenv('DB_ROOT_USERNAME');
+        $db_password = getenv('DB_ROOT_PASSWORD');
+        $dbName = getenv('DB_NAME');
+
+        // MongoDB connection setup
+        $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+        $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
         // Query MongoDB
         $query = new MongoDB\Driver\Query([]);
-        $rows = $manager->executeQuery('rapid.Screenshots', $query);
+        $rows = $manager->executeQuery("$dbName.Screenshots", $query);
 
         $uniqueUUIDs = [];
         foreach ($rows as $row) {

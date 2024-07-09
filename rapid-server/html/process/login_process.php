@@ -8,6 +8,7 @@ use MongoDB\Driver\Exception\Exception as MongoDBException;
 // Initialise DB Variables.
 $db_user = getenv('DB_ROOT_USERNAME');
 $db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
 // MongoDB connection string
 $mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
@@ -27,7 +28,7 @@ try {
         $query = new Query($filter);
 
         // Execute the query
-        $cursor = $manager->executeQuery('rapid.Users', $query);
+        $cursor = $manager->executeQuery("$dbName.Users", $query);
 
         // Check if user is found
         $user = current($cursor->toArray());

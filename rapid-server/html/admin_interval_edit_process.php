@@ -10,8 +10,13 @@
 
     <div style="padding: 2%;">
         <?php
+        // Initialise DB Variables.
+        $db_user = getenv('DB_ROOT_USERNAME');
+        $db_password = getenv('DB_ROOT_PASSWORD');
+        $dbName = getenv('DB_NAME');
+
         // MongoDB connection setup
-        $mongoDBConnectionString = "mongodb://myuser:mypassword@db:27017";
+        $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
         $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
         // Retrieve POST data
@@ -26,7 +31,7 @@
         $filter = ['uuid' => $uuid];
         $options = ['limit' => 1];
         $query = new MongoDB\Driver\Query($filter, $options);
-        $rows = $manager->executeQuery('rapid.intervals', $query);
+        $rows = $manager->executeQuery("$dbName.intervals", $query);
 
         if (iterator_count($rows) > 0) {
             $valid_uuid = true;
@@ -51,7 +56,7 @@
 
             try {
                 $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
-                $result = $manager->executeBulkWrite('rapid.intervals', $bulk, $writeConcern);
+                $result = $manager->executeBulkWrite("$dbName.intervals", $bulk, $writeConcern);
 
                 echo '<div class="alert alert-success" role="alert">
                     <h4 class="alert-heading">Success!</h4>

@@ -26,7 +26,7 @@ if (isset($_FILES['csv'])) {
             'CapturedAt' => new MongoDB\BSON\UTCDateTime($capturedAt->getTimestamp() * 1000)
         ];
         $query = new MongoDB\Driver\Query($filter);
-        $rows = $manager->executeQuery('rapid.StudentProcesses', $query)->toArray();
+        $rows = $manager->executeQuery("$dbName.StudentProcesses", $query)->toArray();
 
         if (empty($rows)) {
             // Process does not exist, insert it
@@ -40,7 +40,7 @@ if (isset($_FILES['csv'])) {
 
     // Execute bulk write
     try {
-        $manager->executeBulkWrite('rapid.StudentProcesses', $bulk);
+        $manager->executeBulkWrite("$dbName.StudentProcesses", $bulk);
         header("Location: ../student_overview.php");
         exit;
     } catch (MongoDB\Driver\Exception\Exception $e) {

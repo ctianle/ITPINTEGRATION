@@ -3,8 +3,14 @@
 use MongoDB\Client as MongoDBClient;
 use MongoDB\BSON\UTCDateTime;
 
-// MongoDB Connection Setup
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@192.168.18.2:27017");
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 // Querying Data from `proctoring` collection
 $filter = [];
@@ -13,7 +19,7 @@ $options = [
 ];
 
 $query = new MongoDB\Driver\Query($filter, $options);
-$cursor = $manager->executeQuery('rapid.proctoring', $query);
+$cursor = $manager->executeQuery("$dbName.proctoring", $query);
 
 // Displaying Results
 echo "<h1>Proctoring Data</h1>";

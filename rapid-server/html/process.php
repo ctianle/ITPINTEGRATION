@@ -14,8 +14,14 @@ use MongoDB\Client as MongoDBClient;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\BSON\ObjectId;
 
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@192.168.18.2:27017");
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 //====================================
 //     Decode POST Request (JSON)
 //====================================
@@ -89,7 +95,7 @@ $date = date('d-m-Y');
 //===================================================
 $uuid_exist = false;
 $query = new MongoDB\Driver\Query(['uuid' => $UUID]);
-$rows = $manager->executeQuery('rapid.intervals', $query);
+$rows = $manager->executeQuery("$dbName.intervals", $query);
 
 foreach ($rows as $row) {
     $uuid_exist = true;
@@ -102,7 +108,7 @@ foreach ($rows as $row) {
 //      Retrieve Defaults for `intervals`
 //=============================================
 $query = new MongoDB\Driver\Query(['name' => 'intervals']);
-$rows = $manager->executeQuery('rapid.defaults', $query);
+$rows = $manager->executeQuery("$dbName.defaults", $query);
 
 foreach ($rows as $row) {
     $AWD_Default = $row->AWD;
@@ -126,7 +132,7 @@ if (!$uuid_exist) {
         'OW' => $OW_Default,
         'admin_override' => $admin_override_default
     ]);
-    $manager->executeBulkWrite('rapid.intervals', $bulk);
+    $manager->executeBulkWrite("$dbName.intervals", $bulk);
     echo "Default Interval Initialized.\n";
 }
 
@@ -147,7 +153,7 @@ if ($trigger == "True" && $admin_override == 0) {
         ['uuid' => $UUID],
         ['$set' => [$category => $interval_data]]
     );
-    $manager->executeBulkWrite('rapid.intervals', $bulk);
+    $manager->executeBulkWrite("$dbName.intervals", $bulk);
     echo "Interval Updated\n";
 } elseif ($admin_override == 1) {
     echo "Admin Override activated. Interval Value is currently defined by the Administrator.\n";
@@ -182,7 +188,7 @@ $bulk->insert([
     'data' => $data,
     'date_time' => $date_time
 ]);
-$manager->executeBulkWrite('rapid.proctoring', $bulk);
+$manager->executeBulkWrite("$dbName.proctoring", $bulk);
 echo "Proctoring Data inserted successfully.\n";
 
 //=============================================

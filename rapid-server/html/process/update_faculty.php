@@ -4,8 +4,13 @@ session_start();
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
 
-$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
+// MongoDB connection string
+$mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
 try {
     $manager = new Manager($mongoConnectionString);
 
@@ -18,7 +23,6 @@ try {
         exit;
     }
 
-    $dbName = 'rapid';
     $collectionName = 'Users';
 
     $bulkWrite = new BulkWrite();

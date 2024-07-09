@@ -3,8 +3,14 @@
 //=============================================
 // MongoDB Connection & Credentials Set Up
 //=============================================
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@192.168.18.2:27017");
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 ////////////////////////////////////////////////////////////////////////////
 // Display Interval Value via Specified UUID & Category (GET METHOD)
@@ -21,7 +27,7 @@ if (isset($_GET["uuid"])) {
 
     $filter = ['uuid' => $UUID];
     $query = new MongoDB\Driver\Query($filter);
-    $cursor = $manager->executeQuery('rapid.ping', $query);
+    $cursor = $manager->executeQuery("$dbName.ping", $query);
 
     $document = current($cursor->toArray());
 
@@ -32,7 +38,7 @@ if (isset($_GET["uuid"])) {
         $document = ['uuid' => $UUID, 'last_connect' => $date_time];
         $bulk = new MongoDB\Driver\BulkWrite();
         $bulk->insert($document);
-        $manager->executeBulkWrite('rapid.ping', $bulk);
+        $manager->executeBulkWrite("$dbName.ping", $bulk);
         echo "New Connection: " . htmlspecialchars($UUID) . "\n";
     }
 }

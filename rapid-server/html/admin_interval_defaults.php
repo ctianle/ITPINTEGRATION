@@ -8,9 +8,14 @@
 </head>
 <body>
 <?php
+
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$database = getenv('DB_NAME');
+
 // Define MongoDB connection details
-$mongoURI = "mongodb://myuser:mypassword@db:27017";
-$database = "rapid";
+$mongoURI = "mongodb://$db_user:$db_password@db:27017";
 $collectionName = "defaults";
 
 // Query MongoDB

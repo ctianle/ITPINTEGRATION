@@ -3,7 +3,13 @@
 ///////////////////////////////////////////////
 // MongoDB Connection & Credentials Setup
 ///////////////////////////////////////////////
-$mongoDBConnectionString = "mongodb://myuser:mypassword@db:27017";
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
 $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 ///////////////////////////////////////////////
@@ -17,7 +23,7 @@ $date = date('d-m-Y');
 // Process MongoDB Data
 ///////////////////////////////////////////////
 $query = new MongoDB\Driver\Query([]);
-$rows = $manager->executeQuery('rapid.ping', $query);
+$rows = $manager->executeQuery("$dbName.ping", $query);
 
 foreach ($rows as $row) {
     $last_connect_time = strtotime($row->last_connect);

@@ -53,11 +53,18 @@
                                                 <h5 class="card-title ml-2">Screen</h5>
                                             </div>
                                             <?php
-                                            // MongoDB connection
-                                            $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+                                            // Initialise DB Variables.
+                                            $db_user = getenv('DB_ROOT_USERNAME');
+                                            $db_password = getenv('DB_ROOT_PASSWORD');
+                                            $dbName = getenv('DB_NAME');
+
+                                            // MongoDB connection setup
+                                            $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+                                            $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+           
                                             // Query MongoDB for the latest uploaded screen image
                                             $query = new MongoDB\Driver\Query(['uuid' => 'Screenshots'], ['sort' => ['date_time' => -1], 'limit' => 1]);
-                                            $rows = $manager->executeQuery('rapid.Screenshots', $query);
+                                            $rows = $manager->executeQuery("$dbName.Screenshots", $query);
                                             // Display the latest screen image
                                             foreach ($rows as $row) {
                                                 echo '<img src="data:image/png;base64,' . $row->data . '" alt="Screen Activity" class="activity-image">';
@@ -78,7 +85,7 @@
                                             <?php
                                             // Query MongoDB for the latest uploaded webcam image
                                             $query = new MongoDB\Driver\Query(['uuid' => 'Snapshots'], ['sort' => ['date_time' => -1], 'limit' => 1]);
-                                            $rows = $manager->executeQuery('rapid.Snapshots', $query);
+                                            $rows = $manager->executeQuery("$dbName.Snapshots", $query);
                                             // Display the latest webcam image
                                             foreach ($rows as $row) {
                                                 echo '<img src="data:image/png;base64,' . $row->data . '" alt="Webcam Activity" class="activity-image">';
@@ -101,7 +108,7 @@
                                                 $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
                                                 // Query MongoDB for the latest processes
                                                 $query = new MongoDB\Driver\Query([], ['sort' => ['CapturedAt' => -1]]);
-                                                $rows = $manager->executeQuery('rapid.StudentProcesses', $query);
+                                                $rows = $manager->executeQuery("$dbName.StudentProcesses", $query);
                                                 // Display the process list
                                                 echo '<ul class="apps-list">';
                                                 foreach ($rows as $row) {

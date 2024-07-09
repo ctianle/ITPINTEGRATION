@@ -5,8 +5,13 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Exception\Exception as MongoDBException;
 
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
 // MongoDB connection string
-$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+$mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
 
 try {
     // Create a new MongoDB Manager instance
@@ -24,7 +29,6 @@ try {
     $sessionId = (int)$_GET['sessionId'];
 
     // Specify the database and collection
-    $dbName = 'rapid';
     $collectionName = 'Students';
 
     // Prepare filter and update data

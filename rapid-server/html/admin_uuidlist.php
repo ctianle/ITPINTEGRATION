@@ -43,8 +43,13 @@
             <tbody>
 
                 <?php
-                // MongoDB Connection & Credentials Setup
-                $mongoDBConnectionString = "mongodb://myuser:mypassword@db:27017";
+                // Initialise DB Variables.
+                $db_user = getenv('DB_ROOT_USERNAME');
+                $db_password = getenv('DB_ROOT_PASSWORD');
+                $dbName = getenv('DB_NAME');
+
+                // MongoDB connection setup
+                $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
                 $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
                 // Query MongoDB for distinct UUIDs from proctoring collection
@@ -52,7 +57,7 @@
                     'distinct' => 'proctoring',
                     'key' => 'uuid',
                 ]);
-                $cursor = $manager->executeCommand('rapid', $command);
+                $cursor = $manager->executeCommand("$dbName", $command);
                 $UUIDs = current($cursor->toArray())->values;
 
                 foreach ($UUIDs as $UUID) {

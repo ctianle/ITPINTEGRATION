@@ -8,11 +8,16 @@ use MongoDB\Driver\WriteConcern;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\BSON\ObjectId;
 
-// Connect to MongoDB
-$manager = new Manager("mongodb://myuser:mypassword@db:27017");
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection string
+$mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
 
 // Specify the database and collection
-$collection = "rapid.Sessions";
+$collection = "$dbName.Sessions";
 
 // Function for redirection with an alert message
 function redirectWithMessage($message, $url = '../sessions.php') {
@@ -27,7 +32,7 @@ function getNextSequenceValue($sequenceName, $manager) {
     $options = ['projection' => ['sequence_value' => 1]];
 
     $query = new MongoDB\Driver\Query($filter, $options);
-    $cursor = $manager->executeQuery('rapid.session_sequence', $query);
+    $cursor = $manager->executeQuery("$dbName.session_sequence", $query);
 
     foreach ($cursor as $doc) {
         $sequence_value = $doc->sequence_value;
@@ -40,7 +45,7 @@ function getNextSequenceValue($sequenceName, $manager) {
         ['upsert' => true]
     );
 
-    $manager->executeBulkWrite('rapid.session_sequence', $bulk);
+    $manager->executeBulkWrite("$dbName.session_sequence", $bulk);
 
     return $sequence_value;
 }

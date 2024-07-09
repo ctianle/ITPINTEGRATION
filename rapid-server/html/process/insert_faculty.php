@@ -9,6 +9,7 @@ use MongoDB\BSON\ObjectId;
 // Initialise DB Variables.
 $db_user = getenv('DB_ROOT_USERNAME');
 $db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
 
 // Connect to MongoDB
@@ -56,7 +57,7 @@ if ($handle !== FALSE) {
     // Execute the bulk write operation
     $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
     try {
-        $result = $manager->executeBulkWrite('rapid.' . $collectionName, $bulk, $writeConcern);
+        $result = $manager->executeBulkWrite("$dbName." . $collectionName, $bulk, $writeConcern);
         $insertedCount = $result->getInsertedCount();
         alertAndRedirect('CSV file uploaded successfully! Inserted ' . $insertedCount . ' documents.');
     } catch (MongoDB\Driver\Exception\BulkWriteException $e) {

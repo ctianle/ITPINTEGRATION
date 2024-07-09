@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_P
 
         // Insert into MongoDB
         try {
-            $result = $manager->executeBulkWrite('rapid.Snapshots', $bulk);
+            $result = $manager->executeBulkWrite("$dbName.Snapshots", $bulk);
             header("Location: ../student_overview.php"); // Redirect to overview page
             exit;
         } catch (MongoDB\Driver\Exception\BulkWriteException $e) {

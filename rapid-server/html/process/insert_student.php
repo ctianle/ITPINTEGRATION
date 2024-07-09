@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file']) && isset($_PO
         // Execute the bulk write operation
         $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
         try {
-            $result = $manager->executeBulkWrite('rapid.' . $collectionName, $bulk, $writeConcern);
+            $result = $manager->executeBulkWrite("$dbName." . $collectionName, $bulk, $writeConcern);
             $insertedCount = $result->getInsertedCount();
             alertAndRedirect('CSV file uploaded successfully! Inserted ' . $insertedCount . ' documents.');
         } catch (MongoDB\Driver\Exception\BulkWriteException $e) {

@@ -4,7 +4,14 @@
 // MongoDB Connection & Credentials Set Up
 //=============================================
 
-$manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@192.168.18.2:27017");
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
+// MongoDB connection setup
+$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
 //====================================
 // Decode POST Request (JSON)
@@ -51,7 +58,7 @@ $document = [
 
 $bulk = new MongoDB\Driver\BulkWrite();
 $bulk->insert($document);
-$manager->executeBulkWrite('rapid.proctoring', $bulk);
+$manager->executeBulkWrite("$dbName.proctoring", $bulk);
 
 echo "Proctoring Data inserted successfully.\n";
 

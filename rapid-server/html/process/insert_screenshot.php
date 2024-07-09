@@ -2,6 +2,7 @@
 // Initialise DB Variables.
 $db_user = getenv('DB_ROOT_USERNAME');
 $db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
 
 
 // Connect to MongoDB
@@ -36,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_P
 
         // Insert into MongoDB
         try {
-            $result = $manager->executeBulkWrite('rapid.Screenshots', $bulk);
+            $result = $manager->executeBulkWrite("$dbName.Screenshots", $bulk);
             header("Location: ../student_overview.php");
             exit;
         } catch (MongoDB\Driver\Exception\BulkWriteException $e) {
@@ -75,7 +76,7 @@ $document = [
 ];
 $bulk->insert($document);
 
-$result = $manager->executeBulkWrite('rapid.Screenshots', $bulk);
+$result = $manager->executeBulkWrite("$dbName.Screenshots", $bulk);
 if ($result->getInsertedCount() == 1) {
     echo "Screenshot Data inserted successfully.\n";
 } else {

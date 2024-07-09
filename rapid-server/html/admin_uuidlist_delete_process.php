@@ -35,7 +35,12 @@
     //=============================================
     //     MongoDB Connection & Credentials Setup
     //=============================================
-    $mongoDBConnectionString = "mongodb://myuser:mypassword@db:27017";
+    // Initialise DB Variables.
+    $db_user = getenv('DB_ROOT_USERNAME');
+    $db_password = getenv('DB_ROOT_PASSWORD');
+
+    // MongoDB connection setup
+    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
     //=============================================
@@ -47,7 +52,7 @@
     $bulkWrite->delete($filter, $options);
     
     try {
-        $result = $manager->executeBulkWrite('rapid.proctoring', $bulkWrite);
+        $result = $manager->executeBulkWrite("$dbName.proctoring", $bulkWrite);
         
         // Delete log file
         $logfilelocation = "/var/logs/myapp/Heartbeat/{$uuid}.log";
