@@ -17,13 +17,13 @@
     <div class="col">
         <div class="mb-3">
             <label for="public_key" class="form-label">Public Key:</label>
-            <textarea class="form-control" id="public_key" rows="20"><?php echo file_get_contents("RSA/public_rsa.key"); ?></textarea>
+            <textarea class="form-control" id="public_key" rows="20"><?php echo file_get_contents("/var/www/keys/public_rsa.key"); ?></textarea>
         </div>
     </div>
     <div class="col">
         <div class="mb-3">
             <label for="private_key" class="form-label">Private Key:</label>
-            <textarea class="form-control" id="private_key" rows="20"><?php echo file_get_contents("RSA/private_rsa.key"); ?></textarea>
+            <textarea class="form-control" id="private_key" rows="20"><?php echo file_get_contents("/var/www/keys/private_rsa.key"); ?></textarea>
         </div>
     </div>
 </div>

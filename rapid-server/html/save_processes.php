@@ -26,4 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Location: kill_processes_admin.php');  // Redirect back to the form page after saving
     exit;
 }
+
+function logError($error) {
+    global $date_time;
+    $logFile = '/var/logs/myapp/system_error.log';
+    $error_message = "\n" . $date_time . " " . $error;
+    error_log(print_r($error_message, true), 3, $logFile);
+    echo "An Error occurred.\n";
+}
 ?>

@@ -24,9 +24,9 @@
     // Display Last Line of RSA Key Generation Logs
     /////////////////////////////////////////////////
     
-    $file = "/var/logs/myapp/" . "rsa_key_generation.log";
+    $file = "/var/logs/myapp/rsa_key_generation.log";
     $file = escapeshellarg($file); // For Security Purposes
-    $line = `tail -n 1 $file`; //Last Line
+    $line = `tail -n 1 $file`; // Last Line
     echo $line;
     ?>
     </p>
@@ -35,12 +35,14 @@
 
 <?php
 
+$ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
+
 ////////////////////////////////////////////
 //      RSA Encryption Configurations
 ////////////////////////////////////////////
 $config = array(
-    "digest_alg" => "sha512",
-    "private_key_bits" => 4096,
+    "digest_alg" => "sha256",
+    "private_key_bits" => 2048,
     "private_key_type" => OPENSSL_KEYTYPE_RSA,
 );
 
@@ -53,21 +55,34 @@ $res = openssl_pkey_new($config);
 
 // Extract the private key from $res to $privKey
 openssl_pkey_export($res, $privKey);
-$pubKey = openssl_pkey_get_details($res)["key"];
 
-// // NEW
-// putenv("RSA_PRIVATE_KEY"=$privKey);
-// putenv("RSA_PUBLIC_KEY"=$pubKey);
-// NEW: TO BE RUNNED ON BASH
-// export RSA_PRIVATE_KEY=$(cat /path/to/your/private_rsa.key)
-// export RSA_PUBLIC_KEY=$(cat /path/to/your/public_rsa.key)
+$dn = array(
+    "countryName" => "SG",
+    "stateOrProvinceName" => "Singapore",
+    "localityName" => "Singapore",
+    "organizationName" => "SIT",
+    "organizationalUnitName" => "Team 4",
+    "commonName" => "ca"
+);
 
-// OLD
-file_put_contents('RSA/private_rsa.key', $privKey);
-file_put_contents('RSA/public_rsa.key', $pubKey);
+$ca_csr = openssl_csr_new($dn, $privKey, $config);
 
+$ca_cert = openssl_csr_sign($ca_csr, null, $res, 365, $config);
+if ($ca_cert === false) {
+    $error = openssl_error_string();
+    error_log("Error signing CA CSR: $error");
+    die("Error signing CA CSR: $error");
+}
+
+openssl_x509_export_to_file($ca_cert, '/var/www/keys/root_ca.crt');
+
+openssl_pkey_export($res, $ca_privKey, $ca_key_passphrase);
+file_put_contents('/var/www/keys/private_rsa.key', $ca_privKey);
 
 // Extract the public key from $res to $pubKey
+$pubKey = openssl_pkey_get_details($res);
+$pubKey = $pubKey["key"];
+file_put_contents('/var/www/keys/public_rsa.key', $pubKey);
 
 
 
@@ -79,8 +94,7 @@ $date_time = date('d-m-Y H:i:s');
 $date = date('d-m-Y');
 
 $log = "The previous RSA asymmetric key pairs were generated on " . $date_time . "\n";
-// error_log(print_r($log, true), 3, $_SERVER['DOCUMENT_ROOT'] . "/rsa_key_generation.log");
 $logfilelocation = "/var/logs/myapp/rsa_key_generation.log";
-error_log(print_r($log, true), 3, $logfilelocation);
+error_log($log, 3, $logfilelocation);
 
 ?>
