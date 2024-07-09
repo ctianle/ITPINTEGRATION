@@ -1,0 +1,39 @@
+<?php
+session_start();
+
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\BulkWrite;
+
+$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+
+try {
+    $manager = new Manager($mongoConnectionString);
+
+    $userId = isset($_GET['id']) ? (int)$_GET['id'] : null;
+
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'UserId is required']);
+        exit;
+    }
+
+    $dbName = 'rapid';
+    $collectionName = 'Users';
+
+    $bulkWrite = new BulkWrite();
+
+    $filter = ['UserId' => $userId];
+
+    $bulkWrite->delete($filter, ['limit' => 1]);
+
+    $manager->executeBulkWrite("$dbName.$collectionName", $bulkWrite);
+
+    echo json_encode(['success' => true]);
+
+} catch (Exception $e) {
+    error_log("Exception: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Error deleting user: ' . $e->getMessage()]);
+    exit;
+}
+?>

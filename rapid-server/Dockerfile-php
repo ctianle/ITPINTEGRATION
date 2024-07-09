@@ -1,0 +1,25 @@
+# Use an official PHP image with the desired PHP version
+FROM php:8.0-fpm
+
+# Install required system packages
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libssl-dev \
+    libcurl4-openssl-dev
+
+# Install the MongoDB PHP extension
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
+
+# Copy your application code into the container
+COPY . /usr/share/nginx/html
+
+# Set the working directory
+WORKDIR /usr/share/nginx/html
+
+# Expose port 9000 to connect to PHP-FPM
+EXPOSE 9000
+
+# Start PHP-FPM server
+CMD ["php-fpm"]

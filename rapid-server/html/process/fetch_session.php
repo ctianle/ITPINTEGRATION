@@ -1,0 +1,66 @@
+<?php
+session_start();
+
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Query;
+use MongoDB\Driver\Exception\Exception as MongoDBException;
+
+// MongoDB connection string
+$mongoConnectionString = "mongodb://myuser:mypassword@db:27017";
+
+try {
+    // Create a new MongoDB Manager instance
+    $manager = new Manager($mongoConnectionString);
+
+    // Check if session UserId is set
+    if (isset($_SESSION['UserId'])) {
+        // Specify the database and collection
+        $collectionName = 'Sessions';
+
+        // Retrieve data from MongoDB with filter
+        $filter = ['MainInvigilatorId' => $_SESSION['UserId']];
+        $options = [];
+        $query = new Query($filter, $options);
+        $cursor = $manager->executeQuery("rapid.$collectionName", $query);
+
+        // Prepare an array to hold the session data
+        $sessionData = [];
+
+        // Iterate over the cursor and format the data
+        foreach ($cursor as $document) {
+            // Convert MongoDB UTCDateTime to PHP DateTime object
+            $startTime = $document->StartTime->toDateTime();
+
+            // Determine session status based on start time
+            $status = '';
+            $now = new DateTime();
+            if ($startTime < $now) {
+                $status = 'complete'; // Past sessions
+            } elseif ($startTime > $now) {
+                $status = 'planned'; // Future sessions
+            } else {
+                $status = 'ongoing'; // Current sessions
+            }
+            
+            $session = [
+                '_id' => (string)$document->_id,
+                'SessionId' => $document->SessionId,
+                'SessionName' => $document->SessionName,
+                'StartTime' => $document->StartTime->toDateTime()->format('Y-m-d H:i:s'), // Convert BSON UTCDateTime to string
+                'EndTime' => $document->EndTime->toDateTime()->format('Y-m-d H:i:s'), // Convert BSON UTCDateTime to string
+                'Duration' => $document->Duration,
+                'Status' => $status,
+            ];
+            $sessionData[] = $session;
+        }
+
+        // Return the session data as JSON
+        echo json_encode($sessionData);
+    } else {
+        echo json_encode(['error' => 'UserId not set in session.']);
+    }
+} catch (MongoDBException $e) {
+    echo json_encode(['error' => 'Error connecting to MongoDB: ' . $e->getMessage()]);
+}
+
+?>

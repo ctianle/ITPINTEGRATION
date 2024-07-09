@@ -1,0 +1,125 @@
+.container.content {
+    margin: 0;
+    height: 100%;
+    display: grid;
+    place-items: center;
+}
+.btn.create{
+    margin-bottom:24px;
+    color: black;
+}
+.content .card {
+    margin-bottom: 24px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+}
+.table.students .high{
+    background-color: red;
+}
+.table.students .med{
+    background-color: orange;
+    width: 60%;
+}
+.table.students .low{
+    background-color: #FEDC56;
+    width: 30%;
+}
+table .name{
+    max-width: 80px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+table, th{
+    font-size: 0.9rem !important;
+}
+.action .btn{
+    width: 100px !important;
+}
+@media (max-width: 576px) {
+    .action.btn {
+        flex: 1 0 100%;
+        margin-bottom: 0.5rem;
+    }
+    .action.btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.status.flagged {
+    background-color: red;
+}
+
+.status.clear {
+    background-color: green;
+}
+
+.status-flagged {
+    display: inline-block;
+    width: 60px;
+    height: 20px;
+    background-color: red;
+    margin-right: 5px;
+}
+
+.status-clear {
+    display: inline-block;
+    width: 60px;
+    height: 20px;
+    background-color: green;
+    margin-right: 5px;
+}
+
+.student-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    background-size: cover;
+    border-radius: 50%;
+}
+
+.large-card {
+    margin-top: 0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+    min-height: 600px;
+    min-width: 1210px;
+    margin-left: auto; /* Center align horizontally */
+    margin-right: auto; /* Center align horizontally */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-content .student-info {
+    flex-grow: 1;
+}
+
+.header-content .student-img {
+    background: url('../images/misc/avatar.jpg') no-repeat center center;
+    background-size: cover;
+    margin-left: 700px; /* Reduced space between text and image */
+}
+
+#student-record-heading {
+    color: #030229;
+    font-weight: bold;
+}
+
+#student-session-id, #student-name, h2 {
+    color: #403DBA;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.quiz-name-img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    vertical-align: middle; /* Align the image vertically with the text */
+}

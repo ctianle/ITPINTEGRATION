@@ -1,0 +1,50 @@
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php
+      - db
+    networks:
+      - mynetwork
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile-php
+    volumes:
+      - ./html:/usr/share/nginx/html
+      - ./php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - mynetwork
+    depends_on:
+      - db
+
+  db:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: myuser
+      MONGO_INITDB_ROOT_PASSWORD: mypassword
+      MONGO_INITDB_DATABASE: rapid
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - db_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  mynetwork:
+    driver: bridge
+

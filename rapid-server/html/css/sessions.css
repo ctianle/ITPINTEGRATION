@@ -1,0 +1,68 @@
+.container.content {
+    margin: 0;
+    height: 100%;
+    display: grid;
+    place-items: center;
+
+}
+.btn.create{
+    margin-bottom:24px;
+    color: black;
+}
+.content .card {
+    margin-bottom: 24px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+}
+.table.sessions  .status{
+    border-radius: 10px;
+    width: 180px;
+    opacity: 0.8;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+.table.sessions  a{
+    text-decoration: none;
+    color: inherit;
+}
+.complete{
+    background-color: #74B72E ;
+}
+.table.sessions .ongoing{
+    background-color: #FEDC56 ;
+    color: black;
+}
+.table.sessions .planned{
+    background-color: orange ;
+}
+.table.sessions .complete:hover{
+    opacity: 1;
+}
+.table.sessions .ongoing:hover{
+    opacity: 1;
+}
+.table.sessions .planned:hover{
+    opacity: 1;
+}
+table .name{
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+table, th{
+    font-size: 0.9rem !important;
+}
+.action .btn{
+    width: 60px !important;
+}
+@media (max-width: 576px) {
+    .action.btn {
+        flex: 1 0 100%;
+        margin-bottom: 0.5rem;
+    }
+    .action.btn:last-child {
+        margin-bottom: 0;
+    }
+}

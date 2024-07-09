@@ -1,0 +1,44 @@
+.appname{
+    margin: auto 0;
+    justify-content: center;
+}
+.nav{
+
+    width: 100%;
+}
+.nav a{
+    color:lightgray;
+}
+.nav a:hover{
+    color:#ffffff;
+}
+.nav-item{
+    width:100%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    padding: 3px;
+    border-radius: 10px;
+}
+.nav-item a{
+    width: 90%;
+    margin:auto;
+}
+.nav-item.active{
+    box-shadow: 0 0 10px #999999;
+    background-color: #2a3439;
+}
+.nav-item.active a{
+    color: #ffffff;
+}
+.fs-4{
+    margin-left: calc(50% - 0.65rem);
+}
+@media (min-width: 576px) {
+    .fs-4{
+        margin-left: auto;
+    }
+}
+hr{
+    width: 100%;
+
+}

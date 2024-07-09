@@ -1,0 +1,70 @@
+.container.content {
+    margin: 0;
+    height: 100%;
+    display: grid;
+    place-items: center;
+
+}
+.content .card {
+    margin-bottom: 24px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+}
+table, th{
+    font-size: 0.8rem !important;
+}
+.table.students .high{
+    background-color: red;
+}
+.table.students .med{
+    background-color: orange;
+    width: 60%;
+}
+.table.students .low{
+    background-color: #FEDC56;
+    width: 30%;
+}
+.table.psessions .complete{
+    background-color: #74B72E ;
+    border-radius: 5px;
+}
+.table.usessions .ongoing{
+    background-color: #FEDC56 ;
+    border-radius: 5px;
+}
+.table.usessions .planned{
+    background-color: orange ;
+    border-radius: 5px;
+}
+table .name{
+    max-width: 80px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+#myChart{
+    margin: auto;
+}
+@media (min-width: 576px) {
+    .content .card {
+        height: 320px; /* Height for small screens and up */
+    }
+}
+
+@media (min-width: 768px) {
+    .content .card {
+        height: 320px; /* Height for medium screens and up */
+    }
+}
+
+@media (min-width: 992px) {
+    .content .card {
+        height: 40vh; /* Height for large screens and up */
+    }
+}
+
+@media (min-width: 1200px) {
+    .content .card {
+        height: 40vh; /* Height for extra large screens and up */
+    }
+}
