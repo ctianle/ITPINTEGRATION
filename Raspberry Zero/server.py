@@ -66,15 +66,15 @@ def index():
                     category = 'AWD'
                     # decoding data
                     # decode the data from base64 and convert to readable text
-                    decoded = decodebase64(data[category]) 
-                    
+                    decoded = decodebase64(data[category])
+
                     # processing data
                     processing(decoded, category)
                     print("Returning AWD")
                     if JwT_token == None:
                         return ('No Token', 404)
                     return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
-                
+
                 if 'AMD' in data:
                     category = 'AMD'
                     # decoding data
@@ -87,7 +87,7 @@ def index():
                     if JwT_token == None:
                         return ('No Token', 404)
                     return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
-                
+
                 if 'PL' in data:
                     category = 'PL'
                     # decoding each item in the list of data
@@ -110,13 +110,24 @@ def index():
                         # decode the data from base64 and convert to readable text
                         decoded = decodebase64(item)
                         process_list.append(decoded)
-                    
+
                     # processing data
                     processing(process_list, category)
                     print("Returning OW")
                     if JwT_token == None:
                         return ('No Token', 404)
                     return jsonify(constructDataResponse(process_list, category, gen_key(), JwT_token))
+
+                if 'KS' in data:
+                    category = 'KS'
+                    # decoding data
+                    # decode the data from base64 and convert to readable text
+                    decoded = decodebase64(data[category])
+                    print("Returning KS")
+                    if JwT_token == None:
+                        return ('No Token', 404)
+                    return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
+
             else:
                 # return 404, not found if there is no public key and data is received
                 return('Public key not found', 404)
@@ -146,7 +157,7 @@ def receive_cert():
     data = request.get_json()
     return jsonify(save_signed_cert(data['cert']))
 
-# Check if a Certificate has been issued to this device before, and if yes, return encrypted cert with the encrypted key. 
+# Check if a Certificate has been issued to this device before, and if yes, return encrypted cert with the encrypted key.
 @app.route('/check_cert', methods=['GET'])
 def check_cert():
     if os.path.exists(CLIENT_SIGNED_CERT_PATH):
@@ -168,7 +179,7 @@ def get_public_key_endpoint():
     else:
         return jsonify({"status": "error", "message": "Public key not found"}), 404
 
-# Part 3: Sends Encrypted AES Key       
+# Part 3: Sends Encrypted AES Key
 @app.route('/get_encrypted_key', methods=['GET'])
 def get_encrypted_key():
     global fernet_key
@@ -198,9 +209,9 @@ def receive_encrypted_data():
     data = request.get_json()
     combined_encrypted_data = data.get('data')
     if not combined_encrypted_data:
-        return jsonify({"status": "error", "message": "No data provided"}), 400 
+        return jsonify({"status": "error", "message": "No data provided"}), 400
     JwT_token = decrypt_and_get_jwt_token(combined_encrypted_data)
-    
+
     return jsonify({"status": "success", "message": "Data received successfully"})
 
 @app.route("/store_data", methods=["POST"])
@@ -208,17 +219,17 @@ def store_data():
     data = request.get_json()
     if not data or 'type' not in data or 'content' not in data:
         return jsonify({"status": "error", "message": "Invalid data"}), 400
-    
+
     data_type = data['type']
     content = data['content']
-    
+
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     file_name = f"{data_type}_{timestamp}.json"
     file_path = os.path.join(TEMP_STORAGE, file_name)
-    
+
     with open(file_path, 'w') as file:
         json.dump(data, file)
-    
+
     return jsonify({"status": "success", "message": "Data stored successfully"}), 200
 
 @app.route("/retrieve_data", methods=["GET"])
@@ -226,7 +237,7 @@ def retrieve_data():
     files = os.listdir(TEMP_STORAGE)
     if not files:
         return jsonify({"status": "error", "message": "No data available"}), 404
-    
+
     data_to_send = []
     for file_name in files:
         file_path = os.path.join(TEMP_STORAGE, file_name)
@@ -234,9 +245,15 @@ def retrieve_data():
             data = json.load(file)
             data_to_send.append(data)
         os.remove(file_path)
-    
+
     return jsonify({"status": "success", "data": data_to_send}), 200
 
+@app.route('/receive_script_and_key', methods=['POST'])
+def receive_script_and_key():
+    global fernet_key
+    data = request.get_json()
+    response = decrypt_and_reencrypt_script(data, fernet_key)
+    return jsonify(response)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
