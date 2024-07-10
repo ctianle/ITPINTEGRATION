@@ -20,7 +20,7 @@ function fetchData() {
                 };
                 sessions.push(session); // Push session to the sessions array
             });
-            console.log('Session:', sessions);
+
             
             displayTableData(currentPage);
             setupPagination();
@@ -34,6 +34,7 @@ const rowsPerPage = 10;
 let currentPage = 1;
 
 function displayTableData(page, data) {
+    sortData(sortField);
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     const paginatedData = sessions.slice(start, end);
@@ -116,6 +117,27 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
 function deleteDocument(documentId) {
     const SessionId = documentId;
     window.location.href = `../process/delete_session.php?id=${documentId}`;
+}
+
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+        e.preventDefault();
+        sortField = e.target.getAttribute('data-sort');
+        displayTableData(currentPage);
+        setupPagination();
+    });
+});
+
+let sortField = 'session_id';
+
+function sortData(field) {
+    sessions.sort((a, b) => {
+        if (field === 'date') {
+            return new Date(a.date) - new Date(b.date);
+        } else {
+            return a[field].localeCompare(b[field]);
+        }
+    });
 }
 
 

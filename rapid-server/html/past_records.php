@@ -19,13 +19,13 @@ session_start();
                 <div class="container content">
                     <div class="row">
                         <div class="col-12">
-                            <h1>Past Records</h1><br>
+                            <h3>Past Records</h3><br>
                             <a href="sessions.php"><button type="button" class="btn btn-info btn-lg create">Sessions</button></a>
                         </div>
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Upcoming Sessions</h5>
+                                    <h5 class="card-title">History</h5>
                                     <div class="d-flex justify-content-end">
                                         <div class="dropdown">
                                             <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">

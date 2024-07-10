@@ -27,6 +27,19 @@ session_start();
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Upcoming Sessions</h5>
+                                    <div class="d-flex justify-content-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Sort By
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                                <li><a class="dropdown-item" href="#" data-sort="session_id">Session ID</a></li>
+                                                <li><a class="dropdown-item" href="#" data-sort="name">Name</a></li>
+                                                <li><a class="dropdown-item" href="#" data-sort="status">Status</a></li>
+                                                <li><a class="dropdown-item" href="#" data-sort="date">Date</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                     <div class="table-responsive">
                                         <table class="table sessions">
                                             <thead>
