@@ -59,12 +59,12 @@ table .name{
 
 @media (min-width: 992px) {
     .content .card {
-        height: 40vh; /* Height for large screens and up */
+        height: 50vh; /* Height for large screens and up */
     }
 }
 
 @media (min-width: 1200px) {
     .content .card {
-        height: 40vh; /* Height for extra large screens and up */
+        height: 50vh; /* Height for extra large screens and up */
     }
 }

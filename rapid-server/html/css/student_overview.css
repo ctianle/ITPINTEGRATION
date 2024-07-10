@@ -6,13 +6,12 @@ body {
 .card {
     background-color: #363740;
     border: none;
-    width: 1300px; /* Adjust the width to fit the smaller card */
+    width: 100%; /* Adjust the width to fit the smaller card */
     height: 780px; /* Adjust the height to fit the smaller card */
-    margin-left: -70px; /* Move the card to the left */
     display: flex;
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
-    padding: 100px;
+
 }
 
 .back-link {
@@ -22,7 +21,6 @@ body {
     margin-bottom: 10px;
     font-size: 2.25rem; /* Increase text size */
     font-weight: bold;
-    margin-left: -70px; /* Move the card to the left */
 }
 
 .back-link:hover {
@@ -31,7 +29,6 @@ body {
 
 .activity-title {
     font-size: 1.6rem;
-    margin-left: 20px; /* Move the card to the left */
     
 }
 
@@ -56,10 +53,9 @@ body {
     flex-direction: column; /* Ensure content stacks vertically */
     align-items: center; /* Center content horizontally */
     text-align: center;
-    width: 500px; /* Adjust the width to fit the smaller card */
+    width: 100%; /* Adjust the width to fit the smaller card */
     height: 330px; /* Adjust the height to fit the smaller card */
     margin-right: 30px; /* Shift the cards to the right */
-    padding: 10px;
 }
 
 .activity-card .card-body {
@@ -95,7 +91,9 @@ body {
     white-space: nowrap; /* Prevent text from wrapping */
 }
 
-
+.card-body{
+    width: 90%;
+}
 .apps-list {
     color: red;
     text-align: left;

@@ -5,6 +5,24 @@ function setActiveNavItem(currentPath) {
         const href = navLink.getAttribute('href').trim();
         const hrefBase = href.replace('.php', ''); // Remove .php extension for comparison
 
+        // Specific case where 'student_overview' should activate 'sessions'
+        if (currentPath === 'student_overview') {
+            if (hrefBase === 'sessions') {
+                navLink.closest('.nav-item').classList.add('active');
+            }
+            // Deactivate 'students' and 'overview'
+            if (hrefBase === 'students' || hrefBase === 'overview') {
+                navLink.closest('.nav-item').classList.remove('active');
+            }
+            return;
+        }
+
+        // Direct match check
+        if (currentPath === hrefBase) {
+            navLink.closest('.nav-item').classList.add('active');
+            return;
+        }
+
         // Check if any substring of 5 consecutive characters in currentPath matches hrefBase
         let matchFound = false;
         for (let i = 0; i <= currentPath.length - 5; i++) {

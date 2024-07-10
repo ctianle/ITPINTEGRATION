@@ -1,41 +1,25 @@
 <?php session_start(); ?>
 <html lang="en">
+
 <head>
     <?php include "component/essential.inc.php"; ?>
     <link rel="stylesheet" href="css/student_overview.css">
     <title>Student Overview</title>
 </head>
+
 <body>
     <main class="container-fluid">
         <div class="row flex-nowrap">
             <?php include "component/sidebar.inc.php"; ?>
             <div class="col py-3">
                 <div class="container content">
-                    <!-- Temporary Image Upload Form -->
-                    <h1 style="color: black; font-size: 18px;">Upload Screen</h1>
-                    <form action="/process/insert_screenshot.php" method="post" enctype="multipart/form-data">
-                        <input type="file" name="image" accept="image/*" required>
-                        <input type="hidden" name="uuid" value="Screenshots">
-                        <input type="submit" value="Upload Image">
-                    </form>
-                    <h1 style="color: black; font-size: 18px;">Upload Webcam</h1>
-                    <form action="/process/insert_snapshot.php" method="post" enctype="multipart/form-data">
-                        <input type="file" name="image" accept="image/*" required>
-                        <input type="hidden" name="uuid" value="Snapshots">
-                        <input type="submit" value="Upload Image">
-                    </form>
-                    <h1 style="color: black; font-size: 18px;">Upload Process CSV</h1>
-                    <form action="/process/insert_student_process.php" method="post" enctype="multipart/form-data">
-                        <input type="file" name="csv" accept=".csv" required>
-                        <!-- Remove hidden inputs for StudentId and SessionId -->
-                        <input type="submit" value="Upload CSV">
-                    </form>
 
-                    <a href="#" onclick="javascript:history.back();" class="back-link">&lt; Back to Monitoring Session</a>
+                    <a href="#" onclick="javascript:history.back();" class="back-link">&lt; Back to Monitoring
+                        Session</a>
 
                     <div class="card mt-3">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                                 <span class="activity-title">John Doe's Activity</span>
                                 <div class="timer-container d-flex align-items-center">
                                     <div class="timer-icon">&#9200;</div> <!-- Timer icon -->
@@ -45,9 +29,10 @@
                             <div class="row mt-4 justify-content-center">
 
                                 <!-- Screen (Dynamic Screenshot) -->
-                                <div class="col-md-6 mb-4">
+                                <div class="col-md-8 mb-4">
                                     <div class="card activity-card">
-                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                        <div
+                                            class="card-body d-flex flex-column justify-content-center align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <div class="activity-icon">&#128187;</div> <!-- Icon for Screen -->
                                                 <h5 class="card-title ml-2">Screen</h5>
@@ -61,7 +46,7 @@
                                             // MongoDB connection setup
                                             $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
                                             $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
-           
+
                                             // Query MongoDB for the latest uploaded screen image
                                             $query = new MongoDB\Driver\Query(['uuid' => 'Screenshots'], ['sort' => ['date_time' => -1], 'limit' => 1]);
                                             $rows = $manager->executeQuery("$dbName.Screenshots", $query);
@@ -73,11 +58,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <!-- Webcam (Dynamic Snapshot) -->
+                                <!-- Student Logs -->
                                 <div class="col-md-4 mb-4">
                                     <div class="card activity-card">
-                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                        <div
+                                            class="card-body d-flex flex-column justify-content-center align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <div class="activity-icon">&#128221;</div> <!-- Icon for Logs -->
+                                                <h5 class="card-title ml-2">Logs</h5>
+                                            </div>
+
+                                            <p class="logs-text">
+                                                <!-- dynamic logs -->
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Webcam (Dynamic Snapshot) -->
+                                <div class="col-md-8 mb-4">
+                                    <div class="card activity-card">
+                                        <div
+                                            class="card-body d-flex flex-column justify-content-center align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <div class="activity-icon">&#128247;</div> <!-- Icon for Webcam -->
                                                 <h5 class="card-title ml-2">Webcam</h5>
@@ -95,9 +96,10 @@
                                     </div>
                                 </div>
                                 <!-- Processes (Dynamic) -->
-                                <div class="col-md-6 mb-4">
+                                <div class="col-md-4 mb-4">
                                     <div class="card activity-card">
-                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                        <div
+                                            class="card-body d-flex flex-column justify-content-center align-items-center">
                                             <div class="d-flex align-items-center">
                                                 <div class="activity-icon">&#128241;</div> <!-- Icon for Apps -->
                                                 <h5 class="card-title ml-2">Apps</h5>
@@ -120,21 +122,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Student Logs -->
-                                <div class="col-md-4 mb-4">
-                                    <div class="card activity-card">
-                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-icon">&#128221;</div> <!-- Icon for Logs -->
-                                                <h5 class="card-title ml-2">Logs</h5>
-                                            </div>
-                                        
-                                            <p class="logs-text">
-                                              <!-- dynamic logs -->
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -145,4 +133,5 @@
     <script defer src="js/index.js"></script>
     <script defer src="js/monitoring_student.js"></script>
 </body>
+
 </html>
