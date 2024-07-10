@@ -1,7 +1,17 @@
 from flask import Flask, jsonify, request
 from functions import *
+from datetime import datetime
+import base64
+import os
+
 
 app = Flask(__name__)
+
+# Directory to store the temporary files
+TEMP_STORAGE = '/tmp/proctoring_data'
+
+if not os.path.exists(TEMP_STORAGE):
+    os.makedirs(TEMP_STORAGE)
 
 HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW']
 
@@ -193,6 +203,40 @@ def receive_encrypted_data():
     JwT_token = decrypt_and_get_jwt_token(combined_encrypted_data)
     
     return jsonify({"status": "success", "message": "Data received successfully"})
+
+@app.route("/store_data", methods=["POST"])
+def store_data():
+    data = request.get_json()
+    if not data or 'type' not in data or 'content' not in data:
+        return jsonify({"status": "error", "message": "Invalid data"}), 400
+    
+    data_type = data['type']
+    content = data['content']
+    
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    file_name = f"{data_type}_{timestamp}.json"
+    file_path = os.path.join(TEMP_STORAGE, file_name)
+    
+    with open(file_path, 'w') as file:
+        json.dump(data, file)
+    
+    return jsonify({"status": "success", "message": "Data stored successfully"}), 200
+
+@app.route("/retrieve_data", methods=["GET"])
+def retrieve_data():
+    files = os.listdir(TEMP_STORAGE)
+    if not files:
+        return jsonify({"status": "error", "message": "No data available"}), 404
+    
+    data_to_send = []
+    for file_name in files:
+        file_path = os.path.join(TEMP_STORAGE, file_name)
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            data_to_send.append(data)
+        os.remove(file_path)
+    
+    return jsonify({"status": "success", "data": data_to_send}), 200
 
 
 if __name__ == "__main__":
