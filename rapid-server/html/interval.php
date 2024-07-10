@@ -1,5 +1,15 @@
 <?php
 
+function decodeBase64Utf16($data) {
+    // Decode the base64 string
+    $decodedData = base64_decode($data);
+
+    // Convert from UTF-16LE to UTF-8
+    $utf8Data = mb_convert_encoding($decodedData, 'UTF-8', 'UTF-16LE');
+
+    return $utf8Data;
+}
+
 //=============================================
 // MongoDB Connection & Credentials Set Up
 //=============================================
@@ -19,26 +29,18 @@ $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 if (isset($_GET["uuid"]) && isset($_GET["category"])) {
 
     $uuid = $_GET["uuid"];
-    $UUID = mb_convert_encoding(base64_decode($uuid), "UTF-16"); //Base64 (UTF-16LE) Decode
-    $UUID = preg_replace('/[[:^print:]]/', '', $UUID); //Removing Non Printable Characters
-
-    $category = $_GET["category"];
-    $CATEGORY = mb_convert_encoding(base64_decode($category), "UTF-16LE"); //Base64 (UTF-16LE) Decode
-    $CATEGORY = preg_replace('/[[:^print:]]/', '', $CATEGORY); //Removing Non Printable Characters
-
-    //==========================================================================
+    $encodedcategory = $_GET["category"];
+    $category = decodeBase64Utf16($encodedcategory);
 
     // Retrieve Interval Value from MongoDB Collection "intervals"
-    //==========================================================================
-
-    $filter = ['uuid' => $UUID];
+    $filter = ['uuid' => $uuid];
     $query = new MongoDB\Driver\Query($filter);
     $cursor = $manager->executeQuery("$dbName.intervals", $query);
 
     $document = current($cursor->toArray());
 
     if ($document) {
-        switch ($CATEGORY) {
+        switch ($category) {
             case "AWD":
                 $interval_data = $document->AWD;
                 break;
@@ -58,6 +60,8 @@ if (isset($_GET["uuid"]) && isset($_GET["category"])) {
     } else {
         echo 300; // Default value if no data found
     }
+} else {
+    echo "UUID and category parameters are required.";
 }
 
 function logError($error) {
