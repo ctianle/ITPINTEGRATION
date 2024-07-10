@@ -62,6 +62,15 @@ def index():
                 if 'Token' in data:
                     print("ASKING FOR TOKEN")
                     return jsonify(constructPingResponse(JwT_token, gen_key()))
+                if 'VM' in data:
+                    category = "VM"
+                    decoded = decodebase64(data[category]) 
+                    # processing data
+                    processing(decoded, category)
+                    print("VM Detected")
+                    if JwT_token == None:
+                        return ('No Token', 404)
+                    return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
 
                 if 'AWD' in data:
                     category = 'AWD'
