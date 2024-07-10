@@ -1,11 +1,25 @@
 function setActiveNavItem(currentPath) {
     const navLinks = document.querySelectorAll('.nav-link');
+    
     navLinks.forEach(navLink => {
         const href = navLink.getAttribute('href').trim();
-        if (href === currentPath) {
+        const hrefBase = href.replace('.php', ''); // Remove .php extension for comparison
+
+        // Check if any substring of 5 consecutive characters in currentPath matches hrefBase
+        let matchFound = false;
+        for (let i = 0; i <= currentPath.length - 5; i++) {
+            const substring = currentPath.slice(i, i + 5);
+            if (hrefBase.includes(substring)) {
+                matchFound = true;
+                break;
+            }
+        }
+
+        if (matchFound) {
             navLink.closest('.nav-item').classList.add('active');
         }
     });
 }
+
 // Call the function with the current URL path
-setActiveNavItem(window.location.pathname.replace(/[^\w.]/g, ''));
+setActiveNavItem(window.location.pathname.replace('/', '').replace('.php', ''));
