@@ -38,7 +38,9 @@ function fetchSession(sessionId) {
                     date: dateOnly,
                     start_time: item.StartTime.split(' ')[1].substring(0, 5), // Extract time part
                     end_time: item.EndTime.split(' ')[1].substring(0, 5), // Extract time part
-                    duration: item.Duration
+                    duration: item.Duration,
+                    BlacklistedApps: item.BlacklistedApps || [], // Include BlacklistedApps array from MongoDB document
+                    WhitelistedApps: item.WhitelistedApps || [] // Include WhitelistedApps array from MongoDB document
                 };
                 sessions.push(session); // Push session to the sessions array
             
@@ -65,6 +67,7 @@ function fetchSession(sessionId) {
                     console.log('Session is not active now.');
                     // Optionally handle the case when the session is not active now
                 }
+                displaySessionDetails(sessions[0]);
             } else {
                 console.error('No sessions found.');
             }
@@ -149,6 +152,29 @@ function setupPagination() {
             setupPagination();
         });
     });
+}
+
+// Assuming 'sessions' array contains session objects with details
+function displaySessionDetails(session) {
+    const detailsContainer = document.getElementById('details-container');
+    const blacklistedApps = session.BlacklistedApps.length > 0 ? session.BlacklistedApps.join(', ') : 'None';
+    const whitelistedApps = session.WhitelistedApps.length > 0 ? session.WhitelistedApps.join(', ') : 'None';
+
+    const html = `
+        <div class="col-md-6">
+            <p><strong>Session ID:</strong> ${session.session_id}</p>
+            <p><strong>Date:</strong> ${session.date}</p>
+            <p><strong>Start Time:</strong> ${session.start_time}</p>
+            <p><strong>Blacklisted Apps:</strong> ${blacklistedApps}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Name:</strong> ${session.name}</p>   
+            <p><strong>Duration:</strong> ${session.duration}</p>
+            <p><strong>End Time:</strong> ${session.end_time}</p>
+            <p><strong>Whitelisted Apps:</strong> ${whitelistedApps}</p>
+        </div>
+    `;
+    detailsContainer.innerHTML = html;
 }
 
 function setupTimer(duration) {

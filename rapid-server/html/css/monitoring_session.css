@@ -7,11 +7,18 @@
     margin-bottom: 20px;
 }
 
-.card {
+.card.students {
     border-radius: 10px;
     box-shadow: 0 0 10px #999999;
     padding: 10px; /* Reduced padding for a smaller card */
     min-height: 600px; /* Set maximum width to control the size */
+    margin: auto; /* Center the card horizontally */
+}
+
+.card.details {
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+    padding: 10px; /* Reduced padding for a smaller card */
     margin: auto; /* Center the card horizontally */
 }
 

@@ -68,6 +68,8 @@ try {
                 'EndTime' => $document->EndTime->toDateTime()->format('Y-m-d H:i:s'), // Convert BSON UTCDateTime to string
                 'Duration' => $document->Duration,
                 'Status' => $status,
+                'BlacklistedApps' => $document->BlacklistedApps,
+                'WhitelistedApps' => $document->WhitelistedApps
             ];
             $sessionData[] = $session;
         }
