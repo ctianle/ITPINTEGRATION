@@ -31,7 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_P
             '_id' => new MongoDB\BSON\ObjectId(),
             'uuid' => $uuid,
             'data' => $imgData,
-            'date_time' => new MongoDB\BSON\UTCDateTime(strtotime($date_time) * 1000)
+            'date_time' => new MongoDB\BSON\UTCDateTime(strtotime($date_time) * 1000),
+            'SessionId' => 4,
+            'StudentId' => 1
         ];
         $bulk->insert($document);
 

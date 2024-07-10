@@ -2,7 +2,7 @@
 // Initialise DB Variables.
 $db_user = getenv('DB_ROOT_USERNAME');
 $db_password = getenv('DB_ROOT_PASSWORD');
-
+$dbName = getenv('DB_NAME');
 
 // Connect to MongoDB
 $manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017");
@@ -31,6 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_P
             'uuid' => $uuid,
             'data' => $imgData,
             'date_time' => new MongoDB\BSON\UTCDateTime(strtotime($date_time) * 1000),
+            'SessionId' => 4,
+            'StudentId' => 1
         ];
         $bulk->insert($document);
 

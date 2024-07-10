@@ -14,8 +14,10 @@
             <div class="col py-3">
                 <div class="container content">
 
-                    <a href="#" onclick="javascript:history.back();" class="back-link">&lt; Back to Monitoring
-                        Session</a>
+                    <a href="#" onclick="javascript:history.back();" class="back-link">
+                        <h3>Back to Monitoring
+                            Session</h3>
+                    </a>
 
                     <div class="card mt-3">
                         <div class="card-body">
@@ -33,28 +35,21 @@
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-icon">&#128187;</div> <!-- Icon for Screen -->
-                                                <h5 class="card-title ml-2">Screen</h5>
-                                            </div>
                                             <?php
-                                            // Initialise DB Variables.
-                                            $db_user = getenv('DB_ROOT_USERNAME');
-                                            $db_password = getenv('DB_ROOT_PASSWORD');
-                                            $dbName = getenv('DB_NAME');
-
-                                            // MongoDB connection setup
-                                            $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-                                            $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
-
-                                            // Query MongoDB for the latest uploaded screen image
-                                            $query = new MongoDB\Driver\Query(['uuid' => 'Screenshots'], ['sort' => ['date_time' => -1], 'limit' => 1]);
-                                            $rows = $manager->executeQuery("$dbName.Screenshots", $query);
-                                            // Display the latest screen image
-                                            foreach ($rows as $row) {
-                                                echo '<img src="data:image/png;base64,' . $row->data . '" alt="Screen Activity" class="activity-image">';
-                                            }
+                                            echo '<div class="activity-icon"><h5 class="card-title mb-2">&#128187; Screenshots</h5></div>'; // Icon for Screen
                                             ?>
+                                            <div class="d-flex align-items-center pic-container">
+                                                <?php
+                                                require_once 'process/fetch_student_screenshot.php';
+
+                                                $hasScreenshot = getScreenshot();
+                                                if ($hasScreenshot) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128187; Screenshots</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                }
+                                                ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -79,22 +74,25 @@
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-icon">&#128247;</div> <!-- Icon for Webcam -->
-                                                <h5 class="card-title ml-2">Webcam</h5>
-                                            </div>
                                             <?php
-                                            // Query MongoDB for the latest uploaded webcam image
-                                            $query = new MongoDB\Driver\Query(['uuid' => 'Snapshots'], ['sort' => ['date_time' => -1], 'limit' => 1]);
-                                            $rows = $manager->executeQuery("$dbName.Snapshots", $query);
-                                            // Display the latest webcam image
-                                            foreach ($rows as $row) {
-                                                echo '<img src="data:image/png;base64,' . $row->data . '" alt="Webcam Activity" class="activity-image">';
-                                            }
+                                            echo '<div class="activity-icon"><h5 class="card-title mb-2">&#128247; Webcam</h5></div>'; // Icon for Screen
                                             ?>
+                                            <div class="d-flex align-items-center pic-container">
+                                                <?php
+                                                require_once 'process/fetch_student_webcam.php';
+
+                                                $hasWebcam = getWebcam();
+                                                if ($hasWebcam) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128247; Webcam</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                }
+                                                ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <!-- Processes (Dynamic) -->
                                 <div class="col-md-4 mb-4">
                                     <div class="card activity-card">
@@ -107,16 +105,16 @@
                                             <div class="apps-list-container">
                                                 <?php
                                                 // MongoDB connection
-                                                $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
+                                                // $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
                                                 // Query MongoDB for the latest processes
-                                                $query = new MongoDB\Driver\Query([], ['sort' => ['CapturedAt' => -1]]);
-                                                $rows = $manager->executeQuery("$dbName.StudentProcesses", $query);
+                                                //$query = new MongoDB\Driver\Query([], ['sort' => ['CapturedAt' => -1]]);
+                                                //$rows = $manager->executeQuery("$dbName.StudentProcesses", $query);
                                                 // Display the process list
-                                                echo '<ul class="apps-list">';
-                                                foreach ($rows as $row) {
-                                                    echo '<li>' . $row->ProcessName . '</li>';
-                                                }
-                                                echo '</ul>';
+                                                //echo '<ul class="apps-list">';
+                                                //foreach ($rows as $row) {
+                                                //    echo '<li>' . $row->ProcessName . '</li>';
+                                                //}
+                                                //echo '</ul>';
                                                 ?>
                                             </div>
                                         </div>
@@ -131,7 +129,6 @@
         </div>
     </main>
     <script defer src="js/index.js"></script>
-    <script defer src="js/monitoring_student.js"></script>
 </body>
 
 </html>

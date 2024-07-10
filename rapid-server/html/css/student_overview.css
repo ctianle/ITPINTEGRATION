@@ -1,116 +1,159 @@
 body {
-    background-color: #FFFFFF;
-    color: #fff;
+  background-color: #ffffff;
+  color: #fff;
 }
 
 .card {
-    background-color: #363740;
-    border: none;
-    width: 100%; /* Adjust the width to fit the smaller card */
-    height: 780px; /* Adjust the height to fit the smaller card */
-    display: flex;
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-
+  background-color: #363740;
+  border: none;
+  width: 100%; /* Adjust the width to fit the smaller card */
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
 }
 
 .back-link {
-    color: #000000;
-    text-decoration: none;
-    display: block;
-    margin-bottom: 10px;
-    font-size: 2.25rem; /* Increase text size */
-    font-weight: bold;
+  color: #000000;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 2.25rem; /* Increase text size */
+  font-weight: bold;
 }
 
 .back-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .activity-title {
-    font-size: 1.6rem;
-    
+  font-size: 1.6rem;
 }
 
 .timer-container {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .timer-icon {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 #timer {
-    font-size: 1.25rem;
-    
+  font-size: 1.25rem;
 }
 
 .activity-card {
-    background-color: #D9D9D9;
-    color: #fff;
-    display: flex;
-    flex-direction: column; /* Ensure content stacks vertically */
-    align-items: center; /* Center content horizontally */
-    text-align: center;
-    width: 100%; /* Adjust the width to fit the smaller card */
-    height: 330px; /* Adjust the height to fit the smaller card */
-    margin-right: 30px; /* Shift the cards to the right */
+  background-color: #d9d9d9;
+  color: #fff;
+  display: flex;
+  flex-direction: column; /* Ensure content stacks vertically */
+  align-items: center; /* Center content horizontally */
+  text-align: center;
+  width: 100%; /* Adjust the width to fit the smaller card */
+  height: 100%; /* Adjust the height to fit the smaller card */
+  margin-right: 30px; /* Shift the cards to the right */
 }
 
 .activity-card .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align items to the top */
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  align-items: center;
+  width: 100%;
 }
 
 .activity-card .card-title {
-    font-size: 1.45rem;
-    color: black;
-    margin: 0;
+  font-size: 1.45rem;
+  color: black;
+  margin: 0;
 }
 
 .activity-icon {
-    font-size: 1.5rem;
-    margin-right: 10px; /* Space between icon and title */
+  font-size: 1.5rem;
+  margin-right: 10px; /* Space between icon and title */
 }
 
 .activity-image {
-    width: 400px; /* Adjust the width to fit the smaller card */
-    height: 280px; /* Adjust the height to fit the smaller card */
-    margin-top: 0px;
+  width: 400px; /* Adjust the width to fit the smaller card */
+  height: 280px; /* Adjust the height to fit the smaller card */
+  margin-top: 0px;
 }
 
 .apps-list-container {
-    display: flex;
-    justify-content: center; /* Center the lists horizontally */
-    width: 100%;
-    margin-top: 10px;
-    white-space: nowrap; /* Prevent text from wrapping */
+  display: flex;
+  justify-content: center; /* Center the lists horizontally */
+  width: 100%;
+  margin-top: 10px;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
-.card-body{
-    width: 90%;
+.card-body {
+  width: 90%;
 }
 .apps-list {
-    color: red;
-    text-align: left;
-    margin: 0;
-    margin-right: 50px; /* Add space between red and green lists */
+  color: red;
+  text-align: left;
+  margin: 0;
+  margin-right: 50px; /* Add space between red and green lists */
 }
 
 .apps-list.green {
-    color: green;
-    text-align: right;
-    margin-left: 100px; /* Add space between red and green lists */
+  color: green;
+  text-align: right;
+  margin-left: 100px; /* Add space between red and green lists */
 }
 
 .logs-text {
-    text-align: left;
-    color: black;
-    font-size: 0.875rem;
-    margin-top: 10px;
-    white-space: nowrap; /* Prevent text from wrapping */
+  text-align: left;
+  color: black;
+  font-size: 0.875rem;
+  margin-top: 10px;
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+/* Custom CSS for carousel control icons */
+#webcamCarousel .carousel-control-prev-icon,
+#webcamCarousel .carousel-control-next-icon {
+  color: black; /* Set arrow color to black */
+}
+.pic-container{
+  height: 100%;
+}
+
+/* Custom CSS for carousel captions */
+.carousel-caption .caption-text-container {
+  background-color: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+  padding: 10px; /* Adjust padding as needed */
+  border-radius: 5px; /* Optional: Adds rounded corners */
+  color: white; /* Text color inside the caption */
+}
+
+/* Custom CSS for carousel */
+.carousel-item {
+    height: 300px; /* Set a fixed height for the carousel items */
+    overflow: hidden; /* Hide any overflow to prevent distortion */
+}
+
+.carousel-item img {
+    width: 100%; /* Ensure the image width fills its container */
+    height: 100%; /* Ensure the image height fills its container */
+    object-fit: cover; /* Maintain aspect ratio and cover the entire container */
+}
+
+@media (min-width: 992px){
+  .modal-lg, .modal-xl{
+    max-width: 130vh;
+  }
+}
+@media (min-width: 576px){
+  .modal-lg, .modal-xl{
+    max-width: 135vh;
+  }
+}
+.carousel-item:hover{
+  cursor: pointer;
+}
+
+.modal-body h2{
+  color:black;
 }
