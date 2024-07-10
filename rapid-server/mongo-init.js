@@ -163,13 +163,13 @@ db.Sessions.find().forEach(function(doc) {
 db.Sessions.createIndex({ SessionId: 1 })
 
 // Create the intervals collection with validation
-db.createCollection("intervals", {
+db.createCollection("defaults", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["uuid", "AWD", "AMD", "PL", "OW", "admin_override"],
+      required: ["name", "AWD", "AMD", "PL", "OW", "admin_override"],
       properties: {
-        uuid: { bsonType: "string" },
+        name: { bsonType: "string" },
         AWD: { bsonType: "int" },
         AMD: { bsonType: "int" },
         PL: { bsonType: "int" },
@@ -179,6 +179,21 @@ db.createCollection("intervals", {
     }
   }
 });
+
+// Insert default values into the intervals collection
+db.defaults.updateOne(
+  { name: "intervals" },
+  {
+    $set: {
+      AWD: 30, // set your default value here
+      AMD: 30, // set your default value here
+      PL: 30, // set your default value here
+      OW: 30, // set your default value here
+      admin_override: 0
+    }
+  },
+  { upsert: true }
+);
 
 // Create the proctoring collection with validation
 db.createCollection("proctoring", {
