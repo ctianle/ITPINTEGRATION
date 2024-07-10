@@ -30,6 +30,7 @@ foreach ($rows as $row) {
     $AMD = $row->AMD;
     $PL = $row->PL;
     $OW = $row->OW;
+    $KS = $row->KS;
 }
 ?>
 
@@ -57,6 +58,10 @@ foreach ($rows as $row) {
         </div>
         <div class="mb-3">
             <input type="number" class="form-control" id="OW" name="OW" value='<?php echo htmlspecialchars($OW); ?>'>
+            <div id="uuidhelp" class="form-text">Interval Value (Seconds) for OW (Open Windows)</div>
+        </div>
+        <div class="mb-3">
+            <input type="number" class="form-control" id="KS" name="KS" value='<?php echo htmlspecialchars($KS); ?>'>
             <div id="uuidhelp" class="form-text">Interval Value (Seconds) for OW (Open Windows)</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>

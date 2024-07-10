@@ -29,6 +29,7 @@
                 <th>Active Monitor Detection (AMD)</th>
                 <th>Process List (PL)</th>
                 <th>Open Windows (OW)</th>
+                <th>Keystrokes (KS)</th>
                 <th>Admin Override</th>
                 <th>Edit</th>
                 <th>Delete</th>
@@ -57,6 +58,7 @@
             echo '<td>' . htmlspecialchars($row->AMD) . '</td>';
             echo '<td>' . htmlspecialchars($row->PL) . '</td>';
             echo '<td>' . htmlspecialchars($row->OW) . '</td>';
+            echo '<td>' . htmlspecialchars($row->KS) . '</td>';
             echo '<td>' . htmlspecialchars($row->admin_override) . '</td>';
             echo '<td><form action="admin_interval_edit.php" method="POST">';
             echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
@@ -64,6 +66,7 @@
             echo '<input type="hidden" name="AMD" value="' . htmlspecialchars($row->AMD) . '">';
             echo '<input type="hidden" name="PL" value="' . htmlspecialchars($row->PL) . '">';
             echo '<input type="hidden" name="OW" value="' . htmlspecialchars($row->OW) . '">';
+            echo '<input type="hidden" name="KS" value="' . htmlspecialchars($row->KS) . '">';
             echo '<input type="hidden" name="admin_override" value="' . htmlspecialchars($row->admin_override) . '">';
             echo '<button class="btn btn-primary" type="submit">Edit</button>';
             echo '</form></td>';

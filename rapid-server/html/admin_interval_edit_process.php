@@ -25,6 +25,7 @@
         $AMD = $_POST['AMD'] ?? '';
         $PL = $_POST['PL'] ?? '';
         $OW = $_POST['OW'] ?? '';
+        $KS = $_POST['KS'] ?? '';
         $admin_override = $_POST['admin_override'] ?? 0;
 
         // Validate UUID in MongoDB
@@ -49,6 +50,7 @@
                     'AMD' => $AMD,
                     'PL' => $PL,
                     'OW' => $OW,
+                    'KS' => $KS,
                     'admin_override' => $admin_override
                 ]],
                 ['multi' => false, 'upsert' => false]

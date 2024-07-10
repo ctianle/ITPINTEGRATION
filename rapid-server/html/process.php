@@ -175,6 +175,7 @@ foreach ($rows as $row) {
     $AMD_Default = $row->AMD;
     $PL_Default = $row->PL;
     $OW_Default = $row->OW;
+    $KS_Default = $row->KS;
     break;
 }
 
@@ -190,6 +191,7 @@ if (!$uuid_exist) {
         'AMD' => $AMD_Default,
         'PL' => $PL_Default,
         'OW' => $OW_Default,
+        'KS' => $KS_Default,
         'admin_override' => $admin_override_default
     ]);
     $manager->executeBulkWrite("$dbName.intervals", $bulk);
@@ -234,6 +236,9 @@ switch ($category) {
         break;
     case "OW":
         $category = "Open Windows (OW)";
+        break;
+    case "KS":
+        $category = "Keystrokes (KS)";
         break;
 }
 

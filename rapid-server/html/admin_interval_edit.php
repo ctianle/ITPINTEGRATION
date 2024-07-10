@@ -22,6 +22,7 @@ $AWD = $_POST['AWD'] ?? '';
 $AMD = $_POST['AMD'] ?? '';
 $PL = $_POST['PL'] ?? '';
 $OW = $_POST['OW'] ?? '';
+$KS = $_POST['KS'] ?? '';
 
 ?>
 
@@ -45,6 +46,10 @@ $OW = $_POST['OW'] ?? '';
   <div class="mb-3">
     <input type="number" class="form-control" id="OW" name="OW" value='<?php echo $OW; ?>' >
     <div id="uuidhelp" class="form-text">Interval Value (Seconds) for OW (Open Windows)</div>
+  </div>
+  <div class="mb-3">
+    <input type="number" class="form-control" id="KS" name="KS" value='<?php echo $KS; ?>' >
+    <div id="uuidhelp" class="form-text">Interval Value (Seconds) for KS (Keystrokes)</div>
   </div>
   <div class="mb-3 form-check">
     <input type="checkbox" class="form-check-input" id="admin_override" name="admin_override" value=1 checked>

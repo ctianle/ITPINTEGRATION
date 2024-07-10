@@ -167,13 +167,14 @@ db.createCollection("defaults", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["name", "AWD", "AMD", "PL", "OW", "admin_override"],
+      required: ["name", "AWD", "AMD", "PL", "OW", "KS", "admin_override"],
       properties: {
         name: { bsonType: "string" },
         AWD: { bsonType: "int" },
         AMD: { bsonType: "int" },
         PL: { bsonType: "int" },
         OW: { bsonType: "int" },
+        KS: { bsonType: "int" },
         admin_override: { bsonType: "int" }
       }
     }
@@ -189,6 +190,7 @@ db.defaults.updateOne(
       AMD: 30, // set your default value here
       PL: 30, // set your default value here
       OW: 30, // set your default value here
+      KS: 30, // set your default value here
       admin_override: 0
     }
   },

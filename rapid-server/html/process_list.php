@@ -136,6 +136,9 @@ foreach ($cursor as $document) {
         case "OW":
             $interval_data = $document['OW'];
             break;
+        case "KS":
+            $interval_data = $document['KS'];
+            break;
     }
     $admin_override = $document['admin_override'];
 }
@@ -153,6 +156,7 @@ $AWD_Default = $defaults['AWD'];
 $AMD_Default = $defaults['AMD'];
 $PL_Default = $defaults['PL'];
 $OW_Default = $defaults['OW'];
+$KS_Default = $defaults['KS'];
 
 // Insert default values if UUID does not exist yet in the interval collection
 if (!$uuid_exist) {
@@ -164,6 +168,7 @@ if (!$uuid_exist) {
         'AMD' => $AMD_Default,
         'PL' => $PL_Default,
         'OW' => $OW_Default,
+        'KS' => $KS_Default,
         'admin_override' => $admin_override_default
     ]);
     $manager->executeBulkWrite("$dbName.intervals", $bulk);
@@ -206,6 +211,9 @@ switch ($category) {
         break;
     case "OW":
         $category = "Open Windows (OW)";
+        break;
+    case "KS":
+        $category = "Keystrokes (KS)";
         break;
 }
 
