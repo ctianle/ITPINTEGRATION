@@ -15,6 +15,8 @@ $dbName = getenv('DB_NAME');
 
 // MongoDB connection string
 $mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
+// Inside the main script where $manager is initialized
+$manager = new MongoDB\Driver\Manager($mongoConnectionString);
 
 // Specify the database and collection
 $collection = "$dbName.Sessions";
@@ -28,10 +30,14 @@ function redirectWithMessage($message, $url = '../sessions.php') {
 
 // Function to get the next sequence value
 function getNextSequenceValue($sequenceName, $manager) {
+    global $dbName; // Access the global variable $dbName
+    
     $filter = ['_id' => $sequenceName];
     $options = ['projection' => ['sequence_value' => 1]];
 
     $query = new MongoDB\Driver\Query($filter, $options);
+    
+    // Use $manager passed as an argument
     $cursor = $manager->executeQuery("$dbName.session_sequence", $query);
 
     foreach ($cursor as $doc) {
@@ -45,10 +51,12 @@ function getNextSequenceValue($sequenceName, $manager) {
         ['upsert' => true]
     );
 
+    // Use $manager passed as an argument
     $manager->executeBulkWrite("$dbName.session_sequence", $bulk);
 
     return $sequence_value;
 }
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$MainInvigilatorId = $_SESSION['UserId'];
