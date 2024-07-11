@@ -15,8 +15,7 @@
                 <div class="container content">
 
                     <a href="#" onclick="javascript:history.back();" class="back-link">
-                        <h3>Back to Monitoring
-                            Session</h3>
+                    <button type="button" class="btn btn-primary"><h3>Back to Monitoring Session</h3></button>
                     </a>
 
                     <div class="card mt-3">
@@ -129,6 +128,7 @@
         </div>
     </main>
     <script defer src="js/index.js"></script>
+    <script defer src="js/session_timer.js"></script>
 </body>
 
 </html>

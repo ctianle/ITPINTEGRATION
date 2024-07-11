@@ -59,47 +59,49 @@ function getScreenshot()
         $activeClass = '';
         $slideIndex++;
     }
-
-    // Output the complete carousel structure
-    echo '<div id="ScreenshotCaptions" class="carousel slide" data-bs-ride="carousel">';
-    echo '<div class="carousel-indicators">';
-    echo $carouselIndicators;
-    echo '</div>';
-    echo '<div class="carousel-inner">';
-    echo $carouselItems;
-    echo '</div>';
-    echo '<button class="carousel-control-prev" type="button" data-bs-target="#ScreenshotCaptions" data-bs-slide="prev">';
-    echo '<span class="carousel-control-prev-icon" aria-hidden="true"></span>';
-    echo '<span class="visually-hidden">Previous</span>';
-    echo '</button>';
-    echo '<button class="carousel-control-next" type="button" data-bs-target="#ScreenshotCaptions" data-bs-slide="next">';
-    echo '<span class="carousel-control-next-icon" aria-hidden="true"></span>';
-    echo '<span class="visually-hidden">Next</span>';
-    echo '</button>';
-    echo '</div>';
-
-    // Modals for enlarged images
-    $slideIndex = 0; // Reset slide index for modal IDs
-    foreach ($rows as $row) {
-        $imageData = $row->data;
-        $dateTime = $row->date_time->toDateTime()->format('Y-m-d H:i:s'); // Format date_time field
-
-        echo '<div class="modal fade" id="modalScreenshot' . $slideIndex . '" tabindex="-1" aria-labelledby="modalScreenshotLabel' . $slideIndex . '" aria-hidden="true">';
-        echo '<div class="modal-dialog modal-dialog-centered modal-lg">'; // Use modal-lg class for larger modal
-        echo '<div class="modal-content">';
-        echo '<div class="modal-header">';
-        echo '<h5 class="modal-title" id="modalScreenshotLabel' . $slideIndex . '">Screenshot ' . ($slideIndex + 1) . '</h5>';
-        echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+    if ($carouselItems != null) {
+        // Output the complete carousel structure
+        echo '<div id="ScreenshotCaptions" class="carousel slide" data-bs-ride="carousel">';
+        echo '<div class="carousel-indicators">';
+        echo $carouselIndicators;
         echo '</div>';
-        echo '<div class="modal-body">';
-        echo '<img src="data:image/png;base64,' . $imageData . '" class="img-fluid" alt="Screenshot" style="max-width: 100%; max-height: 80vh;">'; // Adjust max-height for the image
-        echo '<h2>Captured at: ' . $dateTime . '</h2>'; // Display formatted date_time
+        echo '<div class="carousel-inner">';
+        echo $carouselItems;
         echo '</div>';
-        echo '</div>';
-        echo '</div>';
+        echo '<button class="carousel-control-prev" type="button" data-bs-target="#ScreenshotCaptions" data-bs-slide="prev">';
+        echo '<span class="carousel-control-prev-icon" aria-hidden="true"></span>';
+        echo '<span class="visually-hidden">Previous</span>';
+        echo '</button>';
+        echo '<button class="carousel-control-next" type="button" data-bs-target="#ScreenshotCaptions" data-bs-slide="next">';
+        echo '<span class="carousel-control-next-icon" aria-hidden="true"></span>';
+        echo '<span class="visually-hidden">Next</span>';
+        echo '</button>';
         echo '</div>';
 
-        $slideIndex++;
+        // Modals for enlarged images
+        $slideIndex = 0; // Reset slide index for modal IDs
+        foreach ($rows as $row) {
+            $imageData = $row->data;
+            $dateTime = $row->date_time->toDateTime()->format('Y-m-d H:i:s'); // Format date_time field
+
+            echo '<div class="modal fade" id="modalScreenshot' . $slideIndex . '" tabindex="-1" aria-labelledby="modalScreenshotLabel' . $slideIndex . '" aria-hidden="true">';
+            echo '<div class="modal-dialog modal-dialog-centered modal-lg">'; // Use modal-lg class for larger modal
+            echo '<div class="modal-content">';
+            echo '<div class="modal-header">';
+            echo '<h5 class="modal-title" id="modalScreenshotLabel' . $slideIndex . '">Screenshot ' . ($slideIndex + 1) . '</h5>';
+            echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
+            echo '</div>';
+            echo '<div class="modal-body">';
+            echo '<img src="data:image/png;base64,' . $imageData . '" class="img-fluid" alt="Screenshot" style="max-width: 100%; max-height: 80vh;">'; // Adjust max-height for the image
+            echo '<h2>Captured at: ' . $dateTime . '</h2>'; // Display formatted date_time
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+            echo '</div>';
+
+            $slideIndex++;
+        }
     }
+
 }
 ?>
