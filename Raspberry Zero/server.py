@@ -18,6 +18,10 @@ PuK = False
 fernet_key = None
 JwT_token = None
 
+calibration_ready = False
+position = 0
+calibration_position = 0
+
 @app.route("/", methods = HTTP_METHODS)
 def index():
     global PuK
@@ -254,6 +258,27 @@ def receive_script_and_key():
     data = request.get_json()
     response = decrypt_and_reencrypt_script(data, fernet_key)
     return jsonify(response)
+
+@app.route("/update_calibration", methods=["POST"])
+def update_calibration():
+    global calibration_ready
+    global calibration_position
+    
+    data = request.get_json()
+    calibration_ready = data["Status"]
+    calibration_position = data["Position"]
+    response = {"Status" : calibration_ready, "Position" : calibration_position}
+    
+    return jsonify(response), 200
+    
+@app.route("/get_calibration", methods=["GET"])
+def get_calibration():
+    global calibration_ready
+    global calibration_position
+    
+    response = {"Status" : calibration_ready, "Position" : calibration_position}
+    
+    return jsonify(response), 200
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

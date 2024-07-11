@@ -6,7 +6,7 @@ $url = "http://192.168.18.5/get_calibration"  # Change to 10.0.0.1 later
 $Position = -1
 $PiReady = $false
 
-# Function to create a WPF window
+
 function New-Window {
     [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -14,6 +14,7 @@ function New-Window {
         Title="Circle Movement" WindowState="Maximized" WindowStyle="None" Topmost="True">
     <Canvas Name="canvas">
         <Ellipse Name="circle" Fill="Blue" Width="40" Height="40"/>
+        <TextBlock Name="textBlock" Text="Look at the circle" FontSize="30" Foreground="Red"/>
     </Canvas>
 </Window>
 "@
@@ -93,10 +94,19 @@ function Main {
     $window = New-Window
     $canvas = $window.FindName("canvas")
     $circle = $window.FindName("circle")
+    $textBlock = $window.FindName("textBlock")
 
     $width = [System.Windows.SystemParameters]::PrimaryScreenWidth
     $height = [System.Windows.SystemParameters]::PrimaryScreenHeight
     $radius = 20
+
+    # Position the text at the top middle
+    $textWidth = 300  # Approximate width of the text block
+    $textHeight = 50  # Approximate height of the text block
+    $canvas.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Render, [Action]{
+        [System.Windows.Controls.Canvas]::SetLeft($textBlock, ($width / 2) - ($textWidth / 2))
+        [System.Windows.Controls.Canvas]::SetTop($textBlock, 10)  # Set a small value for top margin
+    })
 
     # Show the window
     $window.Show()
