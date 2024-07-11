@@ -30,7 +30,7 @@
     echo $line;
     ?>
     </p>
-    <p class="mb-0">To head back to the index page, please click <a href="index.php" class="alert-link">here</a>.</p>
+    <p class="mb-0">To head back to the index page, please click <a href="admin_index.php" class="alert-link">here</a>.</p>
 </div>
 
 <?php

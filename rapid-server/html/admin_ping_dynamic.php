@@ -23,10 +23,6 @@
 </head>
 
 <body>
-    
-<?php include 'nav_bar.php'; ?>
-
-<style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
 
 <!--
 Auto Refresh Table
