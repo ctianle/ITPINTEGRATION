@@ -54,6 +54,7 @@ $cursor = $manager->executeQuery("$dbName.machine_learning_data", $query);
     <table id="datatable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
+                <th>UUID</th>
                 <th>Type</th>
                 <th>Content</th>
                 <th>Timestamp</th>
@@ -62,14 +63,33 @@ $cursor = $manager->executeQuery("$dbName.machine_learning_data", $query);
         <tbody>
             <?php foreach ($cursor as $entry) : ?>
                 <?php
-                $timestamp = $entry->timestamp instanceof MongoDB\BSON\UTCDateTime
-                    ? $entry->timestamp->toDateTime()->setTimezone(new DateTimeZone('Asia/Singapore'))->format('Y-m-d H:i:s')
-                    : htmlspecialchars($entry->timestamp);
+                try {
+                    // Handle timestamp
+                    if ($entry->timestamp instanceof MongoDB\BSON\UTCDateTime) {
+                        $timestamp = $entry->timestamp->toDateTime()->setTimezone(new DateTimeZone('Asia/Singapore'))->format('Y-m-d H:i:s');
+                    } else {
+                        $timestamp = is_string($entry->timestamp) ? htmlspecialchars($entry->timestamp) : 'Invalid timestamp';
+                    }
+                    // Handle type
+                    $uuid = is_string($entry->uuid) ? htmlspecialchars($entry->uuid) : 'Invalid uuid';
+
+                    // Handle type
+                    $type = is_string($entry->type) ? htmlspecialchars($entry->type) : 'Invalid type';
+
+                    // Handle content
+                    $content = is_string($entry->content) ? htmlspecialchars($entry->content) : 'Invalid content';
+                } catch (Exception $e) {
+                    $uuid = "Error: " . $e->getMessage();
+                    $timestamp = "Error: " . $e->getMessage();
+                    $type = "Error: " . $e->getMessage();
+                    $content = "Error: " . $e->getMessage();
+                }
                 ?>
                 <tr>
-                    <td><?= htmlspecialchars($entry->type) ?></td>
-                    <td><?= htmlspecialchars($entry->content) ?></td>
-                    <td><?= htmlspecialchars($timestamp) ?></td>
+                    <td><?= $uuid ?></td>
+                    <td><?= $type ?></td>
+                    <td><?= $content ?></td>
+                    <td><?= $timestamp ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
