@@ -94,8 +94,8 @@ try {
       // Show an alert
         alert('Session updated successfully');
 
-        // Redirect to the sessions page after the user clicks OK on the alert
-        window.location.href = '../sessions.php'; // Replace 'sessions.php' with the actual URL of your sessions page
+        // Go back to the previous page after the user clicks OK on the alert
+        window.history.back();
     </script>
 </body>
 </html>
