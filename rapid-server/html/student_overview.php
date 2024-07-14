@@ -14,9 +14,11 @@
             <div class="col py-3">
                 <div class="container content">
 
-                    <a href="#" onclick="javascript:history.back();" class="back-link">
-                    <button type="button" class="btn btn-primary"><h3>Back to Monitoring Session</h3></button>
-                    </a>
+
+                    <button type="button" class="btn btn-primary" onclick="javascript:history.back();">
+                        <h3>Back to Monitoring Session</h3>
+                    </button>
+
 
                     <div class="card mt-3">
                         <div class="card-body">
@@ -30,7 +32,7 @@
                             <div class="row mt-4 justify-content-center">
 
                                 <!-- Screen (Dynamic Screenshot) -->
-                                <div class="col-md-8 mb-4">
+                                <div class="col-md-6 mb-4">
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
@@ -52,24 +54,39 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Student Logs -->
-                                <div class="col-md-4 mb-4">
+
+                                <!-- Processes (Dynamic) -->
+                                <div class="col-md-6 mb-4">
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-icon">&#128221;</div> <!-- Icon for Logs -->
-                                                <h5 class="card-title ml-2">Logs</h5>
-                                            </div>
+                                            <?php
+                                            echo '<div class="activity-icon"><h5 class="card-title mb-2">&#128241; Process</h5></div>'; // Icon for Screen
+                                            ?>
+                                            <div class="d-flex align-items-center table-container">
+                                                <?php
+                                                require_once 'process/fetch_student_process.php';
 
-                                            <p class="logs-text">
-                                                <!-- dynamic logs -->
-                                            </p>
+                                                // Get process data
+                                                $result = getProcess();
+
+                                                // Check if data exists
+                                                if (!$result['hasData']) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128241; Process</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                } else {
+                                                    // Output the HTML content of the table
+                                                    echo $result['html'];
+                                                }
+                                                ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <!-- Webcam (Dynamic Snapshot) -->
-                                <div class="col-md-8 mb-4">
+                                <div class="col-md-6 mb-4">
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
@@ -92,34 +109,35 @@
                                     </div>
                                 </div>
 
-                                <!-- Processes (Dynamic) -->
-                                <div class="col-md-4 mb-4">
+                                <!-- Student Logs -->
+                                <div class="col-md-6 mb-4">
                                     <div class="card activity-card">
                                         <div
                                             class="card-body d-flex flex-column justify-content-center align-items-center">
-                                            <div class="d-flex align-items-center">
-                                                <div class="activity-icon">&#128241;</div> <!-- Icon for Apps -->
-                                                <h5 class="card-title ml-2">Apps</h5>
-                                            </div>
-                                            <div class="apps-list-container">
+                                            <?php
+                                            echo '<div class="activity-icon"><h5 class="card-title mb-2">&#128221; Logs</h5></div>'; // Icon for Screen
+                                            ?>
+                                            <div class="d-flex align-items-center table-container">
                                                 <?php
-                                                // MongoDB connection
-                                                // $manager = new MongoDB\Driver\Manager("mongodb://myuser:mypassword@db:27017");
-                                                // Query MongoDB for the latest processes
-                                                //$query = new MongoDB\Driver\Query([], ['sort' => ['CapturedAt' => -1]]);
-                                                //$rows = $manager->executeQuery("$dbName.StudentProcesses", $query);
-                                                // Display the process list
-                                                //echo '<ul class="apps-list">';
-                                                //foreach ($rows as $row) {
-                                                //    echo '<li>' . $row->ProcessName . '</li>';
-                                                //}
-                                                //echo '</ul>';
+                                                require_once 'process/fetch_student_logs.php';
+
+                                                // Get process data
+                                                $result = getLogs();
+
+                                                // Check if data exists
+                                                if (!$result['hasData']) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128221; Logs</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                } else {
+                                                    // Output the HTML content of the table
+                                                    echo $result['html'];
+                                                }
                                                 ?>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>

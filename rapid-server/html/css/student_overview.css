@@ -50,7 +50,7 @@ body {
   align-items: center; /* Center content horizontally */
   text-align: center;
   width: 100%; /* Adjust the width to fit the smaller card */
-  height: 100%; /* Adjust the height to fit the smaller card */
+  height: 400px; /* Adjust the height to fit the smaller card */
   margin-right: 30px; /* Shift the cards to the right */
 }
 
@@ -72,12 +72,6 @@ body {
 .activity-icon {
   font-size: 1.5rem;
   margin-right: 10px; /* Space between icon and title */
-}
-
-.activity-image {
-  width: 400px; /* Adjust the width to fit the smaller card */
-  height: 280px; /* Adjust the height to fit the smaller card */
-  margin-top: 0px;
 }
 
 .apps-list-container {
@@ -159,4 +153,62 @@ body {
 
 .modal-body h2{
   color:black;
+}
+
+.table-responsive {
+  overflow-x: auto; /* Enable horizontal scrolling if the table is wider than the container */
+  overflow-y: auto; /* Enable vertical scrolling if the table is taller than the container */
+  max-height: 100%; /* Ensure it uses the full height available within the card */
+}
+
+.table-container{
+  width: 100%;
+  height: 300px;
+}
+.process-table th {
+  background-color: #74b3ce !important;
+  color: white;
+}
+
+.logs-table th {
+  background-color: #FF4F00 !important;
+  color: white;
+}
+/* Reduce padding in table cells to make them more compact */
+.table td, .table th {
+  padding: 0.5rem; /* Adjust padding as needed */
+  text-align: left; /* Align text to the left */
+  vertical-align: middle; /* Align text vertically to the middle */
+  word-wrap: break-word !important; /* Break long words and wrap text */
+  overflow-wrap: break-word !important; /* Wrap long words to prevent overflow */
+}
+
+.table td:first-child, .table th:first-child {
+  max-width: 150px; /* Set a maximum width if needed */
+}
+/* Apply styles to the fpurth column (Process) */
+.table td:nth-child(4), .table th:nth-child(4) {
+  width: 20%; /* Adjust width as needed */
+  max-width: 300px; /* Set maximum width if needed */
+}
+/* Apply styles to the fifth column (Date & Time) */
+.process-table.table td:nth-child(5), .table th:nth-child(5) {
+  width: 20%; /* Adjust width as needed */
+  max-width: 200px; /* Set maximum width if needed */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+/* Apply styles to the fifth column (Date & Time) */
+.logs-table.table td:nth-child(4), .table th:nth-child(4) {
+  width: 20%; /* Adjust width as needed */
+  max-width: 200px; /* Set maximum width if needed */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+/* Apply background color to even rows */
+.table tbody tr:nth-child(even) {
+  background-color: whitesmoke; /* Light gray background */
+}
+
+/* Apply background color to odd rows */
+.table tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White background */
 }
