@@ -55,7 +55,7 @@ session_start();
                                                     <th scope="col">Date</th>
                                                     <th scope="col">Start Time</th>
                                                     <th scope="col">End Time</th>
-                                                    <th scope="col">Duration</th>
+                                                    <th scope="col">Duration(Mins)</th>
                                                     <th scope="col">Action</th>
                                                 </tr>
                                             </thead>
@@ -93,14 +93,6 @@ session_start();
                             <input type="text" class="form-control" id="editSessionName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editSessionStatus" class="form-label">Status</label>
-                            <select class="form-control" id="editSessionStatus" required>
-                                <option value="planned">Planned</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="complete">Complete</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
                             <label for="editSessionDate" class="form-label">Date</label>
                             <input type="date" class="form-control" id="editSessionDate" required>
                         </div>
@@ -113,16 +105,16 @@ session_start();
                             <input type="time" class="form-control" id="editSessionEndTime" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editSessionDuration" class="form-label">Duration</label>
+                            <label for="editSessionDuration" class="form-label">Duration(Mins)</label>
                             <input type="text" class="form-control" id="editSessionDuration" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editBlacklistFile" class="form-label">Blacklist</label>
-                            <input type="file" class="form-control" id="editBlacklistFile" accept=".txt">
+                            <label for="editBlacklist">Blacklist (comma-separated)</label>
+                            <input type="text" class="form-control" id="editBlacklist" name="blacklist" />
                         </div>
                         <div class="mb-3">
-                            <label for="editWhitelistFile" class="form-label">Whitelist</label>
-                            <input type="file" class="form-control" id="editWhitelistFile" accept=".txt">
+                            <label for="editWhitelist">Whitelist (comma-separated)</label>
+                            <input type="text" class="form-control" id="editWhitelist" name="whitelist" />
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>

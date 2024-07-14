@@ -105,7 +105,7 @@ session_start();
                             <input type="time" class="form-control" id="editSessionEndTime" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editSessionDuration" class="form-label">Duration(Mins)</label>
+                            <label for="editSessionDuration" class="form-label">Duration</label>
                             <input type="text" class="form-control" id="editSessionDuration" required>
                         </div>
                         <div class="mb-3">

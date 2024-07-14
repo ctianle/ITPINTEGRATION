@@ -8,7 +8,7 @@ session_start();
     include "component/essential.inc.php";
     ?>
     <link rel="stylesheet" href="css/sessions.css">
-    <title>Sessions</title>
+    <title>Past Records</title>
 </head>
 
 <body>
@@ -21,17 +21,17 @@ session_start();
                 <div class="container content">
                     <div class="row">
                         <div class="col-12">
-                            <a href="create_session.php">
-                                <button type="button" class="btn btn-info btn-lg create">Create Session</button>
-                            </a>
+                            <h3>Past Records</h3><br>
+                            <a href="sessions.php"><button type="button"
+                                    class="btn btn-info btn-lg create">Sessions</button></a>
                         </div>
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Upcoming/Ongoing Sessions</h5>
+                                    <h5 class="card-title">History</h5>
                                     <h6>Click on Status to start monitoring</h6>
                                     <div class="d-flex justify-content-end">
-                                        <div class="dropdown">
+                                        <div clasclass="dropdown">
                                             <button class="btn btn-secondary dropdown-toggle" type="button"
                                                 id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Sort By
@@ -105,7 +105,7 @@ session_start();
                             <input type="time" class="form-control" id="editSessionEndTime" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editSessionDuration" class="form-label">Duration(Mins)</label>
+                            <label for="editSessionDuration" class="form-label">Duration</label>
                             <input type="text" class="form-control" id="editSessionDuration" required>
                         </div>
                         <div class="mb-3">
@@ -123,9 +123,8 @@ session_start();
         </div>
     </div>
 
-
-    <script defer src="js/index.js"></script>
-    <script defer src="js/sessions.js"></script>
 </body>
+<script defer src="js/index.js"></script>
+<script defer src="js/past_records.js"></script>
 
 </html>
