@@ -67,10 +67,6 @@ try {
     // Update the document in the MongoDB collection
     $bulkWrite->update($filter, $updateData, ['multi' => false, 'upsert' => false]);
     $manager->executeBulkWrite("$dbName.Sessions", $bulkWrite);
-
-    // Redirect or send a success message
-    header('Location: ../sessions.php');
-    exit;
     
 } catch (MongoDBException $e) {
     // Log the MongoDB exception
