@@ -24,7 +24,7 @@ function fetchData() {
 
 // Fetch sessions from MongoDB and populate the dropdown
 function fetchSessions() {
-    fetch('../process/fetch_session.php')
+    fetch('../process/fetch_session_all.php')
         .then(response => response.json())
         .then(responseData => {
             const sessionDropdown = document.getElementById('sessionDropdown');
