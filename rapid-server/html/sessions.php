@@ -27,6 +27,7 @@ session_start();
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title">Upcoming Sessions</h5>
+                                    <h6>Click on Status to start monitoring</h6>
                                     <div class="d-flex justify-content-end">
                                         <div class="dropdown">
                                             <button class="btn btn-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">

@@ -59,7 +59,7 @@ try {
             }
 
             // Only include sessions with status 'complete'
-            if ($status !== 'complete') {
+            if ($status === 'complete') {
                 $session = [
                     '_id' => (string) $document->_id,
                     'SessionId' => $document->SessionId,
