@@ -11,6 +11,8 @@ $manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017"
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_POST["uuid"])) {
     $file = $_FILES["image"];
     $uuid = $_POST["uuid"];
+    $session_id = (int) $_POST["session_id"];
+    $student_id = (int) $_POST["student_id"];
 
     // Check if file is an image
     $check = getimagesize($file["tmp_name"]);
@@ -31,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"]) && isset($_P
             'uuid' => $uuid,
             'data' => $imgData,
             'date_time' => new MongoDB\BSON\UTCDateTime(strtotime($date_time) * 1000),
-            'SessionId' => 4,
-            'StudentId' => 1
+            'SessionId' => $session_id,
+            'StudentId' => $student_id
         ];
         $bulk->insert($document);
 
