@@ -38,23 +38,25 @@ function getScreenshot()
     // Iterate through fetched results to generate carousel items
     foreach ($rows as $row) {
         $imageData = $row->data; // Assuming 'data' contains the base64 image data
-        $dateTime = $row->date_time->toDateTime()->format('Y-m-d H:i:s'); // Format date_time field
-
+        $dateTimeUTC = $row->date_time->toDateTime()->setTimezone(new DateTimeZone('UTC'));
+        $dateTimeGMT8 = $dateTimeUTC->setTimezone(new DateTimeZone('Asia/Singapore')); // Adjust timezone as per your GMT+8 location
+        $formattedDateTime = $dateTimeGMT8->format('Y-m-d H:i:s');
+    
         // Generate carousel item HTML
         $carouselItems .= '<div class="carousel-item ' . $activeClass . '">';
         $carouselItems .= '<img src="data:image/png;base64,' . $imageData . '" class="d-block w-100 carousel-img" alt="Screenshot" data-bs-toggle="modal" data-bs-target="#modalScreenshot' . $slideIndex . '">';
         $carouselItems .= '<div class="carousel-caption d-none d-md-block">';
         $carouselItems .= '<div class="caption-text-container">'; // Container for text and shadow
         $carouselItems .= '<h5>Screenshot ' . ($slideIndex + 1) . '</h5>';
-        $carouselItems .= '<p>Captured at: ' . $dateTime . '</p>'; // Display formatted date_time
+        $carouselItems .= '<p>Captured at: ' . $formattedDateTime . ' GMT+8</p>'; // Display formatted date_time
         $carouselItems .= '</div>'; // End caption-text-container
         $carouselItems .= '</div>'; // End carousel-caption
         $carouselItems .= '</div>'; // End carousel-item
-
+    
         // Generate indicator HTML
         $carouselIndicators .= '<button type="button" data-bs-target="#ScreenshotCaptions"';
         $carouselIndicators .= ' data-bs-slide-to="' . $slideIndex . '" class="' . $activeClass . '" aria-label="Slide ' . ($slideIndex + 1) . '"></button>';
-
+    
         // Clear active class after the first item
         $activeClass = '';
         $slideIndex++;

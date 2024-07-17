@@ -44,7 +44,7 @@ function fetchAndDisplaySessions() {
             $(document).on('click', '.session-row', function() {
                 const sessionId = $(this).data('session-id');
                 // Redirect or handle click as needed
-                window.location.href = `session_details.php?id=${sessionId}`;
+                window.location.href = `monitoring_session.php?session_id=${sessionId}`;
             });
         })
         .catch(error => {
