@@ -1,0 +1,6 @@
+python3 -m venv --system-site-packages venv #have to use this for new camera module
+sudo apt install -y libcamera-apps
+pip3 install picamera2
+
+sudo apt install libhdf5-dev
+pip install deepface

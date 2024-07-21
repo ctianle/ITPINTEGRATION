@@ -1,0 +1,15 @@
+after making virtual env, do this
+sudo chown -R raspberry:www-data /home/raspberry/flaskserver
+sudo chmod -R 750 /home/raspberry/flaskserver
+sudo usermod -aG raspberry www-data
+sudo chmod 755 /home/raspberry
+
+sudo nano /etc/nginx/nginx.conf
+
+add under http block:
+http {
+    client_max_body_size 16M;
+    ...
+}
+
+raspberry should be the name of your user

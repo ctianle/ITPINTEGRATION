@@ -24,10 +24,10 @@ def set_affinity(core_id):
     os.system(command)
 
 # Set the current process to run on core 2
-set_affinity(2)
+set_affinity(1)
 
 # Parameters
-BUFFER = 2048  # samples per frame
+BUFFER = 1024  # samples per frame
 FORMAT = pyaudio.paInt16  # audio format
 CHANNELS = 1  # single channel for microphone
 RATE = 16000  # samples per second
@@ -51,7 +51,6 @@ stream = audio.open(
     input=True,
     input_device_index=0)
     
-exec_time = []
 frequency_buffer = []
 moving_sample_size = 2
 recording_time = 0
@@ -90,42 +89,43 @@ recognizer_thread.start()
 
 try:
     while True:
-        performance_start = time.time()
+        start_time = time.time()
         data = stream.read(BUFFER, exception_on_overflow=False)
         data_int = struct.unpack(str(BUFFER) + 'h', data)
-        start_time = time.time()
         filtered_data = sosfilt(sos, data_int)
         yf = fft(filtered_data)
         yf_magnitude = 2.0 / BUFFER * np.abs(yf[0:BUFFER // 2])
-        exec_time.append(time.time() - start_time)
         peaks, _ = find_peaks(yf_magnitude, height=threshold)
         xf = fftfreq(BUFFER, (1 / RATE))[:BUFFER // 2]
         peak_frequencies = xf[peaks]
         
+            
+        if len(peak_frequencies) > 0 and not recording:
+            average_frequency = np.average(peak_frequencies)
+            frequency_buffer.append(average_frequency)
+            if len(frequency_buffer) > moving_sample_size:
+                frequency_buffer.pop(0)
+            min_average_frequency = np.min(frequency_buffer)
+            max_average_frequency = np.max(frequency_buffer)
+            frequency_difference = max_average_frequency - min_average_frequency
+
+            print(f"Frequency Difference: {frequency_difference} Hz")
+            if frequency_difference > 100:
+                recording_time = time.time()
+                print("Recording")
+                recording = True
+                
         if recording:
             if time.time() - recording_time <= 5:
                 frame_queue.put(data)
             else:
                 recording = False
                 print("Ended")
-        else:
-            if len(peak_frequencies) > 0:
-                average_frequency = np.average(peak_frequencies)
-                frequency_buffer.append(average_frequency)
-                if len(frequency_buffer) > moving_sample_size:
-                    frequency_buffer.pop(0)
-                min_average_frequency = np.min(frequency_buffer)
-                max_average_frequency = np.max(frequency_buffer)
-                frequency_difference = max_average_frequency - min_average_frequency
-
-                print(f"Frequency Difference: {frequency_difference} Hz")
-                if frequency_difference > 100:
-                    recording_time = time.time()
-                    print("Recording")
-                    recording = True
-
-        performance_end = time.time()
-        process_time = performance_end - performance_start
+        
+        end_time = time.time()
+        process_time = end_time - start_time
+        #print("process", process_time)
+        time.sleep(0.54)
 except KeyboardInterrupt:
     pass
 
@@ -134,4 +134,3 @@ stream.close()
 audio.terminate()
 
 print('stream stopped')
-print('average execution time = {:.0f} milli seconds'.format(np.mean(exec_time) * 1000))
