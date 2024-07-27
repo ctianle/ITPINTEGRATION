@@ -1,0 +1,12 @@
+[Unit]
+Description=Audio Service
+After=network.target
+
+[Service]
+User=raspberry
+WorkingDirectory=/home/raspberry/Desktop/Audio
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Audio/venv/bin/activate && exec python /home/raspberry/Desktop/Webcam/frequency_diff_vosk.py'
+
+
+[Install]
+WantedBy=multi-user.target

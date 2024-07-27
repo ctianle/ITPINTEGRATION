@@ -54,6 +54,10 @@ def generate_roi(file_path, output_base_dir):
         # Get bounding box
         x, y, w, h = cv2.boundingRect(contour)
 
+        # Skip ROI if it is the same size as the original image
+        if (w == width and h == height):
+            continue
+
         if h < w - 35 or h > w + 35:
             # Extract region of interest from the color image
             roi = resized_image[y:y + h, x:x + w]
@@ -61,17 +65,7 @@ def generate_roi(file_path, output_base_dir):
             cv2.imwrite(roi_path, roi)
             counter += 1
 
-    # End time and CPU usage measurement
     end_time = time.time()
-    cpu_times_end = [psutil.cpu_times(percpu=True)[i].user for i in range(psutil.cpu_count())]
-
-    # Calculate the difference in CPU times
-    cpu_times_used = [end - start for start, end in zip(cpu_times_start, cpu_times_end)]
-
-    # Calculate the average CPU time used
-    average_time = sum(cpu_times_used) / len(cpu_times_used)
-
-    print(f"Average CPU Time used per core: {average_time:.6f} seconds")
     total_time = end_time - start_time
 
     print(f"Completing ROI for {file_name}")

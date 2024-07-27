@@ -1,3 +1,11 @@
+import os
+def set_affinity(core_id):
+    command = f"taskset -cp {core_id} {os.getpid()}"
+    os.system(command)
+
+# Set the current process to run on core 2
+set_affinity(2)
+
 import pyaudio
 import struct
 import numpy as np
@@ -6,7 +14,6 @@ from scipy.signal import butter, sosfilt, find_peaks
 import threading
 import requests
 import time
-import os
 import vosk
 import json
 import sounddevice
@@ -18,13 +25,6 @@ server_data = {
     "type": "Audio",
     "content": "Multiple speakers detected"
 }
-
-def set_affinity(core_id):
-    command = f"taskset -cp {core_id} {os.getpid()}"
-    os.system(command)
-
-# Set the current process to run on core 2
-set_affinity(1)
 
 # Parameters
 BUFFER = 1024  # samples per frame
@@ -77,7 +77,6 @@ def recognize_speech():
                 server_data = {"type": "Audio", "content": "Detected Speech: " + text, "uuid": ""}
                 response = requests.post(url, json=server_data)
                 print(f"Response status code: {response.status_code}")
-                print(f"Response JSON: {response.json()}")
     except Exception as e:
         print(f"Error recognizing speech: {e}")
 
@@ -111,6 +110,8 @@ try:
 
             print(f"Frequency Difference: {frequency_difference} Hz")
             if frequency_difference > 100:
+                server_data = {"type": "Audio", "content": "Multiple Speakers Detected", "uuid": ""}
+                requests.post(url, json=server_data)
                 recording_time = time.time()
                 print("Recording")
                 recording = True
@@ -124,8 +125,6 @@ try:
         
         end_time = time.time()
         process_time = end_time - start_time
-        #print("process", process_time)
-        time.sleep(0.54)
 except KeyboardInterrupt:
     pass
 

@@ -1,22 +1,21 @@
+import os
+
+def set_affinity(core_id):
+    command = f"taskset -cp {core_id} {os.getpid()}"
+    os.system(command)
+
+# Set the current process to run on core 0
+set_affinity(0)
+
 import time
 import cv2
-import os
 from multiprocessing import shared_memory
 import numpy as np
 import requests
 import base64
 
 
-def set_affinity(core_id):
-    command = f"taskset -cp {core_id} {os.getpid()}"
-    os.system(command)
-
-# Set the current process to run on core 1
-set_affinity(1)
-
-time.sleep(402) #wait for gaze and face_recog to start
-
-url = "http://10.0.0.1/store_data"
+#time.sleep(482) #wait for gaze and face_recog to start
 
 def compress_image(image, scale_percent=50, quality=50):
     # Resize the image
@@ -34,42 +33,41 @@ def compress_image(image, scale_percent=50, quality=50):
     else:
         raise ValueError("Failed to compress the image")
 
-# Directory to save images for comparison
-save_dir = 'captures'
-if not os.path.exists(save_dir):
-    os.makedirs(save_dir)
+def capture_images():
+    print("start capture")
+    url = "http://10.0.0.1/store_data"
 
-# Define the size of the shared memory block (RGB image size)
-shm_size = 800 * 600 * 3
+    # Directory to save images for comparison
+    save_dir = 'captures'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-# Open the existing shared memory block
-shm = shared_memory.SharedMemory(name='shm_camera')
+    # Define the size of the shared memory block (RGB image size)
+    shm_size = 800 * 600 * 3
 
-first_captured = False
+    # Open the existing shared memory block
+    shm = shared_memory.SharedMemory(name='shm_camera')
 
-try:
-    while True:
-        image_data = np.ndarray(shape=(600, 800, 3), dtype=np.uint8, buffer=shm.buf)
+    first_captured = False
+
+    try:
+        while True:
+            image_data = np.ndarray(shape=(600, 800, 3), dtype=np.uint8, buffer=shm.buf)
+            
+            compressed_image_bytes = compress_image(image_data)
+            image_base64 = base64.b64encode(compressed_image_bytes).decode('utf-8')
+            server_data = {"type": "camera image", "content": image_base64, "uuid": ""}
+            response = requests.post(url, json=server_data)
+            #print(f"Response: {response.json()}")
+            
+            last_image_filename = os.path.join(save_dir, f'last_image.png')
+            cv2.imwrite(last_image_filename, image_data)
         
-        if not first_captured:
-            first_image_filename = os.path.join(save_dir, f'first_image.png')
-            cv2.imwrite(first_image_filename, image_data)
-            first_captured = True
+            
+            time.sleep(0.14)
+            
+    except KeyboardInterrupt:
+        pass
         
-        compressed_image_bytes = compress_image(image_data)
-        image_base64 = base64.b64encode(compressed_image_bytes).decode('utf-8')
-        server_data = {"type": "camera image", "content": image_base64, "uuid": ""}
-        response = requests.post(url, json=server_data)
-        #print(f"Response: {response.json()}")
-        
-        last_image_filename = os.path.join(save_dir, f'last_image.png')
-        cv2.imwrite(last_image_filename, image_data)
-    
-        
-        time.sleep(0.14)
-        
-except KeyboardInterrupt:
-    pass
-    
-shm.close()
-cv2.destroyAllWindows()
+    shm.close()
+    cv2.destroyAllWindows()

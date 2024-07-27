@@ -1,6 +1,4 @@
 import os
-import json
-import pandas as pd
 from pytess_ocr import ocr_image, clean_text, model
 from matching import run_template_match
 from roi import generate_roi
@@ -9,6 +7,7 @@ import platform
 import requests
 import time
 import logging
+import base64
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -26,17 +25,19 @@ roi_results = []
 template_matching_results = []
 all_results = {}
 
+def encode_image_to_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+
 def send_data_to_server(data):
     url = "http://10.0.0.1/store_data"
-    for _ in range(3):
-        try:
-            response = requests.post(url, data=data, timeout=10)
-            logging.debug(f"Response status code: {response.status_code}")
-            if response.status_code == 200:
-                break
-        except requests.RequestException as e:
-            logging.error(f"Request failed: {e}")
-            time.sleep(5)
+    headers = {'Content-Type': 'application/json'}
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        logging.debug(f"Response status code: {response.status_code}")
+    except requests.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        time.sleep(5)
 
 def process_rois():
     logging.info("Starting ROI generation...")
@@ -50,8 +51,7 @@ def process_rois():
                 'original_image': image_path,
                 'rois': [],
                 'template_matching': {},
-                'conversation_percentage': 0,
-                'risk_level': 'Low'
+                'conversation_percentage': 0
             }
             logging.info(f"Generated {num_rois} ROIs for {image_name}.")
 
@@ -110,8 +110,7 @@ def process_ocr_and_classification():
                     'original_image': None,
                     'rois': [],
                     'template_matching': {},
-                    'conversation_percentage': 0,
-                    'risk_level': 'Low'
+                    'conversation_percentage': 0
                 }
 
             conversation_count = sum(1 for roi in all_results[folder_name]['rois'] if roi['classification'] == "conversation")
@@ -121,15 +120,32 @@ def process_ocr_and_classification():
 
             threshold = 0.7
             any_high_risk_templates = any(value > threshold for key, value in all_results[folder_name]['template_matching'].items() if key.endswith('_value') and value)
-            risk_level = 'High' if any_high_risk_templates else 'Moderate' if conversation_percentage > 70 else 'Low'
-            all_results[folder_name]['risk_level'] = risk_level
 
             # Send data to server if conditions are met
             if conversation_percentage > 70 or any_high_risk_templates:
+                base64_image = encode_image_to_base64(all_results[folder_name]['original_image'])
                 send_data_to_server({
-                    'type': 'Screenshot',
-                    'content': f"image_name={folder_name}, conversation_percentage={conversation_percentage}, template_matching={json.dumps(all_results[folder_name]['template_matching'])}"
+                    'uuid': '',
+                    'type': f'Screenshot image: {folder_name}',
+                    'content': f"{base64_image}"
                 })
+
+                if conversation_percentage > 70:
+                    send_data_to_server({
+                        'uuid': '',
+                        'type': f"Conversation percentage: {folder_name}",
+                        'content': f"conversation_percentage={conversation_percentage:.2f}"
+                    })
+
+                if any_high_risk_templates:
+                    # Extracting templates that match
+                    matched_templates = [key for key, value in all_results[folder_name]['template_matching'].items() if key.endswith('_value') and value > threshold]
+                    matched_templates = [key.replace('_value', '') for key in matched_templates]
+                    send_data_to_server({
+                        'uuid': '',
+                        'type': f"Templates matched: {folder_name}",
+                        'content': f"{','.join(matched_templates)}"
+                    })
 
     logging.info("All processing completed.")
 
@@ -140,20 +156,3 @@ if __name__ == "__main__":
     process_rois()
     process_template_matching()
     process_ocr_and_classification()
-
-    if os.path.exists('all_results.json'):
-        try:
-            with open('all_results.json', 'r') as json_file:
-                existing_results = json.load(json_file)
-        except json.JSONDecodeError:
-            logging.warning("'all_results.json' is empty or corrupted. Starting with an empty dictionary.")
-            existing_results = {}
-    else:
-        existing_results = {}
-
-    existing_results.update(all_results)
-
-    with open('all_results.json', 'w') as json_file:
-        json.dump(existing_results, json_file, indent=4)
-
-    logging.info("All results have been written to all_results.json")

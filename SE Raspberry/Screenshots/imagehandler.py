@@ -6,6 +6,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import threading
 import platform
+import resource
 
 def set_affinity(core_id):
     if platform.system() == 'Linux':
@@ -86,10 +87,10 @@ class ImageHandler(FileSystemEventHandler):
 if __name__ == "__main__":
     set_affinity(1)  # Set to core 1
 
-    input_folder = './images2process'
+    input_folder = '/home/raspberry/flaskserver/images'
     processing_folder = './processing'
     completed_folder = './completed'
-    script_to_run = 'main5.py'
+    script_to_run = 'main8.py'
 
     # Ensure necessary directories exist
     os.makedirs(input_folder, exist_ok=True)
