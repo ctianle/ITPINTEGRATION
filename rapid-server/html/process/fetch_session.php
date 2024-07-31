@@ -68,6 +68,8 @@ try {
                     'EndTime' => $endTimeGMTPlus8->format('Y-m-d H:i:s'), // Convert to GMT+8 formatted string
                     'Duration' => $document->Duration,
                     'Status' => $status,
+                    'BlacklistedApps' => $document->BlacklistedApps,
+                    'WhitelistedApps' => $document->WhitelistedApps
                 ];
 
                 $sessionData[] = $session;

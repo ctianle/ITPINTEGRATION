@@ -18,7 +18,7 @@ function getLogs()
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
     // MongoDB Query Setup
-    $filter = [];
+    $filter = ['type' => ['$not' => new MongoDB\BSON\Regex('image', 'i')]]; // Exclude documents where 'type' contains 'image'
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
     $query = new MongoDB\Driver\Query($filter, $options);
@@ -64,4 +64,5 @@ function getLogs()
 
     return ['hasData' => $hasData, 'html' => $html];
 }
+
 ?>

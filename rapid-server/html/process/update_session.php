@@ -26,12 +26,12 @@ try {
     }
 
     // Extract and validate fields
-    $sessionId = (int)$_GET['SessionId'];
+    $sessionId = (int) $_GET['SessionId'];
     $sessionName = trim($_GET['SessionName']);
     $date = trim($_GET['Date']);
     $startTime = trim($_GET['StartTime']);
     $endTime = trim($_GET['EndTime']);
-    $duration = (int)$_GET['Duration'];
+    $duration = (int) $_GET['Duration'];
 
     // Decode blacklist and whitelist arrays
     $blacklist = json_decode($_GET['Blacklist'], true);
@@ -67,7 +67,7 @@ try {
     // Update the document in the MongoDB collection
     $bulkWrite->update($filter, $updateData, ['multi' => false, 'upsert' => false]);
     $manager->executeBulkWrite("$dbName.Sessions", $bulkWrite);
-    
+
 } catch (MongoDBException $e) {
     // Log the MongoDB exception
     error_log("MongoDB Exception: " . $e->getMessage());
@@ -86,16 +86,19 @@ try {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Update Success</title>
 </head>
+
 <body>
     <script>
-      // Show an alert
+        // Show an alert
         alert('Session updated successfully');
 
         // Go back to the previous page after the user clicks OK on the alert
         window.history.back();
     </script>
 </body>
+
 </html>
