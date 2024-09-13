@@ -30,8 +30,6 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - db_data:/data/db
-      - /mongod.conf:/etc/mongod.conf
-      - ./logs:/data/logs
     ports:
       - "27017:27017"
     networks:

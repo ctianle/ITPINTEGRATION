@@ -227,3 +227,12 @@ db.createCollection("ping", {
     }
   }
 });
+
+db.Users.insertOne({ 
+  UserType: 'admin', 
+  UserName: 'exampleUser', 
+  Email: 'user@example.com', 
+  PasswordHash: 'hashedpassword', 
+  UserId: 1, 
+  isActive: true 
+});
