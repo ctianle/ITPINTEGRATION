@@ -58,40 +58,6 @@ db.createCollection("Students", {
   }
 });
 
-// Create Screenshots collection with schema validation
-db.createCollection("Screenshots", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["uuid", "data", "date_time"],
-      properties: {
-        uuid: { bsonType: "string" },
-        data: { bsonType: "string" },
-        date_time: { bsonType: "date" },
-        CapturedAt: { bsonType: "date" },
-        FlagDescription: { bsonType: "string" }
-      }
-    }
-  }
-});
-
-// Create Snapshots collection with schema validation
-db.createCollection("Snapshots", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["uuid", "data", "date_time"],
-      properties: {
-        uuid: { bsonType: "string" },
-        data: { bsonType: "string" },
-        date_time: { bsonType: "date" },
-        CapturedAt: { bsonType: "date" },
-        FlagDescription: { bsonType: "string" }
-      }
-    }
-  }
-});
-
 // Create SessionInvigilators collection with schema validation
 db.createCollection("SessionInvigilators", {
   validator: {
@@ -106,46 +72,22 @@ db.createCollection("SessionInvigilators", {
   }
 });
 
-// Temporarily use process collection without studentid and sessionid to test process csv upload
-// Create StudentProcesses collection with schema validation
-// db.createCollection("StudentProcesses", {
-//   validator: {
-//     $jsonSchema: {
-//       bsonType: "object",
-//       required: ["StudentId", "SessionId", "ProcessName"],
-//       properties: {
-//         StudentId: { bsonType: "objectId" },
-//         SessionId: { bsonType: "objectId" },
-//         ProcessName: { bsonType: "string" },
-//         CapturedAt: { bsonType: "date" },
-//         FlagDescription: { bsonType: "string" }
-//       }
-//     }
-//   }
-// });
+// Below 4 are Data capture from Users
+db.createCollection("Processes");
 
-// Create StudentProcesses collection with schema validation (this is the current used process collection, need to be modified)
-db.createCollection("StudentProcesses", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["ProcessName"],
-      properties: {
-        StudentId: { bsonType: "objectId" },
-        SessionId: { bsonType: "objectId" },
-        ProcessName: { bsonType: "string" },
-        CapturedAt: { bsonType: "date" },
-        FlagDescription: { bsonType: "string" }
-      }
-    }
-  }
-});
+db.createCollection("Screenshots");
+
+db.createCollection("Snapshots");
+
+db.createCollection("Behvaiour_logs");
+
+//------------------- End of SE Collections -----------------//
 
 // Create a new collection to store the sequence value
-db.createCollection("session_sequence")
+db.createCollection("session_sequence");
 
 // Insert an initial document to track the sequence
-db.session_sequence.insertOne({ _id: "sessionId", sequence_value: 0 })
+db.session_sequence.insertOne({ _id: "sessionId", sequence_value: 0 });
 
 // Update the Sessions collection to include the SessionId field
 db.Sessions.find().forEach(function(doc) {
