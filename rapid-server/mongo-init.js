@@ -79,7 +79,7 @@ db.createCollection("Screenshots");
 
 db.createCollection("Snapshots");
 
-db.createCollection("Behvaiour_logs");
+db.createCollection("Behaviour_logs");
 
 //------------------- End of SE Collections -----------------//
 
