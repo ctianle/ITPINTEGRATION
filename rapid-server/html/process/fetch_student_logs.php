@@ -22,7 +22,7 @@ function getLogs()
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
     $query = new MongoDB\Driver\Query($filter, $options);
-    $rows = $manager->executeQuery("$dbName.machine_learning_data", $query);
+    $rows = $manager->executeQuery("$dbName.Behaviour_logs", $query);
 
     $hasData = false; // To check if we have any data
 

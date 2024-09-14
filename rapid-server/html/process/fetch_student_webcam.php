@@ -18,7 +18,6 @@ function getWebcam()
     $filter = [
         'StudentId' => (int) $student_id, // Assuming student_id is an integer
         'SessionId' => (int) $session_id, // Assuming session_id is an integer
-        'uuid' => 'Snapshots' // Assuming uuid is a string
     ];
     $query = new MongoDB\Driver\Query($filter, ['sort' => ['date_time' => -1]]);
     $cursor = $manager->executeQuery("$dbName.Snapshots", $query);

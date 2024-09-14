@@ -73,7 +73,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128241; Process</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Processes Detected</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
@@ -127,7 +127,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128221; Logs</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Logs Detected</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
