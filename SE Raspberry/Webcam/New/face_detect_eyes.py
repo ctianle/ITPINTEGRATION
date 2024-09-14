@@ -1,12 +1,12 @@
 import os
-
+'''
 def set_affinity(core_id):
     command = f"taskset -cp {core_id} {os.getpid()}"
     os.system(command)
 
 # Set the current process to run on core 0
 set_affinity(0)
-
+'''
 import time
 import cv2
 from mediapipe import solutions
@@ -15,15 +15,17 @@ import requests
 import json
 from multiprocessing import shared_memory
 
-#time.sleep(242) #wait face_recog to start
+#delete later
+#from picamera2 import Picamera2
+#import libcamera    
 
 def gaze_detect():
-    print("gaze start")
     calibration_url = "http://10.0.0.1/update_calibration"
-
+    resolution_url = "http://10.0.0.1/get_resolution"
     logs_url = "http://10.0.0.1/store_data"
 
     Position = 0
+    calculated = False
 
     relative = lambda landmark, shape: (int(landmark.x * shape[1]), int(landmark.y * shape[0]))
     relativeT = lambda landmark, shape: (int(landmark.x * shape[1]), int(landmark.y * shape[0]), 0)
@@ -32,16 +34,20 @@ def gaze_detect():
     mp_face_mesh = solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence=0.5, refine_landmarks=True, max_num_faces = 2)
 
-    mp_drawing = solutions.drawing_utils
-    drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
-    camera_vector = None
     start_time = 0
     timer_duration = 5
+    
+    reset_counter = 0
+    
+    x_corners = []
+    y_corners = []
+    
+    screen_width = 0
+    screen_height = 0
 
-    corners = []
 
     # Define the size of the shared memory block (RGB image size)
-    shm_size = 800 * 600 * 3
+    shm_size = 1640 * 1232 * 3
 
     # Open the existing shared memory block
     shm = shared_memory.SharedMemory(name='shm_camera')
@@ -51,12 +57,25 @@ def gaze_detect():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
+    #delete later
+    #picam2 = Picamera2()
+    #picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (1640, 1232)}, transform=libcamera.Transform(vflip=1)))
+
+    #picam2.start()
+    #time.sleep(2)
+    
+    #time.sleep(492) #wait for capture, gaze and face_recog to start
+
     try:
         while True:
-            image = np.ndarray(shape=(600, 800, 3), dtype=np.uint8, buffer=shm.buf)
+            image = np.ndarray(shape=(1232, 1640, 3), dtype=np.uint8, buffer=shm.buf)
+            
+            #delete later
+            #image = picam2.capture_array()
             
             #performance_start = time.time()
             if image is None:
+                print("image is none")
                 continue
             
             image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
@@ -67,7 +86,7 @@ def gaze_detect():
             if(start_time == 0):
                 start_time = time.time()
                 data = {"Status" : "Ready", "Position" : Position}
-                response = requests.post(calibration_url, json=data)
+                requests.post(calibration_url, json=data)
             elapsed_time = time.time() - start_time
 
             img_h, img_w, img_c = image.shape
@@ -75,14 +94,15 @@ def gaze_detect():
             if results.multi_face_landmarks:
                 if(len(results.multi_face_landmarks) > 1):
                     server_data = {"type": "Gaze", "content": "Multiple faces detected", "uuid": ""}
-                    response = requests.post(logs_url, json=server_data)
-                face_landmarks = results.multi_face_landmarks[0]
+                    requests.post(logs_url, json=server_data)
                 
                 if not first_captured:
                     first_image_filename = os.path.join(save_dir, f'first_image.png')
                     cv2.imwrite(first_image_filename, image)
                     first_captured = True
-
+                
+                face_landmarks = results.multi_face_landmarks[0]
+                 
                 image_points = np.array([
                     relative(face_landmarks.landmark[4], image.shape),  # Nose tip
                     relative(face_landmarks.landmark[152], image.shape),  # Chin
@@ -135,8 +155,8 @@ def gaze_detect():
                     left_pupil_world_cord = transformation @ np.array([[left_pupil[0], left_pupil[1], 0, 1]]).T
                     right_pupil_world_cord = transformation @ np.array([[right_pupil[0], right_pupil[1], 0, 1]]).T
                    
-                    S_L = Eye_ball_center_left + (left_pupil_world_cord - Eye_ball_center_left) * 10
-                    S_R = Eye_ball_center_right + (right_pupil_world_cord - Eye_ball_center_right) * 10
+                    S_L = Eye_ball_center_left + (left_pupil_world_cord - Eye_ball_center_left) * 25
+                    S_R = Eye_ball_center_right + (right_pupil_world_cord - Eye_ball_center_right) * 25
                     
                     left_eye_pupil2D, _ = cv2.projectPoints(S_L.T, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
                     right_eye_pupil2D, _ = cv2.projectPoints(S_R.T, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
@@ -147,100 +167,149 @@ def gaze_detect():
                     right_head_pose, _ = cv2.projectPoints((int(right_pupil_world_cord[0]), int(right_pupil_world_cord[1]), int(40)),
                                                     rotation_vector, translation_vector, camera_matrix, dist_coeffs)
 
-                    estimated_distance = int(S_L[2])
 
                     left_gaze = left_pupil + (left_eye_pupil2D[0][0] - left_pupil) - (left_head_pose[0][0] - left_pupil)
                     right_gaze = right_pupil + (right_eye_pupil2D[0][0] - right_pupil) - (right_head_pose[0][0] - right_pupil)
                     
                     mean_gaze = np.array([(left_gaze[0] + right_gaze[0]) * 0.5, (left_gaze[1] + right_gaze[1]) * 0.5])
                     
+                    #print(mean_gaze)
 
                     countdown = timer_duration - elapsed_time
-                    if(camera_vector is None and countdown <= 0):
-                        camera_vector = np.array([mean_gaze[0], mean_gaze[1]])
-                        Position += 1
-                        data = {"Status" : "Ready", "Position" : Position}
-                        response = requests.post(calibration_url, json=data)
-                        #print("set middle:")
-                        start_time = time.time()  # Reset start_time to current time
-                        countdown = timer_duration
-
-                    if(camera_vector is not None):
-                        gaze_vector = np.array([int(mean_gaze[0]) - int(left_pupil[0]), int(mean_gaze[1]) - int(left_pupil[1]), estimated_distance])
-                        correct_gaze = np.array([int(camera_vector[0]) - int(left_pupil[0]), int(camera_vector[1]) - int(left_pupil[1]), estimated_distance])
-
-                        vector1_normalized = gaze_vector / np.linalg.norm(gaze_vector)
-                        vector2_normalized = correct_gaze / np.linalg.norm(correct_gaze)
-                        # Compute the dot product
-                        dot_product = np.dot(vector1_normalized, vector2_normalized)
-                        # Calculate the angle in degrees
-                        angle = np.arccos(dot_product) * 180 / np.pi
-                           
-                        if(len(corners) < 4 and countdown <= 0):
-                            corners.append(angle)
+                    
+                    if(len(x_corners) < 4 and countdown <=0):
+                        if(len(x_corners) == 0):
+                                x_corners.append(mean_gaze[0])
+                                y_corners.append(mean_gaze[1])
+                                print("First Corner Added", mean_gaze)
+                                Position += 1
+                                data = {"Status" : "Ready", "Position" : Position}
+                                requests.post(calibration_url, json=data)
+                        elif(len(x_corners) == 1 and abs(mean_gaze[1] - y_corners[-1]) < 100):
+                            x_corners.append(mean_gaze[0])
+                            y_corners.append(mean_gaze[1])
+                            print("Second Corner Added", mean_gaze)
+                            requests.post(calibration_url, json=data)
                             Position += 1
                             data = {"Status" : "Ready", "Position" : Position}
-                            response = requests.post(calibration_url, json=data)
-                            #print("angle added:", angle)
-                            if(len(corners) == 4):
-                                angle_gap = max(corners) - min(corners)
-                                #print("difference", angle_gap)
-                                if(angle_gap > 15 or max(corners) < 10):
-                                    #reset
-                                    Position = 0
-                                    print("Recalibrate")
-                                    data = {"Status" : "Ready", "Position" : Position}
-                                    response = requests.post(calibration_url, json=data)
-                                    #print(response.text)
-                                    corners.clear() 
-                                    camera_vector = None
-                                else:
-                                    average_angle = sum(corners) / len(corners)
-                                    #print("average:", average_angle)
-                                    Position += 1
-                                    data = {"Status" : "Ready", "Position" : Position}
-                                    response = requests.post(calibration_url, json=data)
-                                    print(response.text)
-                            start_time = time.time()
-                            countdown = timer_duration
+                            requests.post(calibration_url, json=data)
+                        elif(len(x_corners) == 2 and abs(mean_gaze[0] - x_corners[-1]) < 100):
+                            x_corners.append(mean_gaze[0])
+                            y_corners.append(mean_gaze[1])
+                            print("Third Corner Added", mean_gaze)
+                            Position += 1
+                            data = {"Status" : "Ready", "Position" : Position}
+                            requests.post(calibration_url, json=data)
+                        elif(len(x_corners) == 3 and abs(mean_gaze[1] - y_corners[-1]) < 100): 
+                            if(abs(x_corners[0] - mean_gaze[0]) < 100):
+                                x_corners.append(mean_gaze[0])
+                                y_corners.append(mean_gaze[1])
+                                Position += 1
+                                data = {"Status" : "Ready", "Position" : Position}
+                                requests.post(calibration_url, json=data)
+                            else:
+                                print("Last point does not match first point", mean_gaze)
+                                reset_counter += 1
+                        else:
+                            print("Difference too much. Try again or reset", mean_gaze)
+                            reset_counter += 1
+                        
+                        if(reset_counter == 5):
+                            print("Recalibrate")
+                            reset_counter = 0
+                            x_corners.clear()
+                            y_corners.clear()
+                            Position = 0
+                            data = {"Status" : "Ready", "Position" : Position}
+                            requests.post(calibration_url, json=data)
+                            
+                        
+                        start_time = time.time()
+                        countdown = timer_duration
+                        
+                    elif (len(x_corners) == 4):
+                        if not calculated:
+                            #min_x = (x_corners[0] + x_corners[3]) * 0.5
+                            #max_x = (x_corners[1] + x_corners[2]) * 0.5
+                            
+                            #flipped corners due to vflip 
+                            min_x = (x_corners[1] + x_corners[2]) * 0.5
+                            max_x = (x_corners[0] + x_corners[3]) * 0.5
 
-                        elif(len(corners) ==  4):
-                            if(angle > average_angle):
-                                difference = angle - average_angle
-                                if(difference < 10):
-                                   server_data = {"type": "Gaze", "content": "User looking away from screen. Code : green", "uuid": ""}
-                                   response = requests.post(logs_url, json=server_data)
-                                   #print("green")
-                                elif(difference >= 10 and  difference < 20):
-                                    server_data = {"type": "Gaze", "content": "User looking away from screen. Code : yellow", "uuid": ""}
-                                    response = requests.post(logs_url, json=server_data)
-                                    #print("yellow")
-                                else:
-                                    server_data = {"type": "Gaze", "content": "User looking away from screen. Code : red", "uuid": ""}
-                                    response = requests.post(logs_url, json=server_data)
-                                    #print("red")
+                            min_y= (y_corners[0] + y_corners[1]) * 0.5
+                            max_y = (y_corners[2] + y_corners[3]) * 0.5
+                            
+                            center = np.array((min_x + max_x) * 0.5, (min_y + max_y) * 0.5) 
+                            
+                            print("min x:", min_x)
+                            print("max x:", max_x)
 
+                            print("min y:", min_y)
+                            print("max y:", max_y)
+                            
+                            p1 = (int(min_x), int(min_y))
+                            p2 = (int(max_x), int(min_y))
+                            p3 = (int(max_x), int(max_y))
+                            p4 = (int(min_x), int(max_y))
+                            
+                            cv2.line(image, p1, p2, (0, 0, 255), 2)
+                            cv2.line(image, p2, p3, (0, 0, 255), 2)
+                            cv2.line(image, p3, p4, (0, 0, 255), 2)
+                            cv2.line(image, p4, p1, (0, 0, 255), 2)
+                            calibrated_image_filename = os.path.join(save_dir, f'calibrated.png')
+                            cv2.imwrite(calibrated_image_filename, image)
+                            calculated = True
+                        
+                        if (screen_width== 0 and screen_height == 0):
+                            response = requests.get(resolution_url)
+                            if response.status_code == 200:
+                                data = response.json()
+                                screen_width = data.get("Width")
+                                screen_height = data.get("Height")
+                                #print(screen_width, screen_height)
 
-                        #p1 = (int(left_pupil[0]), int(left_pupil[1]))
-                        #p2 = (int(mean_gaze[0]), int(mean_gaze[1]))
+                        else:
+                            calibrated_x = screen_width - (((mean_gaze[0] - min_x) / (max_x - min_x)) * screen_width)
+                            calibrated_y = ((mean_gaze[1] - min_y) / (max_y - min_y)) * screen_height
 
-                        #cv2.line(image, p1, p2, (0, 255, 0), 2)
+                        if(mean_gaze[0] < min_x or mean_gaze[1] < min_y or mean_gaze[0] > max_x or mean_gaze[1] > max_y):    
+                            if(mean_gaze[0] < min_x or mean_gaze[1] < min_y):
+                                distance = max(abs(mean_gaze[0] - min_x), 
+                                                   abs(mean_gaze[1] - min_y))
+                                                   
+                            elif(mean_gaze[0] > max_x or mean_gaze[1] > max_y):
+                                distance = max(abs(mean_gaze[0] - max_x), 
+                                                  abs(mean_gaze[1] - max_y))
+        
+                            if(distance < 200):
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : green", "uuid": ""}
+                                requests.post(logs_url, json=server_data)
+                                #print("green")
+                            elif(distance < 300):
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : yellow", "uuid": ""}
+                                requests.post(logs_url, json=server_data)
+                                #print("yellow")
+                            else:
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : red", "uuid": ""}
+                                requests.post(logs_url, json=server_data)
+                                #print("red")
             
             else:
                 server_data = {"type": "Gaze", "content": "No faces detected", "uuid": ""}
-                response = requests.post(logs_url, json=server_data)
+                requests.post(logs_url, json=server_data)
                 #print("no faces detected")
-            
-            #cv2.imshow('Head Pose Estimation', image)
             
             #performance_end = time.time()
             #diff = performance_end - performance_start
             #print(diff)
             time.sleep(0.18)
             
-
+    
     except KeyboardInterrupt:
         pass
-            
+     
+    #picam2.stop()
     shm.close()
     cv2.destroyAllWindows()
+
+#gaze_detect()
