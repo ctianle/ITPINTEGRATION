@@ -81,8 +81,6 @@ db.createCollection("Snapshots");
 
 db.createCollection("Behaviour_logs");
 
-//------------------- End of SE Collections -----------------//
-
 // Create a new collection to store the sequence value
 db.createCollection("session_sequence");
 
@@ -103,6 +101,8 @@ db.Sessions.find().forEach(function(doc) {
 
 // Create an index on the SessionId field
 db.Sessions.createIndex({ SessionId: 1 })
+
+//------------------- End of SE Collections -----------------//
 
 // Create the intervals collection with validation
 db.createCollection("defaults", {
