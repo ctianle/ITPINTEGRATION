@@ -138,12 +138,6 @@ $fernet = new Fernet($fernetkey); //Fernet Key
 $data = ""; //Define Data Variable
 $trigger_count = $fernet->decode($array[1]);
 $trigger = $fernet->decode($array[2]);
-$category = $fernet->decode($array[3]);
-$data = $fernet->decode($array[4]);
-$UUID = $fernet->decode($array[6]);
-$JwT_Token = $fernet->decode($array[7]);
-Verify_Token($JwT_Token);
-//=============================================
 //             Logging Parameters
 //=============================================
 date_default_timezone_set('Asia/Singapore');
@@ -246,15 +240,17 @@ switch ($category) {
 //     Inserting Data into `proctoring` database for viewing/analysis
 //========================================================================
 $bulk = new MongoDB\Driver\BulkWrite;
-$bulk->insert([
-    'uuid' => $UUID,
-    'trigger_count' => $trigger_count,
-    'category' => $category,
-    'data' => $data,
-    'date_time' => $date_time
-]);
-$manager->executeBulkWrite("$dbName.proctoring", $bulk);
-echo "Proctoring Data inserted successfully.\n";
+if($data){
+    $bulk->insert([
+        'uuid' => $UUID,
+        'trigger_count' => $trigger_count,
+        'category' => $category,
+        'data' => $data,
+        'date_time' => $date_time
+    ]);
+    $manager->executeBulkWrite("$dbName.Processes", $bulk);
+    echo "Proctoring Data inserted successfully.\n";
+}
 
 //=============================================
 //             Close SQL Connection

@@ -219,15 +219,17 @@ switch ($category) {
 
 // Inserting Data into `proctoring` collection
 $bulk = new BulkWrite;
-$bulk->insert([
-    'uuid' => $UUID,
-    'trigger_count' => $trigger_count,
-    'category' => $category,
-    'data' => $data,
-    'date_time' => $date_time
-]);
-$manager->executeBulkWrite("$dbName.proctoring", $bulk);
-echo "Proctoring Data inserted successfully.\n";
+if($data){
+    $bulk->insert([
+        'uuid' => $UUID,
+        'trigger_count' => $trigger_count,
+        'category' => $category,
+        'data' => $data,
+        'date_time' => $date_time
+    ]);
+    $manager->executeBulkWrite("$dbName.Processes", $bulk);
+    echo "Proctoring Data inserted successfully.\n";
+}
 
 // Logging Parameters
 function logError($error) {
