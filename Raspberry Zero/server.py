@@ -144,6 +144,16 @@ def index():
                         return ('No Token', 404)
                     return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
 
+                if 'VM' in data:
+                    category = 'VM'
+                    # decoding data
+                    # decode the data from base64 and convert to readable text
+                    decoded = decodebase64(data[category])
+                    print("Returning VM")
+                    if JwT_token == None:
+                        return ('No Token', 404)
+                    return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
+
             else:
                 # return 404, not found if there is no public key and data is received
                 return('Public key not found', 404)
