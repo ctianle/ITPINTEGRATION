@@ -2,9 +2,8 @@
 <html>
 
 <head>
-
     <title>ITP24 Admin Panel</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
@@ -24,55 +23,57 @@
 
 <body>
 
-<?php include 'nav_bar.php'; ?>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left column: Navigation Bar -->
+        <div class="col-md-2 p-0 m-0">
+            <?php include 'nav_bar.php'; ?>
+        </div>
 
-<?php
-//=============================================
-//     MongoDB Connection & Credentials Setup
-//=============================================
-// Initialise DB Variables.
-$db_user = getenv('DB_ROOT_USERNAME');
-$db_password = getenv('DB_ROOT_PASSWORD');
-$dbName = getenv('DB_NAME');
+        <!-- Right column: Table content -->
+        <div class="col-md-9">
+            <?php
+            // MongoDB Connection & Query as before
+            $db_user = getenv('DB_ROOT_USERNAME');
+            $db_password = getenv('DB_ROOT_PASSWORD');
+            $dbName = getenv('DB_NAME');
 
-// MongoDB connection setup
-$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+            $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+            $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-//=============================================
-//   MongoDB Query and Data Display
-//=============================================
-$filter = [];
-$options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
+            $filter = [];
+            $options = ['sort' => ['date_time' => -1]];
 
-$query = new MongoDB\Driver\Query($filter, $options);
-$rows = $manager->executeQuery("$dbName.Processes", $query);
+            $query = new MongoDB\Driver\Query($filter, $options);
+            $rows = $manager->executeQuery("$dbName.Processes", $query);
+            ?>
 
-?>
-
-<div id="paddingDiv" style="padding: 2%;">
-    <table id="datatable" class="table table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>UUID</th>
-                <th>Trigger Count</th>
-                <th>Category</th>
-                <th>Data</th>
-                <th>Date & Time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($rows as $row) : ?>
-                <tr>
-                    <td><?= htmlspecialchars($row->uuid) ?></td>
-                    <td><?= htmlspecialchars($row->trigger_count) ?></td>
-                    <td><?= htmlspecialchars($row->category) ?></td>
-                    <td><?= htmlspecialchars($row->data) ?></td>
-                    <td><?= htmlspecialchars($row->date_time) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            <div id="paddingDiv" style="padding: 2%;">
+                <table id="datatable" class="table table-striped" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>UUID</th>
+                            <th>Trigger Count</th>
+                            <th>Category</th>
+                            <th>Data</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($rows as $row) : ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row->uuid) ?></td>
+                                <td><?= htmlspecialchars($row->trigger_count) ?></td>
+                                <td><?= htmlspecialchars($row->category) ?></td>
+                                <td><?= htmlspecialchars($row->data) ?></td>
+                                <td><?= htmlspecialchars($row->date_time) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>

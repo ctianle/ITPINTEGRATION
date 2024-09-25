@@ -5,7 +5,8 @@
     <meta charset="utf-16">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-<title>ITP24 Admin Panel (UUID List)</title>
+<title>ITP24 Admin Panel (Upload)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 
 </head>
 
@@ -70,22 +71,28 @@ body {
 
 <body>
 
-<?php include 'nav_bar.php'; ?>
-
-<style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
-	
-<div class="col-md-6 offset-md-3 mt-5">
-    <br>
-    <h1>Upload Proctoring Script</h1>
-    <form enctype="multipart/form-data" action="upload_process.php" method="post">
-    <div class="form-group">
-        <div>
-            <input class="form-control form-control-lg" id="fileToUpload" name="fileToUpload" type="file" required>
-        </div>
-        <hr>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</div> 
-    
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 p-0">
+                <!-- Navigation Bar (included) -->
+                <?php include 'nav_bar.php'; ?>
+            </div>
+            <div class="col-md-10">
+                <div class="container my-4">
+            <style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
+              
+            <div class="col-md-6 offset-md-3 mt-5">
+                <br>
+                <h1>Upload Proctoring Script</h1>
+                <form enctype="multipart/form-data" action="upload_process.php" method="post">
+                <div class="form-group">
+                    <div>
+                        <input class="form-control form-control-lg" id="fileToUpload" name="fileToUpload" type="file" required>
+                    </div>
+                    <hr>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div> 
+</div>
 </body>
 </html>
