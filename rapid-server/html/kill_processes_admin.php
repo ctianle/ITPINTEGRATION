@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
-
+    
 <head>
-    <title>ITP24 Admin Panel (Kill Process)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <title>ITP24 Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
@@ -21,46 +20,27 @@
 </head>
 
 <body>
-
-<div class="container-fluid">
-    <div class="row">
-        <!-- Left column: Navigation Bar -->
-        <div class="col-md-2 p-0 m-0">
-            <?php include 'nav_bar.php'; ?>
-        </div>
-
-        <!-- Right column: Process Management -->
-        <div class="col-md-9">
-            <div id="paddingDiv" style="padding: 2%;">
-                <h1>Proctoring Process Killer</h1>
-                <form action="save_processes.php" method="post">
-                    <div class="form-group">
-                        <label for="processes">Enter Process Numbers (comma-separated):</label>
-                        <textarea class="form-control" id="processes" name="processes" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-3">Save Processes</button>
-                </form>
-
-                <h2 class="mt-4">Common Processes</h2>
-                <ol>
-                    <li>notepad</li>
-                    <li>calculatorapp</li>
-                    <li>discord</li>
-                    <li>chrome</li>
-                    <li>firefox</li>
-                    <!-- Add more processes as needed -->
-                </ol>
+    <?php include 'nav_bar.php'; ?>
+    
+    <div id="paddingDiv" class="container mt-5">
+        <h1>Proctoring Process Killer</h1>
+        <form action="save_processes.php" method="post">
+            <div class="form-group">
+                <label for="processes">Enter Process Numbers (comma-separated):</label>
+                <textarea class="form-control" id="processes" name="processes" rows="5" required></textarea>
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary">Save Processes</button>
+        </form>
+        <h2>Common Processes</h2>
+        <ol>
+            <li>notepad</li>
+            <li>calculatorapp</li>
+            <li>discord</li>
+            <li>chrome</li>
+            <li>firefox</li>
+            <!-- Add more processes as needed -->
+        </ol>
     </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-        // Initialize any additional scripts if needed
-    });
-</script>
-
 </body>
 
 </html>

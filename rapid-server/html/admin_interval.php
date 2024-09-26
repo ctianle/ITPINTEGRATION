@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>ITP24 Admin Panel (intervals)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <title>ITP24 Admin Panel (Intervals)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
@@ -19,80 +17,81 @@
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
 </head>
-
 <body>
+<?php include 'nav_bar.php'; ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Left column: Navigation Bar -->
-        <div class="col-md-2 p-0 m-0">
-            <?php include 'nav_bar.php'; ?>
-        </div>
+<div id="paddingDiv" style="padding: 2%;">
+    <table id="datatable" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Active Windows Detection (AWD)</th>
+                <th>Active Monitor Detection (AMD)</th>
+                <th>Process List (PL)</th>
+                <th>Open Windows (OW)</th>
+                <th>Keystrokes (KS)</th>
+                <th>Admin Override</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
 
-        <!-- Right column: Table content -->
-        <div class="col-md-10">
-            <?php
-            // MongoDB Connection & Query
-            $db_user = getenv('DB_ROOT_USERNAME');
-            $db_password = getenv('DB_ROOT_PASSWORD');
-            $dbName = getenv('DB_NAME');
+        // Initialise DB Variables.
+        $db_user = getenv('DB_ROOT_USERNAME');
+        $db_password = getenv('DB_ROOT_PASSWORD');
+        $dbName = getenv('DB_NAME');
 
-            $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-            $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+        // MongoDB connection setup
+        $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+        $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-            $filter = [];
-            $options = ['sort' => ['date_time' => -1]];
+        // Query MongoDB
+        $query = new MongoDB\Driver\Query([]);
+        $rows = $manager->executeQuery("$dbName.intervals", $query);
 
-            $query = new MongoDB\Driver\Query($filter, $options);
-            $rows = $manager->executeQuery("$dbName.Processes", $query);
-            ?>
-
-            <div id="paddingDiv" style="padding: 2%;">
-                <table id="datatable" class="table table-striped" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>UUID</th>
-                            <th>Trigger Count</th>
-                            <th>Category</th>
-                            <th>Data</th>
-                            <th>Date & Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($rows as $row) : ?>
-                            <tr>
-                                <td><?= htmlspecialchars($row->uuid) ?></td>
-                                <td><?= htmlspecialchars($row->trigger_count) ?></td>
-                                <td><?= htmlspecialchars($row->category) ?></td>
-                                <td><?= htmlspecialchars($row->data) ?></td>
-                                <td><?= htmlspecialchars($row->date_time) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        foreach ($rows as $row) {
+            echo '<tr>';
+            echo '<td>' . htmlspecialchars($row->uuid) . '</td>';
+            echo '<td>' . htmlspecialchars($row->AWD) . '</td>';
+            echo '<td>' . htmlspecialchars($row->AMD) . '</td>';
+            echo '<td>' . htmlspecialchars($row->PL) . '</td>';
+            echo '<td>' . htmlspecialchars($row->OW) . '</td>';
+            echo '<td>' . htmlspecialchars($row->KS) . '</td>';
+            echo '<td>' . htmlspecialchars($row->admin_override) . '</td>';
+            echo '<td><form action="admin_interval_edit.php" method="POST">';
+            echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
+            echo '<input type="hidden" name="AWD" value="' . htmlspecialchars($row->AWD) . '">';
+            echo '<input type="hidden" name="AMD" value="' . htmlspecialchars($row->AMD) . '">';
+            echo '<input type="hidden" name="PL" value="' . htmlspecialchars($row->PL) . '">';
+            echo '<input type="hidden" name="OW" value="' . htmlspecialchars($row->OW) . '">';
+            echo '<input type="hidden" name="KS" value="' . htmlspecialchars($row->KS) . '">';
+            echo '<input type="hidden" name="admin_override" value="' . htmlspecialchars($row->admin_override) . '">';
+            echo '<button class="btn btn-primary" type="submit">Edit</button>';
+            echo '</form></td>';
+            echo '<td><form action="admin_interval_delete.php" method="POST">';
+            echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
+            echo '<button class="btn btn-danger" type="submit">Delete</button>';
+            echo '</form></td>';
+            echo '</tr>';
+        }
+        ?>
+        </tbody>
+    </table>
 </div>
 
 <script>
-    $(document).ready(function() {
-        var table = $('#datatable').DataTable({
-            lengthChange: false,
-            dom: 'Blfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-            "pageLength": 1000
-        });
-
-        table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+$(document).ready(function() {
+    var table = $('#datatable').DataTable({
+        lengthChange: false,
+        dom: 'Blfrtip',
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+        "pageLength": 1000
     });
+    table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+});
 </script>
 
 </body>
-
 </html>
-
-<?php
-// Close MongoDB connection
-$manager = null;
-?>

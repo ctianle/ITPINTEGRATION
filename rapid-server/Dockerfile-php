@@ -18,12 +18,15 @@ RUN apt-get update && apt-get install -y \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy custom Apache configuration
 COPY apache-php/config.conf /etc/apache2/conf-available/custom-config.conf
+
+# Adjust permissions for the Apache configuration file
+RUN chown root:root /etc/apache2/conf-available/custom-config.conf \
+    && chmod 644 /etc/apache2/conf-available/custom-config.conf
 
 # Enable the new configuration
 RUN a2enconf custom-config
@@ -37,25 +40,15 @@ WORKDIR /var/www/html
 # Copy the app directory to the container
 COPY ./html /var/www/html
 
+# Set ownership and permissions for /var/www/html
+RUN chown -R root:root /var/www/html \
+    && chmod -R 755 /var/www/html
+
 # Install Composer dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# Ensure the web server user can write to the vendor directory
-RUN chown -R www-data:www-data /var/www/html/vendor
-
-# Set permissions for the app directory
-RUN chown -R www-data:www-data /var/www/html
-
-# Create a directory for storing keys and set permissions
-RUN mkdir -p /var/www/keys \
-    && chown -R www-data:www-data /var/www/keys \
-    && chmod 700 /var/www/keys
 
 # Expose port 80
 EXPOSE 80
 
-# Switch to the www-data user
-USER www-data
-
-# Start Apache in the foreground
+# Start Apache in the foreground as root
 CMD ["apache2-foreground"]
