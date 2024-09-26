@@ -29,70 +29,60 @@
 
 <body>
 
-    <?php include 'nav_bar.php'; ?> <!-- Navbar stays untouched -->
+    <!-- Wrap everything in a container-fluid for full width -->
+    <div class="container-fluid d-flex p-0" style="height: 100vh;"> <!-- Flex layout to stretch sidebar -->
+        
+        <!-- Sidebar -->
+        <?php include 'component/sidebar.inc.php'; ?> 
 
-    <?php
-    //=============================================
-    //     MongoDB Connection & Credentials Setup
-    //=============================================
-    $db_user = getenv('DB_ROOT_USERNAME');
-    $db_password = getenv('DB_ROOT_PASSWORD');
-    $dbName = getenv('DB_NAME');
-
-    // MongoDB connection setup
-    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-    $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
-
-    // MongoDB Query and Data Display
-    $filter = [];
-    $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
-
-    $query = new MongoDB\Driver\Query($filter, $options);
-    $rows = $manager->executeQuery("$dbName.Processes", $query);
-    ?>
-
-    <main class="container-fluid my-4">
-        <div class="row">
-            <div class="col">
-                <div class="container content">
-                    <div class="card shadow-lg"> <!-- Added shadow for a sleek look -->
-                        <div class="card-body">
-                            <h5 class="card-title text-center">Processes Overview</h5>
-                            <div id="paddingDiv" class="table-responsive">
-                                <table id="datatable" class="table table-striped table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>UUID</th>
-                                            <th>Trigger Count</th>
-                                            <th>Category</th>
-                                            <th>Data</th>
-                                            <th>Date & Time</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($rows as $row) : ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($row->uuid) ?></td>
-                                                <td><?= htmlspecialchars($row->trigger_count) ?></td>
-                                                <td><?= htmlspecialchars($row->category) ?></td>
-                                                <td><?= htmlspecialchars($row->data) ?></td>
-                                                <td><?= htmlspecialchars($row->date_time) ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                                <nav>
-                                    <ul class="pagination justify-content-center">
-                                        <!-- Pagination can be handled by DataTables or manually if needed -->
-                                    </ul>
-                                </nav>
+        <!-- Main content, including the navbar -->
+        <div class="main-content flex-grow-1">
+            <?php include 'nav_bar.php'; ?> <!-- Navbar stays untouched -->
+            
+            <main class="container my-4">
+                <div class="row">
+                    <div class="col">
+                        <div class="container content">
+                            <div class="card shadow-lg"> <!-- Added shadow for a sleek look -->
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Processes Overview</h5>
+                                    <div id="paddingDiv" class="table-responsive">
+                                        <table id="datatable" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>UUID</th>
+                                                    <th>Trigger Count</th>
+                                                    <th>Category</th>
+                                                    <th>Data</th>
+                                                    <th>Date & Time</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($rows as $row) : ?>
+                                                    <tr>
+                                                        <td><?= htmlspecialchars($row->uuid) ?></td>
+                                                        <td><?= htmlspecialchars($row->trigger_count) ?></td>
+                                                        <td><?= htmlspecialchars($row->category) ?></td>
+                                                        <td><?= htmlspecialchars($row->data) ?></td>
+                                                        <td><?= htmlspecialchars($row->date_time) ?></td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                        <nav>
+                                            <ul class="pagination justify-content-center">
+                                                <!-- Pagination can be handled by DataTables or manually if needed -->
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
+            </main>
+        </div> <!-- End of Main Content -->
+    </div>
 
     <script>
         $(document).ready(function() {

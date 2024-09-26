@@ -26,79 +26,89 @@
 
 <body>
 
-<?php include 'nav_bar.php'; ?>
+    <!-- Full height container-fluid with flex for sidebar and main content -->
+    <div class="container-fluid d-flex p-0" style="height: 100vh;">
 
-<main class="container-fluid my-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="container content">
-                <div class="card shadow-lg p-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">UUID List</h5> <!-- Add a header for clarity -->
+        <!-- Sidebar -->
+        <?php include 'component/sidebar.inc.php'; ?> 
 
-                        <div class="table-responsive">
-                            <table id="datatable" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>UUID</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    // Initialise DB Variables.
-                                    $db_user = getenv('DB_ROOT_USERNAME');
-                                    $db_password = getenv('DB_ROOT_PASSWORD');
-                                    $dbName = getenv('DB_NAME');
+        <!-- Main content including the navbar -->
+        <div class="main-content flex-grow-1">
+            <?php include 'nav_bar.php'; ?> <!-- Include the navbar -->
 
-                                    // MongoDB connection setup
-                                    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-                                    $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+            <main class="container-fluid my-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="container content">
+                            <div class="card shadow-lg p-4">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">UUID List</h5> <!-- Add a header for clarity -->
 
-                                    // Query MongoDB for distinct UUIDs from proctoring collection
-                                    $command = new MongoDB\Driver\Command([
-                                        'distinct' => 'proctoring',
-                                        'key' => 'uuid',
-                                    ]);
-                                    $cursor = $manager->executeCommand("$dbName", $command);
-                                    $UUIDs = current($cursor->toArray())->values;
+                                    <div class="table-responsive">
+                                        <table id="datatable" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>UUID</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                // Initialise DB Variables.
+                                                $db_user = getenv('DB_ROOT_USERNAME');
+                                                $db_password = getenv('DB_ROOT_PASSWORD');
+                                                $dbName = getenv('DB_NAME');
 
-                                    foreach ($UUIDs as $UUID) {
-                                        echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($UUID) . '</td>';
-                                        echo '<td><form action="admin_uuidlist_delete.php" method="POST">';
-                                        echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($UUID) . '">';
-                                        echo '<button class="btn btn-danger" type="submit">Delete</button>';
-                                        echo '</form></td>';
-                                        echo '</tr>';
-                                    }
+                                                // MongoDB connection setup
+                                                $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+                                                $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-                                    // Close MongoDB Connection
-                                    $manager = null;
-                                    ?>
-                                </tbody>
-                            </table>
+                                                // Query MongoDB for distinct UUIDs from proctoring collection
+                                                $command = new MongoDB\Driver\Command([
+                                                    'distinct' => 'proctoring',
+                                                    'key' => 'uuid',
+                                                ]);
+                                                $cursor = $manager->executeCommand("$dbName", $command);
+                                                $UUIDs = current($cursor->toArray())->values;
+
+                                                foreach ($UUIDs as $UUID) {
+                                                    echo '<tr>';
+                                                    echo '<td>' . htmlspecialchars($UUID) . '</td>';
+                                                    echo '<td><form action="admin_uuidlist_delete.php" method="POST">';
+                                                    echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($UUID) . '">';
+                                                    echo '<button class="btn btn-danger" type="submit">Delete</button>';
+                                                    echo '</form></td>';
+                                                    echo '</tr>';
+                                                }
+
+                                                // Close MongoDB Connection
+                                                $manager = null;
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </main>
+        </div> <!-- End of Main Content -->
     </div>
-</main>
 
-<!-- DataTables Initialization Script -->
-<script>
-    $(document).ready(function() {
-        var table = $('#datatable').DataTable({
-            lengthChange: false,
-            dom: 'Blfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-            "pageLength": 1000
+    <!-- DataTables Initialization Script -->
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable({
+                lengthChange: false,
+                dom: 'Blfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+                "pageLength": 1000
+            });
+
+            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
         });
-
-        table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
-    });
-</script>
+    </script>
 
 </body>
 

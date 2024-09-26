@@ -29,97 +29,107 @@
 
 <body>
 
-<?php include 'nav_bar.php'; ?> <!-- Include the navbar -->
+    <!-- Full height container-fluid with flex for sidebar and main content -->
+    <div class="container-fluid d-flex p-0" style="height: 100vh;"> 
 
-<main class="container-fluid my-4">
-    <div class="row">
-        <div class="col">
-            <div class="container content">
-                <div class="card shadow-lg"> <!-- Added shadow for a sleek look -->
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Interval Configurations</h5> <!-- Add title similar to previous pages -->
-                        <div id="paddingDiv" class="table-responsive">
-                            <table id="datatable" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>UUID</th>
-                                        <th>AWD</th>
-                                        <th>AMD</th>
-                                        <th>PL</th>
-                                        <th>OW</th>
-                                        <th>KS</th>
-                                        <th>Admin Override</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    // Initialise DB Variables
-                                    $db_user = getenv('DB_ROOT_USERNAME');
-                                    $db_password = getenv('DB_ROOT_PASSWORD');
-                                    $dbName = getenv('DB_NAME');
+        <!-- Sidebar -->
+        <?php include 'component/sidebar.inc.php'; ?> 
 
-                                    // MongoDB connection setup
-                                    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-                                    $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+        <!-- Main content including the navbar -->
+        <div class="main-content flex-grow-1">
+            <?php include 'nav_bar.php'; ?> <!-- Include the navbar -->
 
-                                    // Query MongoDB
-                                    $query = new MongoDB\Driver\Query([]);
-                                    $rows = $manager->executeQuery("$dbName.intervals", $query);
+            <main class="container my-4">
+                <div class="row">
+                    <div class="col">
+                        <div class="container content">
+                            <div class="card shadow-lg"> <!-- Added shadow for a sleek look -->
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Interval Configurations</h5> <!-- Add title similar to previous pages -->
+                                    <div id="paddingDiv" class="table-responsive">
+                                        <table id="datatable" class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>UUID</th>
+                                                    <th>AWD</th>
+                                                    <th>AMD</th>
+                                                    <th>PL</th>
+                                                    <th>OW</th>
+                                                    <th>KS</th>
+                                                    <th>Admin Override</th>
+                                                    <th>Edit</th>
+                                                    <th>Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                // Initialise DB Variables
+                                                $db_user = getenv('DB_ROOT_USERNAME');
+                                                $db_password = getenv('DB_ROOT_PASSWORD');
+                                                $dbName = getenv('DB_NAME');
 
-                                    foreach ($rows as $row) {
-                                        echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($row->uuid) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->AWD) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->AMD) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->PL) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->OW) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->KS) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row->admin_override) . '</td>';
-                                        echo '<td><form action="admin_interval_edit.php" method="POST">';
-                                        echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
-                                        echo '<input type="hidden" name="AWD" value="' . htmlspecialchars($row->AWD) . '">';
-                                        echo '<input type="hidden" name="AMD" value="' . htmlspecialchars($row->AMD) . '">';
-                                        echo '<input type="hidden" name="PL" value="' . htmlspecialchars($row->PL) . '">';
-                                        echo '<input type="hidden" name="OW" value="' . htmlspecialchars($row->OW) . '">';
-                                        echo '<input type="hidden" name="KS" value="' . htmlspecialchars($row->KS) . '">';
-                                        echo '<input type="hidden" name="admin_override" value="' . htmlspecialchars($row->admin_override) . '">';
-                                        echo '<button class="btn btn-primary btn-sm" type="submit">Edit</button>';
-                                        echo '</form></td>';
-                                        echo '<td><form action="admin_interval_delete.php" method="POST">';
-                                        echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
-                                        echo '<button class="btn btn-danger btn-sm" type="submit">Delete</button>';
-                                        echo '</form></td>';
-                                        echo '</tr>';
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
-                            <nav>
-                                <ul class="pagination justify-content-center">
-                                    <!-- Add pagination here if necessary -->
-                                </ul>
-                            </nav>
+                                                // MongoDB connection setup
+                                                $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+                                                $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+
+                                                // Query MongoDB
+                                                $query = new MongoDB\Driver\Query([]);
+                                                $rows = $manager->executeQuery("$dbName.intervals", $query);
+
+                                                foreach ($rows as $row) {
+                                                    echo '<tr>';
+                                                    echo '<td>' . htmlspecialchars($row->uuid) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->AWD) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->AMD) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->PL) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->OW) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->KS) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($row->admin_override) . '</td>';
+                                                    echo '<td><form action="admin_interval_edit.php" method="POST">';
+                                                    echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
+                                                    echo '<input type="hidden" name="AWD" value="' . htmlspecialchars($row->AWD) . '">';
+                                                    echo '<input type="hidden" name="AMD" value="' . htmlspecialchars($row->AMD) . '">';
+                                                    echo '<input type="hidden" name="PL" value="' . htmlspecialchars($row->PL) . '">';
+                                                    echo '<input type="hidden" name="OW" value="' . htmlspecialchars($row->OW) . '">';
+                                                    echo '<input type="hidden" name="KS" value="' . htmlspecialchars($row->KS) . '">';
+                                                    echo '<input type="hidden" name="admin_override" value="' . htmlspecialchars($row->admin_override) . '">';
+                                                    echo '<button class="btn btn-primary btn-sm" type="submit">Edit</button>';
+                                                    echo '</form></td>';
+                                                    echo '<td><form action="admin_interval_delete.php" method="POST">';
+                                                    echo '<input type="hidden" name="uuid" value="' . htmlspecialchars($row->uuid) . '">';
+                                                    echo '<button class="btn btn-danger btn-sm" type="submit">Delete</button>';
+                                                    echo '</form></td>';
+                                                    echo '</tr>';
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
+                                        <nav>
+                                            <ul class="pagination justify-content-center">
+                                                <!-- Add pagination here if necessary -->
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </main>
+        </div> <!-- End of Main Content -->
     </div>
-</main>
 
-<script>
-    $(document).ready(function() {
-        var table = $('#datatable').DataTable({
-            lengthChange: false,
-            dom: 'Blfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-            "pageLength": 1000
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable({
+                lengthChange: false,
+                dom: 'Blfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+                "pageLength": 1000
+            });
+            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
         });
-        table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
-    });
-</script>
+    </script>
 
 </body>
 
