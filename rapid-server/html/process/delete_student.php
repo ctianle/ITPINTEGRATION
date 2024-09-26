@@ -18,16 +18,9 @@ try {
     // Create a new MongoDB Manager instance
     $manager = new Manager($mongoConnectionString);
 
-    // Get the SessionId from the request body
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Get the SessionId and StudentId from the request
     $studentId = isset($_GET['id']) ? (int)$_GET['id'] : null;
-
-    
-    if (!$studentId) {
-        http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'StudentId is required']);
-        exit;
-    }
+    $sessionId = isset($_GET['sessionId']) ? (int)$_GET['sessionId'] : null; // Ensure sessionId is also an integer
 
     // Specify the database and collection
     $collectionName = 'Students';
@@ -36,7 +29,10 @@ try {
     $bulkWrite = new BulkWrite();
 
     // Prepare the filter to match the document to delete
-    $filter = ['StudentId' => $studentId];
+    $filter = [
+        'StudentId' => $studentId,
+        'SessionId' => $sessionId // Adjusted to include sessionId
+    ];
 
     // Delete the document from the collection
     $bulkWrite->delete($filter, ['limit' => 1]); // Limit to delete only one document
