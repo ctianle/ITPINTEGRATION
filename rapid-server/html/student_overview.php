@@ -43,11 +43,16 @@
                                                 <?php
                                                 require_once 'process/fetch_student_screenshot.php';
 
-                                                $hasScreenshot = getScreenshot();
-                                                if ($hasScreenshot) {
-                                                    echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128187; Screenshots</h5></div>'; // Icon for Screen
-                                                    echo '</div>';
+                                                $ScreenshotData = getScreenshot();
+                                               
+                                                ?>
+                                            </div>
+                                            <!-- Somewhere else in your HTML where you want to display the pagination -->
+                                            <div class="pagination-container">
+                                                <?php
+                                                // Echo the pagination wherever you want it to appear
+                                                if (!empty($ScreenshotData['screenshotPaginationHTML'])) {
+                                                    echo $ScreenshotData['screenshotPaginationHTML'];
                                                 }
                                                 ?>
                                             </div>
@@ -73,7 +78,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Processes Detected</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128241; Process</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
@@ -95,13 +100,17 @@
                                             ?>
                                             <div class="d-flex align-items-center pic-container">
                                                 <?php
+                                                 // Get the webcam content and pagination
                                                 require_once 'process/fetch_student_webcam.php';
-
-                                                $hasWebcam = getWebcam();
-                                                if ($hasWebcam) {
-                                                    echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128247; Webcam</h5></div>'; // Icon for Screen
-                                                    echo '</div>';
+                                                $webcamData = getWebcam();
+                                                ?>
+                                            </div>
+                                            <!-- Somewhere else in your HTML where you want to display the pagination -->
+                                            <div class="pagination-container">
+                                                <?php
+                                                // Echo the pagination wherever you want it to appear
+                                                if (!empty($webcamData['snapshotPaginationHTML'])) {
+                                                    echo $webcamData['snapshotPaginationHTML'];
                                                 }
                                                 ?>
                                             </div>
@@ -127,7 +136,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Logs Detected</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128221; Logs</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
