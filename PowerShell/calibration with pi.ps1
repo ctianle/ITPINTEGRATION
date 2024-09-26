@@ -1,7 +1,9 @@
 Add-Type -AssemblyName PresentationFramework
 
 # Endpoint to send the public key
-$url = "http://192.168.18.5/get_calibration"  # Change to 10.0.0.1 later
+$calibration_url = "http://10.0.0.1/get_calibration" 
+$resolution_url = "http://10.0.0.1/update_resolution"
+
 
 $Position = -1
 $PiReady = $false
@@ -40,29 +42,25 @@ function Move-Circle {
 
     switch ($position) {
         0 {
-            $newX = $width / 2 - $radius
-            $newY = $height / 2 - $radius
+            $newX = 0
+            $newY = 0
         }
         1 {
-            $newX = 0
+            $newX = $width - 2 * $radius
             $newY = 0
         }
         2 {
             $newX = $width - 2 * $radius
-            $newY = 0
-        }
-        3 {
-            $newX = $width - 2 * $radius
             $newY = $height - 2 * $radius
         }
-        4 {
+        3 {
             $newX = 0
             $newY = $height - 2 * $radius
         }
-        5 {
+        4 {
             return
         }
-        6 {
+        5 {
             $window.Dispatcher.Invoke({ $window.Close() })
             return
         }
@@ -80,17 +78,17 @@ function Move-Circle {
 function Main {
     while (-not $PiReady) {
         try {
-            $response = Invoke-RestMethod -Uri $url -Method Get
+            $response = Invoke-RestMethod -Uri $calibration_url -Method Get
             if ($response.Status -ne $null) {
                 $PiReady = $response.Status
-                Write-Output $response
+                #Write-Output $response
             }
         } catch {
             Write-Output "Error fetching status: $_"
         }
         Start-Sleep -Seconds 1
     }
-
+	
     $window = New-Window
     $canvas = $window.FindName("canvas")
     $circle = $window.FindName("circle")
@@ -107,19 +105,36 @@ function Main {
         [System.Windows.Controls.Canvas]::SetLeft($textBlock, ($width / 2) - ($textWidth / 2))
         [System.Windows.Controls.Canvas]::SetTop($textBlock, 10)  # Set a small value for top margin
     })
+	
+	$payload = @{
+    "Width"  = $width
+    "Height" = $height
+	
+	}
+	# Convert payload to JSON
+	$jsonPayload = $payload | ConvertTo-Json
+
+	# Send the resolution data to the endpoint using POST
+	try {
+		$response = Invoke-RestMethod -Uri $resolution_url -Method Post -Body $jsonPayload -ContentType "application/json"
+		Write-Output "Server Response: $($response | ConvertTo-Json)"
+	} catch {
+		Write-Output "Error sending resolution: $_"
+	}
+	
 
     # Show the window
     $window.Show()
 
-    while ($Position -lt 6) {
+    while ($Position -lt 4) {
         try {
-            $response = Invoke-RestMethod -Uri $url -Method Get
+            $response = Invoke-RestMethod -Uri $calibration_url -Method Get
             Write-Output $response
             if ($response.Position -ne $null) {
                 Write-Output $response
                 if ($Position -ne $response.Position) {
                     $Position = $response.Position
-                    Write-Output "position changed"
+                    Write-Output "position changed $Position"
                     Move-Circle -canvas $canvas -circle $circle -width $width -height $height -radius $radius -position $Position
                     $canvas.Dispatcher.Invoke([System.Windows.Threading.DispatcherPriority]::Render, [Action]{})
                 }
