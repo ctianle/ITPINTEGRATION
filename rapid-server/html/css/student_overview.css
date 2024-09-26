@@ -50,7 +50,7 @@ body {
   align-items: center; /* Center content horizontally */
   text-align: center;
   width: 100%; /* Adjust the width to fit the smaller card */
-  height: 400px; /* Adjust the height to fit the smaller card */
+  height: 100%; /* Adjust the height to fit the smaller card */
   margin-right: 30px; /* Shift the cards to the right */
 }
 
@@ -211,4 +211,23 @@ body {
 /* Apply background color to odd rows */
 .table tbody tr:nth-child(odd) {
   background-color: #ffffff; /* White background */
+}
+
+/* Styling for the pagination section */
+.pagination {
+  text-align: center;
+}
+
+.pagination a {
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  margin: 5px;
+  display: inline-block;
+}
+
+.pagination a:hover {
+  background-color: #0056b3;
 }

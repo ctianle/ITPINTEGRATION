@@ -10,19 +10,26 @@ function getWebcam()
     $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-    // Get URL parameters
+    // Get URL parameters for pagination
     $student_id = $_GET['student_id'];
     $session_id = $_GET['session_id'];
+    $limit = 10; // Number of images per page
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
+    $offset = ($page - 1) * $limit; // Offset for the query
 
-    // Query MongoDB for webcam snapshots filtered by student_id, session_id, and uuid
+    // Query MongoDB for webcam snapshots
     $filter = [
-        'StudentId' => (int) $student_id, // Assuming student_id is an integer
-        'SessionId' => (int) $session_id, // Assuming session_id is an integer
+        //'StudentId' => (int) $student_id, // Uncomment and use as needed
+        //'SessionId' => (int) $session_id, // Uncomment and use as needed
     ];
-    $query = new MongoDB\Driver\Query($filter, ['sort' => ['date_time' => -1]]);
+    $query = new MongoDB\Driver\Query($filter, [
+        'sort' => ['timestamp' => -1],
+        'limit' => $limit,
+        'skip' => $offset,
+    ]);
     $cursor = $manager->executeQuery("$dbName.Snapshots", $query);
 
-    // Fetch all results into an array
+    // Fetch results into an array
     $rows = [];
     foreach ($cursor as $document) {
         $rows[] = $document;
@@ -33,33 +40,34 @@ function getWebcam()
     $carouselIndicators = '';
     $activeClass = 'active';
     $slideIndex = 0;
-
+    $paginationHTML = '';
+    
     // Iterate through fetched results to generate carousel items
     foreach ($rows as $row) {
-        $imageData = $row->data; // Assuming 'data' contains the base64 image data
-        $dateTimeUTC = $row->date_time->toDateTime()->setTimezone(new DateTimeZone('UTC'));
-        $dateTimeGMT8 = $dateTimeUTC->setTimezone(new DateTimeZone('Asia/Singapore')); // Adjust timezone as per your GMT+8 location
+        $imageData = $row->content;
+        $dateTimeUTC = $row->timestamp->toDateTime()->setTimezone(new DateTimeZone('UTC'));
+        $dateTimeGMT8 = $dateTimeUTC->setTimezone(new DateTimeZone('Asia/Singapore'));
         $formattedDateTime = $dateTimeGMT8->format('Y-m-d H:i:s');
-    
+
         // Generate carousel item HTML
         $carouselItems .= '<div class="carousel-item ' . $activeClass . '">';
-        $carouselItems .= '<img src="data:image/png;base64,' . $imageData . '" class="d-block w-100 carousel-img" alt="Screenshot" data-bs-toggle="modal" data-bs-target="#modalScreenshot' . $slideIndex . '">';
+        $carouselItems .= '<img src="data:image/png;base64,' . $imageData . '" class="d-block w-100 carousel-img" alt="Screenshot" data-bs-toggle="modal" data-bs-target="#modalWebcam' . $slideIndex . '">';
         $carouselItems .= '<div class="carousel-caption d-none d-md-block">';
         $carouselItems .= '<div class="caption-text-container">'; // Container for text and shadow
         $carouselItems .= '<h5>Screenshot ' . ($slideIndex + 1) . '</h5>';
-        $carouselItems .= '<p>Captured at: ' . $formattedDateTime . ' GMT+8</p>'; // Display formatted date_time
-        $carouselItems .= '</div>'; // End caption-text-container
-        $carouselItems .= '</div>'; // End carousel-caption
-        $carouselItems .= '</div>'; // End carousel-item
-    
+        $carouselItems .= '<p>Captured at: ' . $formattedDateTime . ' GMT+8</p>';
+        $carouselItems .= '</div>';
+        $carouselItems .= '</div>';
+        $carouselItems .= '</div>';
+
         // Generate indicator HTML
-        $carouselIndicators .= '<button type="button" data-bs-target="#ScreenshotCaptions"';
-        $carouselIndicators .= ' data-bs-slide-to="' . $slideIndex . '" class="' . $activeClass . '" aria-label="Slide ' . ($slideIndex + 1) . '"></button>';
-    
+        $carouselIndicators .= '<button type="button" data-bs-target="#carouselWebcamCaptions" data-bs-slide-to="' . $slideIndex . '" class="' . $activeClass . '" aria-label="Slide ' . ($slideIndex + 1) . '"></button>';
+
         // Clear active class after the first item
         $activeClass = '';
         $slideIndex++;
     }
+
     if ($carouselItems != null) {
         // Output the complete carousel structure
         echo '<div id="carouselWebcamCaptions" class="carousel slide" data-bs-ride="carousel">';
@@ -77,31 +85,54 @@ function getWebcam()
         echo '<span class="carousel-control-next-icon" aria-hidden="true"></span>';
         echo '<span class="visually-hidden">Next</span>';
         echo '</button>';
-        echo '</div>';
-
+        echo '</div>'; // Close carousel div
+    
         // Modals for enlarged images
         $slideIndex = 0; // Reset slide index for modal IDs
         foreach ($rows as $row) {
-            $imageData = $row->data;
-            $dateTime = $row->date_time->toDateTime()->format('Y-m-d H:i:s'); // Format date_time field
-
+            $imageData = $row->content;
+            $dateTime = $row->timestamp->toDateTime()->format('Y-m-d H:i:s');
+    
             echo '<div class="modal fade" id="modalWebcam' . $slideIndex . '" tabindex="-1" aria-labelledby="modalWebcamLabel' . $slideIndex . '" aria-hidden="true">';
-            echo '<div class="modal-dialog modal-dialog-centered modal-lg">'; // Use modal-lg class for larger modal
+            echo '<div class="modal-dialog modal-dialog-centered modal-lg">';
             echo '<div class="modal-content">';
             echo '<div class="modal-header">';
             echo '<h5 class="modal-title" id="modalWebcamLabel' . $slideIndex . '">Webcam Snapshot ' . ($slideIndex + 1) . '</h5>';
             echo '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>';
             echo '</div>';
             echo '<div class="modal-body">';
-            echo '<img src="data:image/png;base64,' . $imageData . '" class="img-fluid" alt="Webcam Snapshot" style="max-width: 100%; max-height: 80vh;">'; // Adjust max-height for the image
-            echo '<h2>Captured at: ' . $dateTime . '</h2>'; // Display formatted date_time
+            echo '<img src="data:image/png;base64,' . $imageData . '" class="img-fluid" alt="Webcam Snapshot" style="max-width: 100%; max-height: 80vh;">';
+            echo '<h2>Captured at: ' . $dateTime . '</h2>';
             echo '</div>';
             echo '</div>';
             echo '</div>';
             echo '</div>';
-
+    
             $slideIndex++;
         }
+    
+        $pageSnapshots = isset($_GET['page_snapshots']) ? (int)$_GET['page_snapshots'] : 1; // Current page for snapshots
+        $offsetSnapshots = ($pageSnapshots - 1) * $limit; // Offset for snapshots query
+        // Pagination for Snapshots (store HTML separately)
+        $totalCountQuerySnapshots = new MongoDB\Driver\Query($filter);
+        $totalCountCursorSnapshots = $manager->executeQuery("$dbName.Snapshots", $totalCountQuerySnapshots);
+        $totalCountSnapshots = count(iterator_to_array($totalCountCursorSnapshots));
+        $totalPagesSnapshots = ceil($totalCountSnapshots / $limit);
+
+        $snapshotPaginationHTML = '<div class="pagination" style="margin-top: 20px;">';
+        if ($pageSnapshots > 1) {
+            $snapshotPaginationHTML .= '<a href="?student_id=' . $student_id . '&session_id=' . $session_id . '&page_snapshots=' . ($pageSnapshots - 1) . '">Previous</a>';
+        }
+        if ($pageSnapshots < $totalPagesSnapshots) {
+            $snapshotPaginationHTML .= '<a href="?student_id=' . $student_id . '&session_id=' . $session_id . '&page_snapshots=' . ($pageSnapshots + 1) . '">Next</a>';
+        }
+        $snapshotPaginationHTML .= '</div>';
+
+        // Return the snapshots pagination separately
+        return [
+            'snapshotPaginationHTML' => $snapshotPaginationHTML
+        ];
     }
+    
 }
 ?>
