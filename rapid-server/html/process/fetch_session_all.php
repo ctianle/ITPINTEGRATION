@@ -24,7 +24,9 @@ try {
 
         // Retrieve data from MongoDB with filter
         $filter = ['MainInvigilatorId' => $_SESSION['UserId']];
-        $options = [];
+        $options = [
+            'sort' => ['CreatedAt' => -1] // -1 for descending order
+        ];
         $query = new Query($filter, $options);
         $cursor = $manager->executeQuery("$dbName.$collectionName", $query);
 

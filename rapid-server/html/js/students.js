@@ -1,93 +1,179 @@
 let students = [];
-let currentEditIndex = -1;
+let sessions = [];
+let currentPages = {}; // Object to hold current page for each session
+const rowsPerPage = 5;
+const sessionsPerPage = 4; // Max 4 cards per page for sessions
+let currentSessionPage = 1; // Track current page for sessions
 
 function fetchData() {
     fetch('../process/fetch_student.php')
         .then(response => response.json())
         .then(data => {
-            students = data.map(item => {
-                const student = {
-                    _id: item._id,
-                    student_id: item.student_id,
-                    name: item.name,
-                    email: item.email,
-                    session_id: item.session_id
-                };
-                return student;
-            });
-
-            displayTableData(currentPage);
-            setupPagination();
+            students = data.map(item => ({
+                _id: item._id,
+                student_id: item.student_id,
+                name: item.name,
+                email: item.email,
+                session_id: item.session_id
+            }));
+            fetchSessions();
         })
         .catch(error => console.error('Error fetching data:', error));
 }
 
-// Fetch sessions from MongoDB and populate the dropdown
 function fetchSessions() {
     fetch('../process/fetch_session_all.php')
         .then(response => response.json())
         .then(responseData => {
-            const sessionDropdown = document.getElementById('sessionDropdown');
-            sessionDropdown.innerHTML = ''; // Clear existing options
-
-            responseData.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.SessionId;
-                option.text = item.SessionId +" : " + item.SessionName;
-                sessionDropdown.appendChild(option);
-            });
+            sessions = responseData;
+            displaySessionTables();
         })
         .catch(error => console.error('Error fetching sessions:', error));
 }
 
-const rowsPerPage = 10;
-let currentPage = 1;
+function displaySessionTables() {
+    const tablesContainer = document.getElementById('tables-container');
+    tablesContainer.innerHTML = ''; // Clear existing tables
 
-function displayTableData(page) {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const paginatedData = students.slice(start, end);
+    // Calculate the number of total pages for sessions
+    const totalSessionPages = Math.ceil(sessions.length / sessionsPerPage);
+    
+    // Calculate the sessions to display on the current page
+    const startSessionIndex = (currentSessionPage - 1) * sessionsPerPage;
+    const endSessionIndex = startSessionIndex + sessionsPerPage;
+    const displayedSessions = sessions.slice(startSessionIndex, endSessionIndex);
 
-    const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = '';
-    paginatedData.forEach((row, index) => {
-        tableBody.innerHTML += `
+    displayedSessions.forEach(session => {
+        const sessionStudents = students.filter(student => student.session_id === session.SessionId);
+        const totalPages = Math.ceil(sessionStudents.length / rowsPerPage);
+        
+        console.log(`Session: ${session.SessionId}, Total Students: ${sessionStudents.length}, Total Pages: ${totalPages}`);
+
+        if (!currentPages[session.SessionId]) {
+            currentPages[session.SessionId] = 1; 
+        }
+
+        const tableHtml = `
+        <div class="col-md-6 mb-3">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Student List for ${session.SessionName}</h5>
+                   <form id="uploadForm_${session.SessionId}" class="mb-3" enctype="multipart/form-data" onsubmit="uploadCSV(event, '${session.SessionId}')">
+                        <input type="file" name="file" accept=".csv" required class="mb-3">
+                        <button type="submit" class="btn btn-info">Upload Student List (.CSV)</button>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table students">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Student ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Session ID</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-${session.SessionId}">
+                                ${renderTableRows(sessionStudents, currentPages[session.SessionId])}
+                            </tbody>
+                        </table>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination" id="pagination-${session.SessionId}"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+
+        tablesContainer.innerHTML += tableHtml;
+
+        // Set up pagination for this session
+        setupPagination(totalPages, session.SessionId);
+    });
+
+    // Setup pagination for the session cards
+    setupSessionPagination(totalSessionPages);
+}
+
+function setupSessionPagination(totalSessionPages) {
+    const sessionPagination = document.getElementById('session-pagination');
+    sessionPagination.innerHTML = '';
+
+    for (let i = 1; i <= totalSessionPages; i++) {
+        sessionPagination.innerHTML += `
+        <li class="page-item ${i === currentSessionPage ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changeSessionPage(${i})">${i}</a>
+        </li>
+        `;
+    }
+}
+
+function changeSessionPage(page) {
+    const totalSessionPages = Math.ceil(sessions.length / sessionsPerPage);
+    
+    if (page < 1 || page > totalSessionPages) {
+        console.warn('Invalid session page number:', page);
+        return;
+    }
+
+    currentSessionPage = page; // Update current page for sessions
+    displaySessionTables(); // Refresh session tables
+}
+
+
+function renderTableRows(sessionStudents, currentPage) {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    // Check if the start index is within bounds
+    if (startIndex >= sessionStudents.length) {
+        return '<tr><td colspan="5" class="text-center">No more records available.</td></tr>';
+    }
+
+    return sessionStudents.slice(startIndex, endIndex).map(row => `
         <tr>
             <th scope="row">${row.student_id}</th>
             <td class="name">${row.name}</td>
             <td>${row.email}</td>
             <td>${row.session_id}</td>
-             <td>
-            <div class="action d-flex flex-column flex-md-row align-items-center">
-                <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editStudent(${start + index})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteDocument('${row.student_id}')">Delete</button>
-            </div>
+            <td>
+                <div class="action d-flex flex-column flex-md-row align-items-center">
+                    <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editStudent(${students.indexOf(row)})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteDocument('${row.student_id}', '${row.session_id}')">Delete</button>
+                </div>
             </td>
         </tr>
-        `;
-    });
+    `).join('');
 }
 
-function setupPagination() {
-    const totalPages = Math.ceil(students.length / rowsPerPage);
-    const pagination = document.getElementById('pagination');
-    pagination.innerHTML = '';
+function uploadCSV(event, sessionId) {
+    event.preventDefault();
+    
+    const form = document.getElementById(`uploadForm_${sessionId}`);
+    const formData = new FormData(form);
+    
+    // Add sessionId to formData
+    formData.append('sessionId', sessionId);
 
-    for (let i = 1; i <= totalPages; i++) {
-        pagination.innerHTML += `
-        <li class="page-item ${i === currentPage ? 'active' : ''}">
-            <a class="page-link" href="#">${i}</a>
-        </li>
-        `;
-    }
-
-    document.querySelectorAll('.page-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            currentPage = parseInt(e.target.textContent);
-            displayTableData(currentPage);
-            setupPagination();
+    fetch(`../process/insert_student.php?sessionId=${sessionId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        return response.text().then(text => {
+            if (!response.ok) {
+                throw new Error(text); // Throw an error with the response text
+            }
+            return JSON.parse(text); // Try to parse the text as JSON
         });
+    })
+    .then(data => {
+        alert('Upload successful!');
+        fetchData(); // Refresh the data after upload
+    })
+    .catch(error => {
+        console.error('Error uploading CSV:', error);
     });
 }
 
@@ -119,11 +205,49 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
     window.location.href = url;
 });
 
-function deleteDocument(documentId) {
-    const studentId = documentId;
-    window.location.href = `../process/delete_student.php?id=${studentId}`;
+function setupPagination(totalPages, sessionId) {
+    const pagination = document.getElementById(`pagination-${sessionId}`);
+    pagination.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+        <li class="page-item ${i === currentPages[sessionId] ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${i}, '${sessionId}')">${i}</a>
+        </li>
+        `;
+    }
 }
 
-// Initialize functions
+function changePage(page, sessionId) {
+    // Ensure sessionId is the correct type
+    const sessionIdNum = Number(sessionId); // Ensure this is treated as a number
+
+    // Filter students by session ID
+    const sessionStudents = students.filter(student => student.session_id === sessionIdNum);
+    const totalStudents = sessionStudents.length;
+    const totalPages = Math.ceil(totalStudents / rowsPerPage);
+
+    // Validate the page number
+    if (page < 1 || page > totalPages) {
+        console.warn('Invalid page number:', page);
+        return; // Ignore invalid page requests
+    }
+
+    // Set the current page
+    currentPages[sessionId] = page; // Update current page for the session
+
+    // Render the table rows for the current page
+    document.getElementById(`table-body-${sessionId}`).innerHTML = renderTableRows(sessionStudents, currentPages[sessionId]);
+    
+    // Update pagination UI
+    setupPagination(totalPages, sessionId);
+}
+
+function deleteDocument(documentId, sessionId) {
+    const studentId = documentId;
+    window.location.href = `../process/delete_student.php?id=${studentId}&sessionId=${sessionId}`;
+}
+
+
+// Call fetchData on page load
 fetchData();
-fetchSessions();
