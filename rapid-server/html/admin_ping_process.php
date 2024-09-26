@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITP24 Admin Panel (Ping)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 </head>
 <body>
-    
+    <?php include 'nav_bar.php'; ?>
 
     <div style="padding: 2%;">
         <table id="datatable" class="table table-striped" style="width:100%">

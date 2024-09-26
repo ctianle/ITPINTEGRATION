@@ -1,66 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>ITP24 Admin Panel (Kill Process)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title>ITP24 Admin Panel (Process Killer)</title>
+    
+    <!-- Include Bootstrap and custom CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
+    <link rel="stylesheet" href="css/admin.css"> <!-- Use your custom CSS -->
 </head>
 
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Left column: Navigation Bar -->
-        <div class="col-md-2 p-0 m-0">
-            <?php include 'nav_bar.php'; ?>
-        </div>
+<?php include 'nav_bar.php'; ?>
 
-        <!-- Right column: Process Management -->
-        <div class="col-md-9">
-            <div id="paddingDiv" style="padding: 2%;">
-                <h1>Proctoring Process Killer</h1>
-                <form action="save_processes.php" method="post">
-                    <div class="form-group">
-                        <label for="processes">Enter Process Numbers (comma-separated):</label>
-                        <textarea class="form-control" id="processes" name="processes" rows="5" required></textarea>
+<main class="container-fluid my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="container content">
+                <div class="card shadow-lg p-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Proctoring Process Killer</h5> <!-- Page title -->
+
+                        <!-- Form for killing processes -->
+                        <form action="save_processes.php" method="post" class="mb-4">
+                            <div class="form-group mb-3">
+                                <label for="processes" class="form-label">Enter Process Numbers (comma-separated):</label>
+                                <textarea class="form-control" id="processes" name="processes" rows="4" required></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-danger btn-lg">Save Processes</button>
+                            </div>
+                        </form>
+
+                        <!-- Common Processes List -->
+                        <h6>Common Processes</h6>
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item">notepad</li>
+                            <li class="list-group-item">calculatorapp</li>
+                            <li class="list-group-item">discord</li>
+                            <li class="list-group-item">chrome</li>
+                            <li class="list-group-item">firefox</li>
+                            <!-- Add more processes as needed -->
+                        </ul>
+
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Save Processes</button>
-                </form>
-
-                <h2 class="mt-4">Common Processes</h2>
-                <ol>
-                    <li>notepad</li>
-                    <li>calculatorapp</li>
-                    <li>discord</li>
-                    <li>chrome</li>
-                    <li>firefox</li>
-                    <!-- Add more processes as needed -->
-                </ol>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-        // Initialize any additional scripts if needed
-    });
-</script>
+</main>
 
 </body>
-
 </html>

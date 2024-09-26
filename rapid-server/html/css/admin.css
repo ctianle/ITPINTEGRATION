@@ -1,0 +1,93 @@
+/* Ensure the container takes up most of the screen with proper padding */
+.container.content {
+    padding: 2%; /* Add padding around the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Style the card to have margins, shadow, and padding */
+.card {
+    width: 100%; /* Make the card full width */
+    max-width: 95%; /* Limit the max width */
+    margin: 20px auto;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5; /* Light background color */
+}
+
+/* Card Title with a bolder, more colorful design */
+.card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #403DBA; /* Similar color to your existing scheme */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Table styling with hover effect */
+.table {
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Hover effect for rows */
+.table-hover tbody tr:hover {
+    background-color: #E5E5FF; /* Light blue hover color */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .table th, .table td {
+        font-size: 0.9rem;
+    }
+    
+    .card {
+        padding: 10px;
+    }
+}
+
+/* Add some dynamic colors to table data based on type */
+.table-striped .high {
+    background-color: red;
+    color: white;
+}
+
+.table-striped .med {
+    background-color: orange;
+    color: white;
+}
+
+.table-striped .low {
+    background-color: #74B72E;
+    color: white;
+}
+
+/* Pagination styling */
+.pagination {
+    padding: 20px;
+    justify-content: center;
+}
+
+/* Buttons for table actions */
+.action .btn {
+    width: 100px !important;
+    margin-bottom: 20px;
+}
+
+/* Hover effects on buttons */
+.action .btn:hover {
+    background-color: #403DBA; /* Dark blue */
+    color: white;
+}
+
+

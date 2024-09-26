@@ -18,22 +18,18 @@ $manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017"
 $bulk = new MongoDB\Driver\BulkWrite;
 $collectionName = "Students";
 
-// Function to send JSON response
-function sendJsonResponse($status, $message) {
-    header('Content-Type: application/json');
-    echo json_encode(['status' => $status, 'message' => $message]);
+function alertAndRedirect($message) {
+    echo "<script type='text/javascript'>alert('$message'); window.location.href = '../students.php';</script>";
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
-    // Retrieve session ID from POST data or query string
-    $sessionId = isset($_POST['sessionId']) ? intval($_POST['sessionId']) : intval($_GET['sessionId']);
-    
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file']) && isset($_POST['sessionDropdown'])) {
     $file = $_FILES['file']['tmp_name'];
+    $sessionId = intval($_POST['sessionDropdown']);
 
     // Validate the file
     if (!is_uploaded_file($file)) {
-        sendJsonResponse('error', 'Invalid file!');
+        alertAndRedirect('Invalid file!');
     }
 
     // Open the file in read mode
@@ -43,17 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if (count($header) !== count($data)) {
-                sendJsonResponse('error', 'Error: Data format mismatch!');
+                alertAndRedirect('Error: Data format mismatch!');
             }
 
             // Generate a unique _id
-            $student = [
-                '_id' => new ObjectId(), 
-                'StudentId' => (int)$data[0], 
-                'StudentName' => $data[1], 
-                'Email' => $data[2], 
-                'SessionId' => $sessionId
-            ];
+            $student = ['_id' => new ObjectId(), 'StudentId' => (int)$data[0], 'StudentName' => $data[1], 'Email' => $data[2], 'SessionId' => $sessionId];
 
             $bulk->insert($student); // Queue the insert operation
         }
@@ -61,18 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         // Execute the bulk write operation
         $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
         try {
-            $result = $manager->executeBulkWrite("$dbName.$collectionName", $bulk, $writeConcern);
+            $result = $manager->executeBulkWrite("$dbName." . $collectionName, $bulk, $writeConcern);
             $insertedCount = $result->getInsertedCount();
-            sendJsonResponse('success', "CSV file uploaded successfully! Inserted $insertedCount documents.");
+            alertAndRedirect('CSV file uploaded successfully! Inserted ' . $insertedCount . ' documents.');
         } catch (MongoDB\Driver\Exception\BulkWriteException $e) {
-            sendJsonResponse('error', 'Error inserting data: ' . $e->getMessage());
+            alertAndRedirect('Error inserting data: ' . $e->getMessage());
         }
 
         fclose($handle); // Close the file handle
     } else {
-        sendJsonResponse('error', 'Error opening the file!');
+        alertAndRedirect('Error opening the file!');
     }
 } else {
-    sendJsonResponse('error', 'Invalid file or no file uploaded!');
+    alertAndRedirect('Invalid file or no file uploaded or no session selected!');
 }
 ?>

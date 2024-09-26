@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITP24 Admin Panel</title>
 
+    <!-- Bootstrap and Datatables CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin.css"> <!-- Custom CSS file -->
 
+    <!-- jQuery and Datatables JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
@@ -26,87 +29,83 @@
 
 <body>
 
-<?php include 'nav_bar.php'; ?>
+    <?php include 'nav_bar.php'; ?> <!-- Navbar stays untouched -->
 
-<?php
-//=============================================
-//     MongoDB Connection & Credentials Setup
-//=============================================
-// Initialise DB Variables.
-$db_user = getenv('DB_ROOT_USERNAME');
-$db_password = getenv('DB_ROOT_PASSWORD');
-$dbName = getenv('DB_NAME');
+    <?php
+    //=============================================
+    //     MongoDB Connection & Credentials Setup
+    //=============================================
+    $db_user = getenv('DB_ROOT_USERNAME');
+    $db_password = getenv('DB_ROOT_PASSWORD');
+    $dbName = getenv('DB_NAME');
 
-// MongoDB connection setup
-$mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-$manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+    // MongoDB connection setup
+    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+    $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-//=============================================
-//   MongoDB Query and Data Display
-//=============================================
-$filter = [];
-$options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
+    // MongoDB Query and Data Display
+    $filter = [];
+    $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
-$query = new MongoDB\Driver\Query($filter, $options);
-$rows = $manager->executeQuery("$dbName.Processes", $query);
+    $query = new MongoDB\Driver\Query($filter, $options);
+    $rows = $manager->executeQuery("$dbName.Processes", $query);
+    ?>
 
-?>
-
-<main class="container-fluid">
-    <div class="row flex-nowrap">
-        <div class="col py-3">
-            <div class="container content">
-                <div class="card"> <!-- Wrap in card to match sessions style -->
-                    <div class="card-body">
-                        <h5 class="card-title">Processes</h5> <!-- Add title similar to sessions page -->
-                        <div id="paddingDiv">
-                            <table id="datatable" class="table table-striped" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>UUID</th>
-                                        <th>Trigger Count</th>
-                                        <th>Category</th>
-                                        <th>Data</th>
-                                        <th>Date & Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($rows as $row) : ?>
+    <main class="container-fluid my-4">
+        <div class="row">
+            <div class="col">
+                <div class="container content">
+                    <div class="card shadow-lg"> <!-- Added shadow for a sleek look -->
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Processes Overview</h5>
+                            <div id="paddingDiv" class="table-responsive">
+                                <table id="datatable" class="table table-striped table-hover">
+                                    <thead>
                                         <tr>
-                                            <td><?= htmlspecialchars($row->uuid) ?></td>
-                                            <td><?= htmlspecialchars($row->trigger_count) ?></td>
-                                            <td><?= htmlspecialchars($row->category) ?></td>
-                                            <td><?= htmlspecialchars($row->data) ?></td>
-                                            <td><?= htmlspecialchars($row->date_time) ?></td>
+                                            <th>UUID</th>
+                                            <th>Trigger Count</th>
+                                            <th>Category</th>
+                                            <th>Data</th>
+                                            <th>Date & Time</th>
                                         </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                            <nav>
-                                <ul class="pagination">
-                                    <!-- Add pagination here if necessary -->
-                                </ul>
-                            </nav>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($rows as $row) : ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($row->uuid) ?></td>
+                                                <td><?= htmlspecialchars($row->trigger_count) ?></td>
+                                                <td><?= htmlspecialchars($row->category) ?></td>
+                                                <td><?= htmlspecialchars($row->data) ?></td>
+                                                <td><?= htmlspecialchars($row->date_time) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                                <nav>
+                                    <ul class="pagination justify-content-center">
+                                        <!-- Pagination can be handled by DataTables or manually if needed -->
+                                    </ul>
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<script>
-    $(document).ready(function() {
-        var table = $('#datatable').DataTable({
-            lengthChange: false,
-            dom: 'Blfrtip',
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-            "pageLength": 1000
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable({
+                lengthChange: false,
+                dom: 'Blfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+                "pageLength": 1000
+            });
+
+            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
         });
-
-        table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
-    });
-</script>
+    </script>
 
 </body>
 
