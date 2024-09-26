@@ -1,0 +1,50 @@
+/* Ensure the main container takes most of the screen with padding */
+.container.content {
+    padding: 2%; /* Add padding around the content */
+    height: 100%;
+    display: grid;
+    place-items: center;
+    grid-template-rows: auto 1fr;
+}
+
+/* Style the card that wraps the table */
+.card {
+    width: 100%; /* Make the card full width */
+    max-width: 95%; /* Limit the card's maximum width to prevent it from stretching too much */
+    margin: 0 auto; /* Center the card */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #999999;
+}
+
+/* Ensure the table stretches and remains responsive */
+.table-striped {
+    width: 100%;
+    table-layout: auto; /* Allow columns to grow/shrink dynamically */
+    overflow-x: auto;
+    font-size: 1rem; /* Make the table text a bit larger */
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.pagination {
+    justify-content: center; /* Center the pagination */
+    padding: 10px;
+}
+
+/* Responsive design: ensure the card and table adjust for smaller screens */
+@media (max-width: 768px) {
+    .card {
+        padding: 10px;
+        width: 100%;
+    }
+
+    .table-striped {
+        font-size: 0.9rem;
+    }
+}
