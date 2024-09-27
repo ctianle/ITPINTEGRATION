@@ -48,7 +48,7 @@ while ($true) {
                 # Handle different data types
                 if ($data.type -eq "camera image") {
                     $sendResponse = Invoke-RestMethod -Uri $snapshotsUrl -Method POST -Body ($data | ConvertTo-Json) -ContentType "application/json"
-                } elseif ($data.type -eq "Screenshot image") {
+                } elseif ($data.type -eq "Screenshot image" -or $data.type -eq "gaze coordinates") {
                     $sendResponse = Invoke-RestMethod -Uri $screenshotsUrl -Method POST -Body ($data | ConvertTo-Json) -ContentType "application/json"
                 } else {
                     $sendResponse = Invoke-RestMethod -Uri $behaviourUrl -Method POST -Body ($data | ConvertTo-Json) -ContentType "application/json"

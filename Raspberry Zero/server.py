@@ -16,6 +16,9 @@ app = Flask(__name__)
 # Directory to store the temporary files
 TEMP_STORAGE = '/tmp/proctoring_data'
 
+# Directory to detect gaze coords
+WEBCAM_FOLDER = '/home/raspberry/Desktop/Webcam/screenshots'
+
 if not os.path.exists(TEMP_STORAGE):
     os.makedirs(TEMP_STORAGE)
 
@@ -143,7 +146,7 @@ def index():
                     if JwT_token == None:
                         return ('No Token', 404)
                     return jsonify(constructDataResponse(decoded, category, gen_key(), JwT_token))
-
+                
                 if 'VM' in data:
                     category = 'VM'
                     # decoding data
@@ -342,6 +345,12 @@ def upload_image():
         with open(image_path, 'wb') as image_file:
             image_file.write(image_bytes)
         print(f"Image saved: {image_path}")
+        
+        # Save the image to Webcam Folder
+        image_path2 = os.path.join(WEBCAM_FOLDER, image_name)
+        with open(image_path2, 'wb') as image_file2:
+            image_file2.write(image_bytes)
+        print(f"Image saved: {image_path2}")
 
         return jsonify({"message": "Image uploaded successfully", "path": image_path}), 200
     except Exception as e:

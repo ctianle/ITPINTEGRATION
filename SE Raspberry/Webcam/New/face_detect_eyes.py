@@ -14,15 +14,35 @@ import numpy as np
 import requests
 import json
 from multiprocessing import shared_memory
+import base64
 
 #delete later
 #from picamera2 import Picamera2
 #import libcamera    
+def compress_image(image, scale_percent=50, quality=50):
+    # Resize the image
+    width = int(image.shape[1] * scale_percent / 100)
+    height = int(image.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    resized_image = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+    
+    # Compress the image
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
+    result, encimg = cv2.imencode('.jpg', resized_image, encode_param)
+    
+    if result:
+        return encimg.tobytes()
+    else:
+        raise ValueError("Failed to compress the image")
+
 
 def gaze_detect():
     calibration_url = "http://10.0.0.1/update_calibration"
     resolution_url = "http://10.0.0.1/get_resolution"
     logs_url = "http://10.0.0.1/store_data"
+    
+    screenshots_directory = "screenshots"
+    debug_directory = "debug"
 
     Position = 0
     calculated = False
@@ -68,6 +88,7 @@ def gaze_detect():
 
     try:
         while True:
+            #print("gaze")
             image = np.ndarray(shape=(1232, 1640, 3), dtype=np.uint8, buffer=shm.buf)
             
             #delete later
@@ -155,8 +176,8 @@ def gaze_detect():
                     left_pupil_world_cord = transformation @ np.array([[left_pupil[0], left_pupil[1], 0, 1]]).T
                     right_pupil_world_cord = transformation @ np.array([[right_pupil[0], right_pupil[1], 0, 1]]).T
                    
-                    S_L = Eye_ball_center_left + (left_pupil_world_cord - Eye_ball_center_left) * 25
-                    S_R = Eye_ball_center_right + (right_pupil_world_cord - Eye_ball_center_right) * 25
+                    S_L = Eye_ball_center_left + (left_pupil_world_cord - Eye_ball_center_left) * 20
+                    S_R = Eye_ball_center_right + (right_pupil_world_cord - Eye_ball_center_right) * 20
                     
                     left_eye_pupil2D, _ = cv2.projectPoints(S_L.T, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
                     right_eye_pupil2D, _ = cv2.projectPoints(S_R.T, rotation_vector, translation_vector, camera_matrix, dist_coeffs)
@@ -271,6 +292,34 @@ def gaze_detect():
                         else:
                             calibrated_x = screen_width - (((mean_gaze[0] - min_x) / (max_x - min_x)) * screen_width)
                             calibrated_y = ((mean_gaze[1] - min_y) / (max_y - min_y)) * screen_height
+                            if os.path.isdir(screenshots_directory) and os.listdir(screenshots_directory):
+                                # Get the first image file in the directory (you can modify this to load specific images)
+                                screenshot_file = os.listdir(screenshots_directory)[0]
+                                screenshot_path = os.path.join(screenshots_directory, screenshot_file)
+                                
+                                # Load the image using OpenCV
+                                screenshot_image = cv2.imread(screenshot_path)
+                                if screenshot_image is not None:
+                                    # Draw a circle on the image
+                                    # Parameters: image, center coordinates, radius, color (BGR), thickness
+                                    center_coordinates = (int(calibrated_x), int(calibrated_y))
+                                    radius = 50
+                                    color = (0, 255, 0)  # Green color in BGR
+                                    thickness = 2  # Thickness of the circle
+                                    # Draw the circle
+                                    cv2.circle(screenshot_image, center_coordinates, radius, color, thickness)
+
+                                    #for debugging
+                                    output_filename = os.path.join(debug_directory, 'output_image_with_circle.jpg')
+                                    cv2.imwrite(output_filename, screenshot_image)
+
+                                    #save image with circle
+                                    compressed_image_bytes = compress_image(screenshot_image)
+                                    image_base64 = base64.b64encode(compressed_image_bytes).decode('utf-8')
+                                    server_data = {"type": "gaze coordinates", "content": image_base64, "uuid": ""}
+                                    requests.post(logs_url, json=server_data)
+                                    os.remove(screenshot_path)
+                                    
 
                         if(mean_gaze[0] < min_x or mean_gaze[1] < min_y or mean_gaze[0] > max_x or mean_gaze[1] > max_y):    
                             if(mean_gaze[0] < min_x or mean_gaze[1] < min_y):
@@ -284,15 +333,15 @@ def gaze_detect():
                             if(distance < 200):
                                 server_data = {"type": "Gaze", "content": "User looking away from screen. Code : green", "uuid": ""}
                                 requests.post(logs_url, json=server_data)
-                                #print("green")
+                                print("green")
                             elif(distance < 300):
                                 server_data = {"type": "Gaze", "content": "User looking away from screen. Code : yellow", "uuid": ""}
                                 requests.post(logs_url, json=server_data)
-                                #print("yellow")
+                                print("yellow")
                             else:
                                 server_data = {"type": "Gaze", "content": "User looking away from screen. Code : red", "uuid": ""}
                                 requests.post(logs_url, json=server_data)
-                                #print("red")
+                                print("red")
             
             else:
                 server_data = {"type": "Gaze", "content": "No faces detected", "uuid": ""}
