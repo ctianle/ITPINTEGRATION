@@ -1,6 +1,4 @@
-<?php
-session_start();
-?>
+
 <html lang="en">
 
 <head>
@@ -24,7 +22,7 @@ session_start();
 
     <main class="container-fluid">
         <div class="row flex-nowrap">
-            <?php include 'component/sidebar.inc.php'; ?>
+            
 
             <div class="col py-3">
                 <div class="container content">
@@ -105,5 +103,3 @@ session_start();
 </body>
 
 </html>
-
-?>

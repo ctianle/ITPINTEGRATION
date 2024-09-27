@@ -32,7 +32,7 @@ session_start();
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">Ping Settings</h5>
+                                    <h5 class="card-title">Ping Process</h5>
                                         <div class="card-body">
                                         <table id="datatable" class="table table-striped" style="width:100%">
                                         <thead>
@@ -109,4 +109,4 @@ session_start();
 
 </html>
 
-?>
+
