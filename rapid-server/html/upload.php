@@ -1,98 +1,75 @@
-<!doctype html>
+<?php
+session_start();
+?>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-16">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
-<title>ITP24 Admin Panel (Upload)</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 
+<head>
+    <?php
+    include "component/essential.inc.php";
+    ?>
+    <link rel="stylesheet" href="css/sessions.css">
+    <title>ITP24 Admin Panel (Upload)</title>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
 </head>
-
-<style>
-
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.topnav {
-  overflow: hidden;
-  background-color: #333;
-}
-
-.topnav a {
-  float: left;
-  display: block;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-}
-
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.topnav a.active {
-  background-color: #04AA6D;
-  color: white;
-}
-
-.topnav .icon {
-  display: none;
-}
-
-@media screen and (max-width: 600px) {
-  .topnav a:not(:first-child) {display: none;}
-  .topnav a.icon {
-    float: right;
-    display: block;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .topnav.responsive {position: relative;}
-  .topnav.responsive .icon {
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-  .topnav.responsive a {
-    float: none;
-    display: block;
-    text-align: left;
-  }
-}
-</style>
 
 <body>
 
-<div class="container-fluid">
-        <div class="row">
-            <div class="col-md-2 p-0">
-                <!-- Navigation Bar (included) -->
-                <?php include 'nav_bar.php'; ?>
-            </div>
-            <div class="col-md-10">
-                <div class="container my-4">
-            <style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
-              
-            <div class="col-md-6 offset-md-3 mt-5">
-                <br>
-                <h1>Upload Proctoring Script</h1>
-                <form enctype="multipart/form-data" action="upload_process.php" method="post">
-                <div class="form-group">
-                    <div>
-                        <input class="form-control form-control-lg" id="fileToUpload" name="fileToUpload" type="file" required>
+    <main class="container-fluid">
+        <div class="row flex-nowrap">
+            <?php include 'component/sidebar.inc.php'; ?>
+
+            <div class="col py-3">
+                <div class="container content">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                        <div class="card-body">
+                                        <style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
+                                        
+                                        <div class="col-md-6 offset-md-3 mt-5">
+                                            <br>
+                                            <h1>Upload Proctoring Script</h1>
+                                            <form enctype="multipart/form-data" action="upload_process.php" method="post">
+                                            <div class="form-group">
+                                                <div>
+                                                    <input class="form-control form-control-lg" id="fileToUpload" name="fileToUpload" type="file" required>
+                                                </div>
+                                                <hr>
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <hr>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div> 
-</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script defer src="js/index.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable({
+                lengthChange: false,
+                dom: 'Blfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+                "pageLength": 1000
+            });
+
+            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+        });
+    </script>
 </body>
+
 </html>
+
+?>

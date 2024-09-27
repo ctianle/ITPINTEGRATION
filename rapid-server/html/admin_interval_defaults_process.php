@@ -1,83 +1,121 @@
-<!DOCTYPE html>
+<?php
+session_start();
+?>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITP24 Admin Panel (Intervals)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
+    <?php
+    include "component/essential.inc.php";
+    ?>
+    <link rel="stylesheet" href="css/sessions.css">
+    <title>ITP24 Admin Panel (intervals)</title>
+    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script> 
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
 </head>
+
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Left column: Navigation Bar -->
-            <div class="col-md-2 p-0">
-                <?php include 'nav_bar.php'; ?>
-            </div>
 
-            <!-- Right column: Messages -->
-            <div class="col-md-10">
-                <div style="padding: 2%;">
-                    <?php
-                    // Initialise DB Variables.
-                    $db_user = getenv('DB_ROOT_USERNAME');
-                    $db_password = getenv('DB_ROOT_PASSWORD');
-                    $dbName = getenv('DB_NAME');
+    <main class="container-fluid">
+        <div class="row flex-nowrap">
+            <?php include 'component/sidebar.inc.php'; ?>
 
-                    // MongoDB connection setup
-                    $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
-                    $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
+            <div class="col py-3">
+                <div class="container content">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Interval Settings</h5>
+                                        <div class="card-body">
+                                        <?php
+                                                // Initialise DB Variables.
+                                                $db_user = getenv('DB_ROOT_USERNAME');
+                                                $db_password = getenv('DB_ROOT_PASSWORD');
+                                                $dbName = getenv('DB_NAME');
 
-                    // Retrieve POST data
-                    $AWD = $_POST['AWD'] ?? '';
-                    $AMD = $_POST['AMD'] ?? '';
-                    $PL = $_POST['PL'] ?? '';
-                    $OW = $_POST['OW'] ?? '';
+                                                // MongoDB connection setup
+                                                $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
+                                                $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
-                    // Sanitize input data
-                    $AWD = (int)htmlspecialchars($AWD);
-                    $AMD = (int)htmlspecialchars($AMD);
-                    $PL = (int)htmlspecialchars($PL);
-                    $OW = (int)htmlspecialchars($OW);
+                                                // Retrieve POST data
+                                                $AWD = $_POST['AWD'] ?? '';
+                                                $AMD = $_POST['AMD'] ?? '';
+                                                $PL = $_POST['PL'] ?? '';
+                                                $OW = $_POST['OW'] ?? '';
 
-                    // Update 'defaults' in MongoDB
-                    $bulk = new MongoDB\Driver\BulkWrite;
-                    $bulk->update(
-                        ['name' => 'intervals'],
-                        ['$set' => [
-                            'AWD' => $AWD,
-                            'AMD' => $AMD,
-                            'PL' => $PL,
-                            'OW' => $OW
-                        ]],
-                        ['multi' => false, 'upsert' => true]
-                    );
+                                                // Sanitize input data
+                                                $AWD = (int)htmlspecialchars($AWD);
+                                                $AMD = (int)htmlspecialchars($AMD);
+                                                $PL = (int)htmlspecialchars($PL);
+                                                $OW = (int)htmlspecialchars($OW);
 
-                    try {
-                        $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
-                        $result = $manager->executeBulkWrite("$dbName.defaults", $bulk, $writeConcern);
+                                                // Update 'defaults' in MongoDB
+                                                $bulk = new MongoDB\Driver\BulkWrite;
+                                                $bulk->update(
+                                                    ['name' => 'intervals'],
+                                                    ['$set' => [
+                                                        'AWD' => $AWD,
+                                                        'AMD' => $AMD,
+                                                        'PL' => $PL,
+                                                        'OW' => $OW
+                                                    ]],
+                                                    ['multi' => false, 'upsert' => true]
+                                                );
 
-                        echo '<div class="alert alert-success" role="alert">
-                            <h4 class="alert-heading">Success!</h4>
-                            <p>Default values for intervals have been updated.</p>
-                            <hr>
-                            <p class="mb-0">To return to the admin panel to view interval defaults, click <a href="/admin_interval_defaults.php" class="alert-link">here</a>.</p>
-                        </div>';
-                    } catch (MongoDB\Driver\Exception\Exception $e) {
-                        echo '<div class="alert alert-danger" role="alert">
-                            <h4 class="alert-heading">Error!</h4>
-                            <p>An unexpected error occurred.</p>
-                            <hr>
-                            <p class="mb-0">Please check the error logs for more information.</p>
-                            <p class="mb-0">To return to the admin panel to view interval defaults, click <a href="/admin_interval_defaults.php" class="alert-link">here</a>.</p>
-                        </div>';
+                                                try {
+                                                    $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
+                                                    $result = $manager->executeBulkWrite("$dbName.defaults", $bulk, $writeConcern);
 
-                        error_log('MongoDB Update Error: ' . $e->getMessage());
-                    }
-                    ?>
+                                                    echo '<div class="alert alert-success" role="alert">
+                                                        <h4 class="alert-heading">Success!</h4>
+                                                        <p>Default values for intervals have been updated.</p>
+                                                        <hr>
+                                                        <p class="mb-0">To return to the admin panel to view interval defaults, click <a href="/admin_interval_defaults.php" class="alert-link">here</a>.</p>
+                                                    </div>';
+                                                } catch (MongoDB\Driver\Exception\Exception $e) {
+                                                    echo '<div class="alert alert-danger" role="alert">
+                                                        <h4 class="alert-heading">Error!</h4>
+                                                        <p>An unexpected error occurred.</p>
+                                                        <hr>
+                                                        <p class="mb-0">Please check the error logs for more information.</p>
+                                                        <p class="mb-0">To return to the admin panel to view interval defaults, click <a href="/admin_interval_defaults.php" class="alert-link">here</a>.</p>
+                                                    </div>';
+
+                                                    error_log('MongoDB Update Error: ' . $e->getMessage());
+                                                }
+                                                ?>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <script defer src="js/index.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#datatable').DataTable({
+                lengthChange: false,
+                dom: 'Blfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
+                "pageLength": 1000
+            });
+
+            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
+        });
+    </script>
 </body>
+
 </html>
+
+?>
