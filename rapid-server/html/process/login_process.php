@@ -37,7 +37,9 @@ try {
             // Set session variables
             $_SESSION['UserName'] = $user->UserName;
             $_SESSION['UserId'] = $user->UserId;
-
+            // Set Session Role
+            $_SESSION['UserType'] = $user->UserType;
+            
             // Redirect to the overview page
             header("Location: ../overview.php");
             exit;
