@@ -178,3 +178,12 @@ db.Users.insertOne({
   UserId: 1, 
   isActive: true 
 });
+
+db.Users.insertOne({ 
+  UserType: 'invigilator', 
+  UserName: 'Invigilator', 
+  Email: 'invigilator@example.com', 
+  PasswordHash: 'hashedpassword', 
+  UserId: 2, 
+  isActive: true 
+});
