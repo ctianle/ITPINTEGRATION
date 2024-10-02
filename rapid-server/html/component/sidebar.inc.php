@@ -27,6 +27,8 @@
                     <i class="fs-4 bi-journal-bookmark"></i> <span class="ms-1 d-none d-sm-inline">Past Records</span>
                 </a>
             </li>
+            <!-- Only show the "Features" section if the user is an admin -->
+            <?php if (isset($_SESSION['UserType']) && $_SESSION['UserType'] === 'admin') : ?>
             <li class="nav-item">
                 <a href="#" class="nav-link dropdown-toggle align-middle px-0" id="navbarScrollingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Features</span>
@@ -44,6 +46,7 @@
                     <li><a class="dropdown-item" href="kill_processes_admin.php">Kill Processes</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
         </ul>
         <hr>
         <div class="dropdown pb-4">
