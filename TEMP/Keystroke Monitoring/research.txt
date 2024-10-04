@@ -1,0 +1,7 @@
+keylogv1 - Detected by Windows 10 as Malware
+RubberDucky Keylogger
+
+keylogv2 - Works but inaccurate, utilize Win32API
+https://www.powershellgallery.com/packages/PowerSploit/3.0.0.0/Content/Exfiltration%5CGet-Keystrokes.ps1
+
+https://stackoverflow.com/questions/54236696/how-to-capture-global-keystrokes-with-powershell

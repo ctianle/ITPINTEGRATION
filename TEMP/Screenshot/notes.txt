@@ -1,0 +1,2 @@
+Screenshot feature implemented to be sent via Powershell Script to C2 in base64 format.
+It is NOT encrypted yet.
