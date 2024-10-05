@@ -28,7 +28,7 @@
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card">
+                            <div class="card" style="width:1000px">
                                 <div class="card-body">
                                     <h5 class="card-title">Ping Process</h5>
                                         <div class="card-body">

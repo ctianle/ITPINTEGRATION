@@ -1,3 +1,10 @@
+<?php
+// Start the session if it's not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <link rel="stylesheet" href="css/main.css">
 
 <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
@@ -12,21 +19,22 @@
                     <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Overview</span>
                 </a>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a href="sessions.php" class="nav-link align-middle px-0">
                     <i class="fs-4 bi-calendar"></i> <span class="ms-1 d-none d-sm-inline">Sessions</span>
                 </a>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a href="students.php" class="nav-link align-middle px-0">
                     <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Students</span>
                 </a>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a href="past_records.php" class="nav-link align-middle px-0">
                     <i class="fs-4 bi-journal-bookmark"></i> <span class="ms-1 d-none d-sm-inline">Past Records</span>
                 </a>
             </li>
+            
             <!-- Only show the "Features" section if the user is an admin -->
             <?php if (isset($_SESSION['UserType']) && $_SESSION['UserType'] === 'admin') : ?>
             <li class="nav-item">
@@ -52,7 +60,7 @@
         <div class="dropdown pb-4">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="https://github.com/mdo.png" alt="hugenerd" width="30" height="30" class="rounded-circle">
-                <span class="d-none d-sm-inline mx-1">  <?php echo isset($_SESSION['UserName']) ? $_SESSION['UserName'] : 'Instructor 1'; ?></span>
+                <span class="d-none d-sm-inline mx-1"><?php echo isset($_SESSION['UserName']) ? $_SESSION['UserName'] : 'Instructor 1'; ?></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                 <li><a class="dropdown-item" href="#">Settings</a></li>
@@ -65,4 +73,3 @@
         </div>
     </div>
 </div>
-<!--Source: https://www.codeply.com/p/WGCqYEiPBg -->

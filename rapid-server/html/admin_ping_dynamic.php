@@ -37,7 +37,7 @@ session_start();
                         <div class="col">
                             
                                 <div class="card-body">
-                                    <h1 class="card-title">Heartbeat Monitoring</h1>
+                                    <h1 class="card-title" style="margin-left: 65;">Heartbeat Monitoring</h1>
                                         <div class="card-body">
                                         <div id="auto_refresh">
                                             <?php include 'admin_ping_process.php'; ?>

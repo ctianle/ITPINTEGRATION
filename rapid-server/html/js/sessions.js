@@ -151,13 +151,13 @@ function deleteDocument(documentId) {
   window.location.href = `../process/delete_session.php?id=${documentId}`;
 }
 
-document.querySelectorAll(".dropdown-item").forEach((item) => {
-  item.addEventListener("click", (e) => {
+document.getElementById("dropdown-menu").addEventListener("click", (e) => {
+  if (e.target.classList.contains("dropdown-item")) {
     e.preventDefault();
     sortField = e.target.getAttribute("data-sort");
     displayTableData(currentPage);
     setupPagination();
-  });
+  };
 });
 
 let sortField = "session_id";

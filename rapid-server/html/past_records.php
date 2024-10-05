@@ -31,7 +31,7 @@ session_start();
                                     <h5 class="card-title">History</h5>
                                     <h6>Click on Status to start monitoring</h6>
                                     <div class="d-flex justify-content-end">
-                                        <div clasclass="dropdown">
+                                        <div class="dropdown">
                                             <button class="btn btn-secondary dropdown-toggle" type="button"
                                                 id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Sort By

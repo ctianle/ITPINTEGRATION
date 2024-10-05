@@ -28,7 +28,7 @@ session_start();
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card">
+                            <div class="card" style="width:130%">
                                 <div class="card-body">
                                     <h5 class="card-title">Processes (Intervals)</h5>
                                     <div id="paddingDiv" style="padding: 2%;">

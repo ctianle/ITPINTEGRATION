@@ -55,7 +55,7 @@ session_start();
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card">
+                            <div class="card" style="width: 800px; margin: auto;">
                                 <div class="card-body">
                                     <h5 class="card-title">Interval Settings</h5>
                                         <div class="card-body">

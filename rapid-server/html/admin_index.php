@@ -49,10 +49,9 @@ $rows = $manager->executeQuery("$dbName.Processes", $query);
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card">
+                            <div class="card" style="width:130%">
                                 <div class="card-body">
                                     <h5 class="card-title">Processes</h5>
-                                    <h6>Click on Status to start monitoring</h6>
                                     <div id="paddingDiv">
                                     <table id="datatable" class="table table-striped" style="width:100%">
                                         <thead>

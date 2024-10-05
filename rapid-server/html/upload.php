@@ -30,7 +30,7 @@ session_start();
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card">
+                            <div class="card" style="width:1000px">
                                 <div class="card-body">
                                         <div class="card-body">
                                         <style> #paddingDiv{ padding-top: 2%; padding-right: 2%; padding-bottom: 2%; padding-left: 2%; } </style> <div id="paddingDiv"> <!-- Padding applies to this area onwards -->
