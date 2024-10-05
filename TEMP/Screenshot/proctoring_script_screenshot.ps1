@@ -98,7 +98,17 @@ $functions = {
     	
     	$graphics.CopyFromScreen($bounds.Location, [Drawing.Point]::Empty, $bounds.size);
     	
-    	#$bmp.Save($path);
+        # --------------------------Saving screenshot to folder-------------------------------------
+        # Define the image format
+        [System.Drawing.Imaging.ImageFormat]$ImageFormat = [System.Drawing.Imaging.ImageFormat]::jpg
+
+        # Generate a unique filename using timestamp
+        $timestamp = Get-Date -Format "yyyyMMdd_HHmmss_fff"
+        $fileName = "screenshot_$timestamp.jpg"
+        $filePath = Join-Path -Path $tempFolderPath -ChildPath $fileName
+
+        # Save the screenshot to the tempImages folder
+        $bmp.Save($filePath, $ImageFormat)
     	
     	[System.Drawing.Imaging.ImageFormat]$ImageFormat = [System.Drawing.Imaging.ImageFormat]::png;
     	$memory = New-Object System.IO.MemoryStream;
