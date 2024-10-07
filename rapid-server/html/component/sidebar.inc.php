@@ -63,11 +63,13 @@ if (session_status() === PHP_SESSION_NONE) {
                 <span class="d-none d-sm-inline mx-1"><?php echo isset($_SESSION['UserName']) ? $_SESSION['UserName'] : 'Instructor 1'; ?></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <!-- 
                 <li><a class="dropdown-item" href="#">Settings</a></li>
                 <li><a class="dropdown-item" href="#">Profile</a></li>
+                
                 <li>
                     <hr class="dropdown-divider">
-                </li>
+                </li>-->
                 <li><a class="dropdown-item" href="process/signout.php">Sign out</a></li>
             </ul>
         </div>

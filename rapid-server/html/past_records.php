@@ -36,7 +36,7 @@ session_start();
                                                 id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                 Sort By
                                             </button>
-                                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                            <ul id="recordsDropdownMenu" class="dropdown-menu" aria-labelledby="sortDropdown">
                                                 <li><a class="dropdown-item" href="#" data-sort="session_id">Session
                                                         ID</a></li>
                                                 <li><a class="dropdown-item" href="#" data-sort="name">Name</a></li>

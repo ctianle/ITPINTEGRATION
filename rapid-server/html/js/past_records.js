@@ -1,5 +1,6 @@
 const sessions = []; // Initialize sessions array to store session data
 
+// Function to fetch session data from the server
 function fetchData() {
   fetch("../process/fetch_session_past.php")
     .then((response) => response.json())
@@ -28,48 +29,47 @@ function fetchData() {
     .catch((error) => console.error("Error fetching data:", error));
 }
 
-window.onload = fetchData;
-
 const rowsPerPage = 10;
 let currentPage = 1;
+let sortField = "session_id"; // Initialize sortField here to avoid ReferenceError
 
-function displayTableData(page, data) {
+// Function to display table data based on the current page
+function displayTableData(page) {
   sortData(sortField);
   const start = (page - 1) * rowsPerPage;
   const end = start + rowsPerPage;
   const paginatedData = sessions.slice(start, end);
-
-  paginatedData.sort((a, b) => a.status.localeCompare(b.status));
 
   const tableBody = document.getElementById("table-body");
   tableBody.innerHTML = "";
   paginatedData.forEach((row, index) => {
     tableBody.innerHTML += `
         <tr>
-        <th scope="row">${row.session_id}</th>
-        <td class="name">${row.name}</td>
-        <td><a href="monitoring_session.php?session_id=${
-          row.session_id
-        }"><div class="status ${row.status}">${row.status}</div></a></td>
-        <td>${row.date}</td>
-        <td>${row.start_time}</td>
-        <td>${row.end_time}</td>
-        <td>${row.duration}</td>
-        <td>
-        <div class="action d-flex flex-column flex-md-row align-items-center">
-        <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editSession(${
-          start + index
-        })">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteDocument('${
-          row.session_id
-        }')">Delete</button>
-        </div>
-        </td>
+          <th scope="row">${row.session_id}</th>
+          <td class="name">${row.name}</td>
+          <td><a href="monitoring_session.php?session_id=${
+            row.session_id
+          }"><div class="status ${row.status}">${row.status}</div></a></td>
+          <td>${row.date}</td>
+          <td>${row.start_time}</td>
+          <td>${row.end_time}</td>
+          <td>${row.duration}</td>
+          <td>
+            <div class="action d-flex flex-column flex-md-row align-items-center">
+              <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editSession(${
+                start + index
+              })">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteDocument('${
+                row.session_id
+              }')">Delete</button>
+            </div>
+          </td>
         </tr>
-        `;
+      `;
   });
 }
 
+// Function to set up pagination
 function setupPagination() {
   const totalPages = Math.ceil(sessions.length / rowsPerPage);
   const pagination = document.getElementById("pagination");
@@ -77,10 +77,10 @@ function setupPagination() {
 
   for (let i = 1; i <= totalPages; i++) {
     pagination.innerHTML += `
-        <li class="page-item ${i === currentPage ? "active" : ""}">
+      <li class="page-item ${i === currentPage ? "active" : ""}">
         <a class="page-link" href="#">${i}</a>
-        </li>
-        `;
+      </li>
+    `;
   }
 
   document.querySelectorAll(".page-link").forEach((link) => {
@@ -93,6 +93,18 @@ function setupPagination() {
   });
 }
 
+// Function to sort the session data
+function sortData(field) {
+  sessions.sort((a, b) => {
+    if (field === "date") {
+      return new Date(b.date) - new Date(a.date); // Sort by newest date (descending order)
+    } else {
+      return a[field].localeCompare(b[field]); // Sort other fields in ascending order
+    }
+  });
+}
+
+// Function to edit session details
 function editSession(index) {
   currentEditIndex = index;
   const session = sessions[index];
@@ -102,75 +114,72 @@ function editSession(index) {
   document.getElementById("editSessionStartTime").value = session.start_time;
   document.getElementById("editSessionEndTime").value = session.end_time;
   document.getElementById("editSessionDuration").value = session.duration;
-  document.getElementById("editBlacklist").value = session.BlacklistedApps;
-  document.getElementById("editWhitelist").value = session.WhitelistedApps;
+  document.getElementById("editBlacklist").value = session.BlacklistedApps.join(
+    ", "
+  );
+  document.getElementById("editWhitelist").value = session.WhitelistedApps.join(
+    ", "
+  );
 
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
   editModal.show();
 }
 
-document
-  .getElementById("editForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
-    const sessionId = sessions[currentEditIndex].session_id;
-    const sessionName = document.getElementById("editSessionName").value;
-    const sessionDate = document.getElementById("editSessionDate").value;
-    const startTime = document.getElementById("editSessionStartTime").value;
-    const endTime = document.getElementById("editSessionEndTime").value;
-    const duration = document.getElementById("editSessionDuration").value;
-    // Get blacklist and whitelist values and convert to arrays
-    const blacklist = document
-      .getElementById("editBlacklist")
-      .value.split(",")
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-    const whitelist = document
-      .getElementById("editWhitelist")
-      .value.split(",")
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0);
-
-    // Construct the URL with query parameters
-    const url = `../process/update_session.php?SessionId=${sessionId}&SessionName=${encodeURIComponent(
-      sessionName
-    )}&Date=${encodeURIComponent(sessionDate)}&StartTime=${encodeURIComponent(
-      startTime
-    )}&EndTime=${encodeURIComponent(endTime)}&Duration=${encodeURIComponent(
-      duration
-    )}&Blacklist=${encodeURIComponent(
-      JSON.stringify(blacklist)
-    )}&Whitelist=${encodeURIComponent(JSON.stringify(whitelist))}`;
-
-    // Redirect to the URL
-    window.location.href = url;
-  });
-
+// Function to delete a session document
 function deleteDocument(documentId) {
-  const SessionId = documentId;
   window.location.href = `../process/delete_session.php?id=${documentId}`;
 }
 
-document.getElementById("dropdown-menu").addEventListener("click", (e) => {
+// Function to set up the dropdown menu sorting
+function setupDropdown() {
+  const dropdownMenu = document.getElementById("recordsDropdownMenu");
+  document.getElementById("recordsDropdownMenu").addEventListener("click", (e) => {
   if (e.target.classList.contains("dropdown-item")) {
     e.preventDefault();
-    sortField = e.target.getAttribute("data-sort");
-    displayTableData(currentPage);
+    sortField = e.target.getAttribute("data-sort"); // Set the sort field based on the selected item
+    displayTableData(currentPage); // Call displayTableData to re-render with sorted data
     setupPagination();
-  };
-});
-
-let sortField = "session_id";
-
-function sortData(field) {
-  sessions.sort((a, b) => {
-    if (field === "date") {
-      return new Date(a.date) - new Date(b.date);
-    } else {
-      return a[field].localeCompare(b[field]);
-    }
+  }
   });
 }
 
-displayTableData(currentPage);
-setupPagination();
+document.getElementById("editForm").addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  const sessionId = sessions[currentEditIndex].session_id;
+  const sessionName = document.getElementById("editSessionName").value;
+  const sessionDate = document.getElementById("editSessionDate").value;
+  const startTime = document.getElementById("editSessionStartTime").value;
+  const endTime = document.getElementById("editSessionEndTime").value;
+  const duration = document.getElementById("editSessionDuration").value;
+  
+  const blacklist = document
+    .getElementById("editBlacklist")
+    .value.split(",")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+    
+  const whitelist = document
+    .getElementById("editWhitelist")
+    .value.split(",")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+
+  const url = `../process/update_session.php?SessionId=${sessionId}&SessionName=${encodeURIComponent(
+    sessionName
+  )}&Date=${encodeURIComponent(sessionDate)}&StartTime=${encodeURIComponent(
+    startTime
+  )}&EndTime=${encodeURIComponent(endTime)}&Duration=${encodeURIComponent(
+    duration
+  )}&Blacklist=${encodeURIComponent(
+    JSON.stringify(blacklist)
+  )}&Whitelist=${encodeURIComponent(JSON.stringify(whitelist))}`;
+
+  window.location.href = url;
+});
+
+// Ensure DOM is fully loaded before running scripts
+window.onload = () => {
+  fetchData();
+  setupDropdown(); // Attach the event listener after the DOM is loaded
+};
