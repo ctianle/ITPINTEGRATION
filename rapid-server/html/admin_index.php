@@ -5,19 +5,11 @@ session_start();
 
 <head>
     <?php
-    include "component/essential.inc.php";
+    include "component/admin_essential.inc.php";
     ?>
     <link rel="stylesheet" href="css/sessions.css">
     <title>ITP24 Admin Panel</title>
-    <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script> 
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script> 
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script> 
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script> 
-    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
+   
 </head>
 <?php
 //=============================================
@@ -49,7 +41,7 @@ $rows = $manager->executeQuery("$dbName.Processes", $query);
                 <div class="container content">
                     <div class="row">
                         <div class="col">
-                            <div class="card" style="width:130%">
+                            <div class="card" style="width:120%">
                                 <div class="card-body">
                                     <h5 class="card-title">Processes</h5>
                                     <div id="paddingDiv">
