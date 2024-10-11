@@ -23,7 +23,9 @@
                     <div class="card mt-3">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
-                                <span class="activity-title">John Doe's Activity</span>
+                                <?php
+                                require_once 'process/fetch_specific_student.php';
+                                ?>
                                 <div class="timer-container d-flex align-items-center">
                                     <div class="timer-icon">&#9200;</div> <!-- Timer icon -->
                                     <span id="timer" class="ml-2">00:00</span>
@@ -44,7 +46,11 @@
                                                 require_once 'process/fetch_student_screenshot.php';
 
                                                 $ScreenshotData = getScreenshot();
-                                               
+                                                if (!$ScreenshotData) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Data</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                }
                                                 ?>
                                             </div>
                                             <!-- Somewhere else in your HTML where you want to display the pagination -->
@@ -78,7 +84,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128241; Process</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Data</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
@@ -103,6 +109,11 @@
                                                  // Get the webcam content and pagination
                                                 require_once 'process/fetch_student_webcam.php';
                                                 $webcamData = getWebcam();
+                                                if (!$webcamData) {
+                                                    echo '<div class="placeholder">';
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Data</h5></div>'; // Icon for Screen
+                                                    echo '</div>';
+                                                }
                                                 ?>
                                             </div>
                                             <!-- Somewhere else in your HTML where you want to display the pagination -->
@@ -136,7 +147,7 @@
                                                 // Check if data exists
                                                 if (!$result['hasData']) {
                                                     echo '<div class="placeholder">';
-                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">&#128221; Logs</h5></div>'; // Icon for Screen
+                                                    echo '<div class="activity-icon"><h5 class="card-title ml-2">No Data</h5></div>'; // Icon for Screen
                                                     echo '</div>';
                                                 } else {
                                                     // Output the HTML content of the table
