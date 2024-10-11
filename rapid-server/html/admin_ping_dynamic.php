@@ -32,7 +32,7 @@ session_start();
                                             }, 4000);
                                         });
                                     </script>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -42,18 +42,6 @@ session_start();
     </main>
 
     <script defer src="js/index.js"></script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#datatable').DataTable({
-                lengthChange: false,
-                dom: 'Blfrtip',
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                "pageLength": 1000
-            });
-
-            table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
-        });
-    </script>
 </body>
 
 </html>

@@ -47,6 +47,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Features</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="admin_index.php">Admin Index</a></li>
                         <li><a class="dropdown-item" href="admin_interval_defaults.php">Default Interval Configurations</a></li>
                         <li><a class="dropdown-item" href="admin_interval.php">Interval Configurations</a></li>
                         <li><a class="dropdown-item" href="upload.php">Upload Proctoring Script</a></li>

@@ -1,4 +1,3 @@
-
 <html lang="en">
 
 <head>
@@ -19,7 +18,7 @@
                             <div class="card" style="width:1000px">
                                 <div class="card-body">
                                     <h5 class="card-title">Ping Process</h5>
-                                        <div class="card-body">
+                                    <div class="card-body">
                                         <table id="datatable" class="table table-striped" style="width:100%">
                                             <thead>
                                                 <tr>
@@ -65,7 +64,7 @@
                                                 ?>
                                             </tbody>
                                         </table>
-                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
