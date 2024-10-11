@@ -95,6 +95,7 @@ function displayStudents(page) {
 
         studentDiv.innerHTML = `
             <div class="student-avatar ${student.status}" style="background-image: url('${student.avatar}');"></div>
+            <p class="student-name">${student.id}</p>
             <p class="student-name">${student.name}</p>
         `;
 

@@ -19,6 +19,7 @@ function getScreenshot()
 
     // Query MongoDB for screenshots
     $filter = [
+        'uuid' => ['$regex' => "^$student_id-"],
         //'StudentId' => (int) $student_id, // Uncomment and use as needed
         //'SessionId' => (int) $session_id, // Uncomment and use as needed
     ];
@@ -91,7 +92,9 @@ function getScreenshot()
         $slideIndex = 0; // Reset slide index for modal IDs
         foreach ($rows as $row) {
             $imageData = $row->content;
-            $dateTime = $row->timestamp->toDateTime()->format('Y-m-d H:i:s');
+            $dateTimeUTC = $row->timestamp->toDateTime()->setTimezone(new DateTimeZone('UTC'));
+            $dateTimeGMT8 = $dateTimeUTC->setTimezone(new DateTimeZone('Asia/Singapore'));
+            $formattedDateTime = $dateTimeGMT8->format('Y-m-d H:i:s');
     
             echo '<div class="modal fade" id="modalScreenshot' . $slideIndex . '" tabindex="-1" aria-labelledby="modalScreenshotLabel' . $slideIndex . '" aria-hidden="true">';
             echo '<div class="modal-dialog modal-dialog-centered modal-lg">';
@@ -102,7 +105,7 @@ function getScreenshot()
             echo '</div>';
             echo '<div class="modal-body">';
             echo '<img src="data:image/png;base64,' . $imageData . '" class="img-fluid" alt="Screenshot" style="max-width: 100%; max-height: 80vh;">';
-            echo '<h2>Captured at: ' . $dateTime . '</h2>';
+            echo '<h2>Captured at: ' . $formattedDateTime . " GMT+8" . '</h2>';
             echo '</div>';
             echo '</div>';
             echo '</div>';

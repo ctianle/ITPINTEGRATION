@@ -16,8 +16,11 @@ function getProcess() {
     $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 
+    $student_id = $_GET['student_id'];
     // MongoDB Query Setup
-    $filter = [];
+    $filter = [
+        'uuid' => ['$regex' => "^$student_id-"],
+    ];
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
     $query = new MongoDB\Driver\Query($filter, $options);

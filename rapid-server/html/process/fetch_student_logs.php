@@ -16,9 +16,16 @@ function getLogs()
     // MongoDB connection setup
     $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
-
+    $student_id = $_GET['student_id'];
     // MongoDB Query Setup
-    $filter = ['type' => ['$not' => new MongoDB\BSON\Regex('image', 'i')]]; // Exclude documents where 'type' contains 'image'
+    $filter = [
+        'uuid' => ['$regex' => "^$student_id-"],
+    ];
+    // MongoDB Query Setup
+    $filter = [
+            'type' => ['$not' => new MongoDB\BSON\Regex('image', 'i')],
+            'uuid' => ['$regex' => "^$student_id-"],
+    ]; // Exclude documents where 'type' contains 'image'
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
     $query = new MongoDB\Driver\Query($filter, $options);
