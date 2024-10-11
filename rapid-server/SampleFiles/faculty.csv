@@ -1,0 +1,4 @@
+UserId,UserName,Email,PasswordHash,UserType
+2,Bob Brown,bob.brown@example.com,5f4dcc3b5aa765d61d8327deb882cf99,faculty
+3,Charlie Davis,charlie.davis@example.com,5f4dcc3b5aa765d61d8327deb882cf99,faculty
+4,Jane Smith,jane.smith@example.com,5f4dcc3b5aa765d61d8327deb882cf99,faculty
