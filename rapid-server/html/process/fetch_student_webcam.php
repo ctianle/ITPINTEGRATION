@@ -14,8 +14,8 @@ function getWebcam()
     $student_id = $_GET['student_id'];
     $session_id = $_GET['session_id'];
     $limit = 10; // Number of images per page
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
-    $offset = ($page - 1) * $limit; // Offset for the query
+    $pageSnapshots = isset($_GET['page_snapshots']) ? (int)$_GET['page_snapshots'] : 1; // Current page
+    $offsetSnapshots = ($pageSnapshots - 1) * $limit; // Offset for the query
 
     // Query MongoDB for webcam snapshots
     $filter = [
@@ -23,16 +23,17 @@ function getWebcam()
         //'StudentId' => ['$regex' => "^$student_id-"], // Uncomment and use as needed
         //'SessionId' => (int) $session_id, // Uncomment and use as needed
     ];
-    $query = new MongoDB\Driver\Query($filter, [
+    // Update the query for pagination
+    $snapshotQuery = new MongoDB\Driver\Query($filter, [
         'sort' => ['timestamp' => -1],
         'limit' => $limit,
-        'skip' => $offset,
+        'skip' => $offsetSnapshots, // Use the correct offset for pagination
     ]);
-    $cursor = $manager->executeQuery("$dbName.Snapshots", $query);
+    $snapshotCursor = $manager->executeQuery("$dbName.Snapshots", $snapshotQuery);
 
     // Fetch results into an array
     $rows = [];
-    foreach ($cursor as $document) {
+    foreach ($snapshotCursor as $document) {
         $rows[] = $document;
     }
 
@@ -132,6 +133,7 @@ function getWebcam()
         }
         $snapshotPaginationHTML .= '</div>';
 
+        
         // Return the snapshots pagination separately
         return [
             'snapshotPaginationHTML' => $snapshotPaginationHTML

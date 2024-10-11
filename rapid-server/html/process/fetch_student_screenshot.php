@@ -23,16 +23,21 @@ function getScreenshot()
         //'StudentId' => (int) $student_id, // Uncomment and use as needed
         //'SessionId' => (int) $session_id, // Uncomment and use as needed
     ];
-    $query = new MongoDB\Driver\Query($filter, [
+    // Update this part for pagination
+    $pageScreenshots = isset($_GET['page_screenshots']) ? (int)$_GET['page_screenshots'] : 1; // Current page for screenshots
+    $offsetScreenshots = ($pageScreenshots - 1) * $limit; // Offset for screenshots query
+
+    // Ensure that you apply the offset in the screenshots query
+    $screenshotQuery = new MongoDB\Driver\Query($filter, [
         'sort' => ['timestamp' => -1],
         'limit' => $limit,
-        'skip' => $offset,
+        'skip' => $offsetScreenshots, // Use the correct offset for pagination
     ]);
-    $cursor = $manager->executeQuery("$dbName.Screenshots", $query);
+    $screenshotCursor = $manager->executeQuery("$dbName.Screenshots", $screenshotQuery);
 
     // Fetch results into an array
     $rows = [];
-    foreach ($cursor as $document) {
+    foreach ($screenshotCursor as $document) {
         $rows[] = $document;
     }
 
@@ -132,6 +137,7 @@ function getScreenshot()
         if ($pageScreenshots < $totalPagesScreenshots) {
             $screenshotPaginationHTML .= '<a href="?student_id=' . $student_id . '&session_id=' . $session_id . '&page_screenshots=' . ($pageScreenshots + 1) . '">Next</a>';
         }
+        
         $screenshotPaginationHTML .= '</div>';
 
         // Return the screenshots pagination separately
