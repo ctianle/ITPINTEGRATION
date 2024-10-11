@@ -37,23 +37,28 @@ if (session_status() === PHP_SESSION_NONE) {
             
             <!-- Only show the "Features" section if the user is an admin -->
             <?php if (isset($_SESSION['UserType']) && $_SESSION['UserType'] === 'admin') : ?>
-            <li class="nav-item">
-                <a href="#" class="nav-link dropdown-toggle align-middle px-0" id="navbarScrollingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Features</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="admin_interval_defaults.php">Default Interval Configurations</a></li>
-                    <li><a class="dropdown-item" href="admin_interval.php">Interval Configurations</a></li>
-                    <li><a class="dropdown-item" href="upload.php">Upload Proctoring Script</a></li>
-                    <li><a class="dropdown-item" href="admin_uuidlist.php">Delete Data for specified UUID</a></li>
-                    <li><a class="dropdown-item" href="rsa_key_generation.php">RSA Asymmetric Key Pair Generation</a></li>
-                    <li><a class="dropdown-item" href="admin_ping_dynamic.php">Connection Status (Heartbeat - Dynamic)</a></li>
-                    <li><a class="dropdown-item" href="admin_ping_static.php">Connection Status (Heartbeat - Static)</a></li>
-                    <li><a class="dropdown-item" href="admin_ping_server.php">Heartbeat Server</a></li>
-                    <li><a class="dropdown-item" href="admin_ping_server_logs.php">Heartbeat Server Logs</a></li>
-                    <li><a class="dropdown-item" href="kill_processes_admin.php">Kill Processes</a></li>
-                </ul>
-            </li>
+                <li class="nav-item">
+                    <a href="faculty.php" class="nav-link align-middle px-0">
+                        <i class="fs-4 bi-briefcase"></i> <span class="ms-1 d-none d-sm-inline">Faculty</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link dropdown-toggle align-middle px-0" id="navbarScrollingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Features</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="admin_interval_defaults.php">Default Interval Configurations</a></li>
+                        <li><a class="dropdown-item" href="admin_interval.php">Interval Configurations</a></li>
+                        <li><a class="dropdown-item" href="upload.php">Upload Proctoring Script</a></li>
+                        <li><a class="dropdown-item" href="admin_uuidlist.php">Delete Data for specified UUID</a></li>
+                        <li><a class="dropdown-item" href="rsa_key_generation.php">RSA Asymmetric Key Pair Generation</a></li>
+                        <li><a class="dropdown-item" href="admin_ping_dynamic.php">Connection Status (Heartbeat - Dynamic)</a></li>
+                        <li><a class="dropdown-item" href="admin_ping_static.php">Connection Status (Heartbeat - Static)</a></li>
+                        <li><a class="dropdown-item" href="admin_ping_server.php">Heartbeat Server</a></li>
+                        <li><a class="dropdown-item" href="admin_ping_server_logs.php">Heartbeat Server Logs</a></li>
+                        <li><a class="dropdown-item" href="kill_processes_admin.php">Kill Processes</a></li>
+                    </ul>
+                </li>
             <?php endif; ?>
         </ul>
         <hr>

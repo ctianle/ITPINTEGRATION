@@ -17,7 +17,7 @@ session_start();
                 ?>
                 <div class="col py-3">
                     <div class="container content">
-                        <div class="row">
+                        <div class="row" style="width: 100%">
                             <div class="col-md">
                                 <div class="col">
                                     <div class="card">
@@ -71,7 +71,7 @@ session_start();
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="chart-container" style="width:100%;">
-                                                <canvas id="myChart" max-width="280" height="280"></canvas>
+                                                <canvas id="myChart" max-width="280" height="280" ></canvas>
 
                                             </div>
                                         </div>
@@ -107,5 +107,5 @@ session_start();
     <script defer src="js/index.js"></script>
     <script src="js/session_overview.js"></script>
     <script src="js/chart.js"></script>
-    <script defer src="js/students_overview.js"></script>
+    <!--<script defer src="js/students_overview.js"></script>-->
 </html>

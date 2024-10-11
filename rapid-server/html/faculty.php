@@ -16,8 +16,9 @@
                         <div class="row">
                             <form id="uploadForm" action="process/insert_faculty.php" method="post" enctype="multipart/form-data">
                                 <div class="col-8">
-                                    <button type="button" class="btn btn-info btn-lg create" onclick="document.getElementById('fileInput').click();">Upload Faculty List (.CSV)</button>
-                                    <input type="file" name="file" id="fileInput" accept=".csv" onchange="document.getElementById('uploadForm').submit();" style="display:none;">
+                                    <button type="button" class="btn btn-info btn-lg create" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
+                                        Add Faculty Member
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -55,6 +56,46 @@
             </div>
         </div>
     </main>
+
+    <!-- Add Faculty Member Modal -->
+    <div class="modal fade" id="addFacultyModal" tabindex="-1" aria-labelledby="addFacultyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addFacultyModalLabel">Add Faculty Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addFacultyForm" action="process/insert_faculty.php" method="post">
+                        <div class="mb-3">
+                            <label for="addUserId" class="form-label">User ID</label>
+                            <input type="text" class="form-control" id="addUserId" name="user_id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addUserType" class="form-label">User Type</label>
+                            <select class="form-select" id="addUserType" name="user_type" required>
+                                <option value="invigilator">Invigilator</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addUserName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="addUserName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addUserEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="addUserEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPasswordHash" class="form-label">Password Hash</label>
+                            <input type="text" class="form-control" id="addPasswordHash" name="password_hash" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Member</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
