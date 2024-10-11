@@ -7,7 +7,7 @@ services:
     container_name: php_app
     volumes:
       - ./html:/var/www/html
-      - ./logs:/var/logs/myapp
+      - ./logs:/var/logs/myapp:rw
       - ./keys:/var/www/keys
       - ./ssl/openssl_myapp.cnf:/etc/ssl/openssl_myapp.cnf
     ports:

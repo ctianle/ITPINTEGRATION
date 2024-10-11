@@ -1,5 +1,12 @@
 FROM php:8.0-apache
 
+# Set user 'www-data' UID and GID to match the host system or a standard ID, such as 1000, if suitable
+ARG WWW_DATA_UID=1000
+ARG WWW_DATA_GID=1000
+
+# Update 'www-data' UID and GID to match the provided arguments
+RUN usermod -u $WWW_DATA_UID www-data && groupmod -g $WWW_DATA_GID www-data
+
 # Install necessary extensions and tools
 RUN apt-get update && apt-get install -y \
     libonig-dev \
@@ -36,20 +43,22 @@ WORKDIR /var/www/html
 
 # Copy the app directory to the container
 COPY ./html /var/www/html
-
+COPY ./logs /var/logs/myapp
 # Install Composer dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Ensure the web server user can write to the vendor directory
-RUN chown -R www-data:www-data /var/www/html/vendor
-
-# Set permissions for the app directory
+# Ensure the web server user can write to the web directory
 RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/logs/myapp
 
 # Create a directory for storing keys and set permissions
 RUN mkdir -p /var/www/keys \
     && chown -R www-data:www-data /var/www/keys \
     && chmod 700 /var/www/keys
+
+# Create and set permissions for log directory
+RUN mkdir -p /var/logs/myapp \
+    && chown -R www-data:www-data /var/logs/myapp
 
 # Expose port 80
 EXPOSE 80

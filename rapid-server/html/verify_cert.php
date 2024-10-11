@@ -159,6 +159,7 @@ $current_time = time();
 
 $allowed_time_difference = 300; // 5 minutes
 if (abs($current_time - $timestamp) > $allowed_time_difference) {
+    error_log('TESTe: ' . openssl_error_string());
     respond('error', 'Timestamp is outside the allowed time window.');
 }
 
