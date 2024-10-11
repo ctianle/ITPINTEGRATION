@@ -56,7 +56,7 @@ function getWebcam()
         $carouselItems .= '<img src="data:image/png;base64,' . $imageData . '" class="d-block w-100 carousel-img" alt="Screenshot" data-bs-toggle="modal" data-bs-target="#modalWebcam' . $slideIndex . '">';
         $carouselItems .= '<div class="carousel-caption d-none d-md-block">';
         $carouselItems .= '<div class="caption-text-container">'; // Container for text and shadow
-        $carouselItems .= '<h5>Screenshot ' . ($slideIndex + 1) . '</h5>';
+        $carouselItems .= '<h5>Snapshot ' . ($slideIndex + 1) . '</h5>';
         $carouselItems .= '<p>Captured at: ' . $formattedDateTime . ' GMT+8</p>';
         $carouselItems .= '</div>';
         $carouselItems .= '</div>';
