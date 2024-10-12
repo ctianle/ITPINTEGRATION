@@ -250,8 +250,8 @@ def store_data():
         return jsonify({"status": "error", "message": "Invalid data"}), 400
 
     data_type = data['type']
-    content = data['content']
-
+    # content = data['content']
+    data['content'] = jsonify(constructDataResponse(data['content'], data['type'], gen_key(), JwT_token))
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     file_name = f"{data_type}_{timestamp}.json"
     file_path = os.path.join(TEMP_STORAGE, file_name)
