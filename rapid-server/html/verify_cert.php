@@ -8,10 +8,110 @@ use Firebase\JWT\Key;
 define('ROOT_CA_CERT_PATH', '/var/www/keys/root_ca.crt');
 define('PRIVATE_KEY_PATH', '/var/www/keys/private_rsa.key');
 
+// Initialise DB Variables.
+$db_user = getenv('DB_ROOT_USERNAME');
+$db_password = getenv('DB_ROOT_PASSWORD');
+$dbName = getenv('DB_NAME');
+
 function respond($status, $message) {
     echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
+
+function fetchStudentSessions($manager, $studentId) {
+    global $dbName;
+    // Create a query to find the student by StudentId
+    $query = new MongoDB\Driver\Query(['StudentId' => (int)$studentId]);
+    
+    // Execute the query against the 'Students' collection in the specified database
+    $cursor = $manager->executeQuery($dbName . '.Students', $query);
+
+    $sessions = [];
+    
+    // Iterate through the student documents
+    foreach ($cursor as $student) {
+        // Ensure the document has 'SessionIds' and it's an array
+        if (isset($student->SessionId)) {
+            // Fetch the session details for this SessionId
+            $sessionQuery = new MongoDB\Driver\Query(['SessionId' => $student->SessionId]);
+
+            // Execute the query against the 'Sessions' collection
+            $sessionCursor = $manager->executeQuery($dbName . '.Sessions', $sessionQuery);
+
+            // Add each session document to the $sessions array
+            foreach ($sessionCursor as $session) {
+                $sessions[] = $session;
+            }
+        }
+    }
+    return $sessions;
+}
+
+function checkSessionTiming($session) {
+    // Ensure the server is using the correct timezone (e.g., Asia/Singapore or GMT+8)
+    date_default_timezone_set('Asia/Singapore'); 
+
+    // Get the current time
+    $currentTime = new DateTime();
+
+    // Ensure StartTime and EndTime exist and are valid MongoDB\BSON\UTCDateTime objects
+    if (isset($session->StartTime) && $session->StartTime instanceof MongoDB\BSON\UTCDateTime &&
+        isset($session->EndTime) && $session->EndTime instanceof MongoDB\BSON\UTCDateTime) {
+        
+        // Convert MongoDB\BSON\UTCDateTime to PHP DateTime and adjust to the server's timezone (GMT+8)
+        $sessionStartTime = $session->StartTime->toDateTime()->setTimezone(new DateTimeZone('Asia/Singapore'));
+        $sessionEndTime = $session->EndTime->toDateTime()->setTimezone(new DateTimeZone('Asia/Singapore'));
+
+        // Modify the session start time to 15 minutes prior
+        $sessionStartTime->modify('-15 minutes');
+
+        // Check if the current time is between the adjusted start time and the end time
+        if ($currentTime >= $sessionStartTime && $currentTime <= $sessionEndTime) {
+            return true;
+        } 
+    }
+
+    return false;
+}
+
+// Function to generate JWT token
+function generate_jwt($client_uuid, $session_id) {
+    $issued_at = time();
+    $expiration_time = $issued_at + 3600; // jwt valid for 1 hour from the issued time
+    $payload = array(
+        "iat" => $issued_at,
+        "exp" => $expiration_time,
+        "jti" => bin2hex(random_bytes(16)),
+        "client_uuid" => $client_uuid,
+        "session_id" => $session_id
+    );
+
+    // Get the secret key from environment variables
+    $secret_key = getenv('JWT_SECRET');
+    if (!$secret_key) {
+        error_log('JWT secret key is not set in environment variables.');
+        respond('error', 'JWT secret key is not set.');
+    }
+
+    $jwt = JWT::encode($payload, $secret_key, 'HS256');
+    return $jwt;
+}
+
+function main($manager, $client_uuid) {
+    $client_id_parts = explode("-", $client_uuid);
+    $student_id = $client_id_parts[0]; // Extract the student ID
+    $sessions = fetchStudentSessions($manager, $student_id);
+
+    foreach ($sessions as $session) {
+        if (checkSessionTiming($session)) {
+            $jwt_token = generate_jwt($client_uuid, $session->SessionId);
+            return $jwt_token;
+        }
+    }
+    error_log('No suitable session found for issuing JWT to Device: ' . $client_uuid);
+    return null;
+}
+
 
 // Fetch the CA key passphrase from environment variable
 $ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
@@ -74,14 +174,6 @@ try {
 $signed_message = $combined_data['signed_message'];
 $cert_data = $combined_data['cert_data'];
 $original_message = $combined_data['message'];
-
-
-
-// MongoDB connection
-// Initialise DB Variables.
-$db_user = getenv('DB_ROOT_USERNAME');
-$db_password = getenv('DB_ROOT_PASSWORD');
-$dbName = getenv('DB_NAME');
 
 // MongoDB connection using native driver
 $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
@@ -159,38 +251,17 @@ $current_time = time();
 
 $allowed_time_difference = 300; // 5 minutes
 if (abs($current_time - $timestamp) > $allowed_time_difference) {
-    error_log('TESTe: ' . openssl_error_string());
     respond('error', 'Timestamp is outside the allowed time window.');
 }
 
 $client_uuid = $original_message_parts[0]; 
 
-// Function to generate JWT token
-function generate_jwt($client_uuid) {
-    $issued_at = time();
-    $expiration_time = $issued_at + 3600; // jwt valid for 1 hour from the issued time
-    $payload = array(
-        "iat" => $issued_at,
-        "exp" => $expiration_time,
-        "jti" => bin2hex(random_bytes(16)),
-        "client_uuid" => $client_uuid
-    );
-
-    // Get the secret key from environment variables
-    $secret_key = getenv('JWT_SECRET');
-    if (!$secret_key) {
-        error_log('JWT secret key is not set in environment variables.');
-        respond('error', 'JWT secret key is not set.');
-    }
-
-    $jwt = JWT::encode($payload, $secret_key, 'HS256');
-    return $jwt;
-}
-
-
 // Generate JWT token
-$jwt_token = generate_jwt($client_uuid);
+$jwt_token = main($manager, $client_uuid);
 
+if (!$jwt_token) { // Checking if there is NOT a JWT token
+    exit;
+}
 // Generate a new Fernet key
 $new_fernet_key = Fernet::generateKey();
 

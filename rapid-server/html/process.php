@@ -32,6 +32,9 @@ function Verify_Token($jwt_token) {
             respond('error', "Invalid Token Timestamp");
             exit;
         }
+        if (!validateUUID($decoded_array['client_uuid'])) {
+            exit; // Stop further execution if the UUID format is not valid
+        }
         // Token is valid
         return true;
 
@@ -42,6 +45,63 @@ function Verify_Token($jwt_token) {
     }
 }
 
+function getUUID($jwt_token){
+    // Get the secret key from environment variables
+    $secret_key = getenv('JWT_SECRET');
+    if (!$secret_key) {
+        error_log('JWT secret key is not set in environment variables.');
+        exit;
+    }
+
+    try {
+        // Decode the JWT token
+        $decoded = JWT::decode($jwt_token, new Key($secret_key, 'HS256'));
+
+        // Convert the decoded object to an array
+        $decoded_array = (array) $decoded;
+
+        return $decoded_array['client_uuid'];
+
+    } catch (Exception $e) {
+        // Handle errors
+        error_log('JWT decode error: ' . $e->getMessage());
+        exit;
+    }
+}
+
+function getSessionID($jwt_token){
+    // Get the secret key from environment variables
+    $secret_key = getenv('JWT_SECRET');
+    if (!$secret_key) {
+        error_log('JWT secret key is not set in environment variables.');
+        exit;
+    }
+
+    try {
+        // Decode the JWT token
+        $decoded = JWT::decode($jwt_token, new Key($secret_key, 'HS256'));
+
+        // Convert the decoded object to an array
+        $decoded_array = (array) $decoded;
+
+        return $decoded_array['session_id'];
+
+    } catch (Exception $e) {
+        // Handle errors
+        error_log('JWT decode error: ' . $e->getMessage());
+        exit;
+    }
+}
+function validateUUID($uuid) {
+    $regex = '/^\d{7}-[a-f0-9]{64}$/';
+
+    if (preg_match($regex, $uuid)) {
+        return true; // UUID is valid
+    } else {
+        error_log('Invalid UUID format.');
+        return false; // UUID is not valid
+    }
+}
 //====================================
 //     Troubleshooting Parameters
 //====================================
@@ -138,6 +198,14 @@ $fernet = new Fernet($fernetkey); //Fernet Key
 $data = ""; //Define Data Variable
 $trigger_count = $fernet->decode($array[1]);
 $trigger = $fernet->decode($array[2]);
+$category = $fernet->decode($array[3]);
+$data = $fernet->decode($array[4]);
+$JwT_Token = $fernet->decode($array[7]);
+Verify_Token($JwT_Token);
+$UUID = getUUID($JwT_Token);
+$ProctorSessionID = getSessionID($JwT_Token);
+
+//=============================================
 //             Logging Parameters
 //=============================================
 date_default_timezone_set('Asia/Singapore');
@@ -234,23 +302,24 @@ switch ($category) {
     case "KS":
         $category = "Keystrokes (KS)";
         break;
+    case "VM":
+    $category = "Virtual Machine Detection (VM)";
+    break;
 }
 
 //========================================================================
 //     Inserting Data into `proctoring` database for viewing/analysis
 //========================================================================
 $bulk = new MongoDB\Driver\BulkWrite;
-if($data){
-    $bulk->insert([
-        'uuid' => $UUID,
-        'trigger_count' => $trigger_count,
-        'category' => $category,
-        'data' => $data,
-        'date_time' => $date_time
-    ]);
-    $manager->executeBulkWrite("$dbName.Processes", $bulk);
-    echo "Proctoring Data inserted successfully.\n";
-}
+$bulk->insert([
+    'uuid' => $UUID,
+    'trigger_count' => $trigger_count,
+    'category' => $category,
+    'data' => $data,
+    'date_time' => $date_time
+]);
+$manager->executeBulkWrite("$dbName.proctoring", $bulk);
+echo "Proctoring Data inserted successfully.\n";
 
 //=============================================
 //             Close SQL Connection
