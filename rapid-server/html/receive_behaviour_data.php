@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ProctorSessionID = getSessionID($JwT_Token);
 
     $newData = [
-        'timestamp' => new UTCDateTime((new DateTime())->getTimestamp() * 1000), // Timestamp in milliseconds
+        'timestamp' => new UTCDateTime((new DateTime('now', new DateTimeZone('Asia/Singapore')))->getTimestamp() * 1000), // Timestamp in milliseconds, Asia/Singapore timezone
         'datatype' => $datatype, 
         'content' => $data,
         'UUID' => $UUID     
