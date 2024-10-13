@@ -181,7 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newData = [
         'timestamp' => new UTCDateTime((new DateTime())->getTimestamp() * 1000), // Timestamp in milliseconds
         'datatype' => $datatype, 
-        'content' => $data       
+        'content' => $data,
+        'UUID' => $UUID     
     ];
 
         // Insert the received data into MongoDB
