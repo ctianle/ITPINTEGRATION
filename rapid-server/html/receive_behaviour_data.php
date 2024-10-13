@@ -171,9 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //  Decrypting the rest of the JSON Data
     //========================================
     $fernet = new Fernet($fernetkey); //Fernet Key
-    $category = $fernet->decode($array[3]); // Content
-    $data = $fernet->decode($array[4]);
-    $JwT_Token = $fernet->decode($array[7]);
+    $category = $fernet->decode($encryptedArray[3]); // Content
+    $data = $fernet->decode($encryptedArray[4]);
+    $JwT_Token = $fernet->decode($encryptedArray[7]);
     Verify_Token($JwT_Token);
     $UUID = getUUID($JwT_Token);
     $ProctorSessionID = getSessionID($JwT_Token);
@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Insert the received data into MongoDB
         try {
             $bulk = new BulkWrite();
-            $bulk->insert($data);
+            $bulk->insert($newData);
             $result = $manager->executeBulkWrite("$dbName.Behaviour_logs", $bulk);
 
             if ($result->getInsertedCount() === 1) {
