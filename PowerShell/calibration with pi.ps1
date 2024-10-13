@@ -8,6 +8,10 @@ $resolution_url = "http://10.0.0.1/update_resolution"
 $Position = -1
 $PiReady = $false
 
+$display = Get-CimInstance Win32_VideoController
+
+$actual_width = $display.CurrentHorizontalResolution -as [int]
+$actual_height = $display.CurrentVerticalResolution -as [int]
 
 function New-Window {
     [xml]$xaml = @"
@@ -107,8 +111,8 @@ function Main {
     })
 	
 	$payload = @{
-    "Width"  = $width
-    "Height" = $height
+    "Width"  = $actual_width
+    "Height" = $actual_height
 	
 	}
 	# Convert payload to JSON

