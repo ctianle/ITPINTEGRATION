@@ -87,7 +87,7 @@
                             <input type="email" class="form-control" id="addUserEmail" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="addPasswordHash" class="form-label">Password Hash</label>
+                            <label for="addPasswordHash" class="form-label">Password (PlainText)</label>
                             <input type="text" class="form-control" id="addPasswordHash" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Member</button>
@@ -127,7 +127,7 @@
                             <input type="email" class="form-control" id="editUserEmail" required>
                         </div>
                         <div class="mb-3">
-                            <label for="editPasswordHash" class="form-label">Password Hash</label>
+                            <label for="editPasswordHash" class="form-label">Password (Backspace all & Enter PlainText)</label>
                             <input type="text" class="form-control" id="editPassword" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
