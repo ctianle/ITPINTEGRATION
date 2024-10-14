@@ -141,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rawData = json_decode($postData, true);
 
     $encryptedArray = $rawData['content'];
-    $datatype = $rawData['type'];    
+    // $datatype = $rawData['type'];    
     //========================================
     // RSA Encryption (Decrypting Fernet Key)
     //========================================
@@ -180,9 +180,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $newData = [
         'timestamp' => new UTCDateTime((new DateTime('now', new DateTimeZone('Asia/Singapore')))->getTimestamp() * 1000), // Timestamp in milliseconds, Asia/Singapore timezone
-        'datatype' => $datatype, 
+        'datatype' => $category, 
         'content' => $data,
-        'UUID' => $UUID     
+        'UUID' => $UUID,
+        'ProctorSessionID' => $ProctorSessionID   
     ];
 
         // Insert the received data into MongoDB
