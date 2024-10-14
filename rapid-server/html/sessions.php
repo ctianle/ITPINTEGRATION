@@ -87,35 +87,35 @@ session_start();
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm">
-                        <div class="mb-3">
-                            <label for="editSessionName" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="editSessionName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editSessionDate" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="editSessionDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editSessionStartTime" class="form-label">Start Time</label>
-                            <input type="time" class="form-control" id="editSessionStartTime" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editSessionEndTime" class="form-label">End Time</label>
-                            <input type="time" class="form-control" id="editSessionEndTime" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editSessionDuration" class="form-label">Duration(Mins)</label>
-                            <input type="text" class="form-control" id="editSessionDuration" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editBlacklist">Blacklist (comma-separated)</label>
-                            <input type="text" class="form-control" id="editBlacklist" name="blacklist" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="editWhitelist">Whitelist (comma-separated)</label>
-                            <input type="text" class="form-control" id="editWhitelist" name="whitelist" />
-                        </div>
+                <form id="editSessionForm" action="process/update_session.php" method="POST">
+                    <div class="mb-3">
+                        <label for="editSessionId" class="form-label">Session ID</label>
+                     <input type="text" class="form-control" id="editSessionId" name="session_id" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSessionName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="editSessionName" name="session_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSessionDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="editSessionDate" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSessionStartTime" class="form-label">Start Time</label>
+                        <input type="time" class="form-control" id="editSessionStartTime" name="start_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSessionEndTime" class="form-label">End Time</label>
+                        <input type="time" class="form-control" id="editSessionEndTime" name="end_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editBlacklist">Blacklist (comma-separated)</label>
+                        <input type="text" class="form-control" id="editBlacklist" name="blacklist" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editWhitelist">Whitelist (comma-separated)</label>
+                        <input type="text" class="form-control" id="editWhitelist" name="whitelist" />
+                    </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>
                 </div>

@@ -42,9 +42,6 @@ session_start();
                                         <label for="end_time">End Time</label>
                                         <input type="time" id="end_time" name="end_time" required>
 
-                                        <label for="duration">Duration</label>
-                                        <input type="text" id="duration" name="duration" required>
-
                                         <div class="whitelist">
                                             <button type="button" onclick="addWhitelist()">+ Add Whitelist</button>
                                             <button type="button" onclick="addBlacklist()">+ Add Blacklist</button>

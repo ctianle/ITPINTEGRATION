@@ -104,26 +104,23 @@ function sortData(field) {
   });
 }
 
-// Function to edit session details
 function editSession(index) {
-  currentEditIndex = index;
   const session = sessions[index];
-
+  
+  // Populate modal form with session data
+  document.getElementById("editSessionId").value = session.session_id;
   document.getElementById("editSessionName").value = session.name;
   document.getElementById("editSessionDate").value = session.date;
   document.getElementById("editSessionStartTime").value = session.start_time;
   document.getElementById("editSessionEndTime").value = session.end_time;
-  document.getElementById("editSessionDuration").value = session.duration;
-  document.getElementById("editBlacklist").value = session.BlacklistedApps.join(
-    ", "
-  );
-  document.getElementById("editWhitelist").value = session.WhitelistedApps.join(
-    ", "
-  );
+  document.getElementById("editBlacklist").value = session.BlacklistedApps;
+  document.getElementById("editWhitelist").value = session.WhitelistedApps;
 
+  // Show modal
   const editModal = new bootstrap.Modal(document.getElementById("editModal"));
   editModal.show();
 }
+
 
 // Function to delete a session document
 function deleteDocument(documentId) {
@@ -142,41 +139,6 @@ function setupDropdown() {
   }
   });
 }
-
-document.getElementById("editForm").addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  const sessionId = sessions[currentEditIndex].session_id;
-  const sessionName = document.getElementById("editSessionName").value;
-  const sessionDate = document.getElementById("editSessionDate").value;
-  const startTime = document.getElementById("editSessionStartTime").value;
-  const endTime = document.getElementById("editSessionEndTime").value;
-  const duration = document.getElementById("editSessionDuration").value;
-  
-  const blacklist = document
-    .getElementById("editBlacklist")
-    .value.split(",")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
-    
-  const whitelist = document
-    .getElementById("editWhitelist")
-    .value.split(",")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
-
-  const url = `../process/update_session.php?SessionId=${sessionId}&SessionName=${encodeURIComponent(
-    sessionName
-  )}&Date=${encodeURIComponent(sessionDate)}&StartTime=${encodeURIComponent(
-    startTime
-  )}&EndTime=${encodeURIComponent(endTime)}&Duration=${encodeURIComponent(
-    duration
-  )}&Blacklist=${encodeURIComponent(
-    JSON.stringify(blacklist)
-  )}&Whitelist=${encodeURIComponent(JSON.stringify(whitelist))}`;
-
-  window.location.href = url;
-});
 
 // Ensure DOM is fully loaded before running scripts
 window.onload = () => {

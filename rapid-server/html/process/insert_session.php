@@ -64,9 +64,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $date = $_POST['date'] ?? '';
     $startTime = $_POST['start_time'] ?? '';
     $endTime = $_POST['end_time'] ?? '';
-    $duration = (int)($_POST['duration'] ?? 0);
 
-    // Validate inputs as needed
+    if (!empty($startTime) && !empty($endTime)) {
+        $startDateTime = new DateTime("$date $startTime");
+        $endDateTime = new DateTime("$date $endTime");
+
+        // Check if end time is in AM when start time is in PM
+        if ($startDateTime->format('A') === 'PM' && $endDateTime->format('A') === 'AM') {
+            redirectWithMessage('End time cannot be in AM if start time is in PM. Please correct the times.');
+        }
+
+        // Calculate duration in minutes
+        $duration = ($endDateTime->getTimestamp() - $startDateTime->getTimestamp()) / 60; // Convert seconds to minutes
+
+        // Ensure duration is a positive value
+        if ($duration < 0) {
+            redirectWithMessage('End time must be after start time. Please correct the times.');
+        }
+    } else {
+        redirectWithMessage('Start time and end time must be provided.');
+    }
 
     $whitelist = $_POST['whitelist'] ?? [];
     $blacklist = $_POST['blacklist'] ?? [];

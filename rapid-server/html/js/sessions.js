@@ -111,11 +111,11 @@ function editSession(index) {
   const session = sessions[index];
   
   // Populate modal form with session data
+  document.getElementById("editSessionId").value = session.session_id;
   document.getElementById("editSessionName").value = session.name;
   document.getElementById("editSessionDate").value = session.date;
   document.getElementById("editSessionStartTime").value = session.start_time;
   document.getElementById("editSessionEndTime").value = session.end_time;
-  document.getElementById("editSessionDuration").value = session.duration;
   document.getElementById("editBlacklist").value = session.BlacklistedApps;
   document.getElementById("editWhitelist").value = session.WhitelistedApps;
 
@@ -141,6 +141,7 @@ function setupDropdown() {
   }
   });
 }
+
 
 // Ensure DOM is fully loaded before running scripts
 window.onload = () => {

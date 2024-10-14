@@ -1,12 +1,12 @@
 <?php
 session_start();
 
+use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
-use MongoDB\Driver\Exception\Exception as MongoDBException;
+use MongoDB\Driver\WriteConcern;
 use MongoDB\BSON\UTCDateTime;
-use DateTime;
-use DateTimeZone;
+use MongoDB\BSON\ObjectId;
 
 // Initialise DB Variables.
 $db_user = getenv('DB_ROOT_USERNAME');
@@ -15,90 +15,68 @@ $dbName = getenv('DB_NAME');
 
 // MongoDB connection string
 $mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
+$manager = new MongoDB\Driver\Manager($mongoConnectionString);
 
-try {
-    // Create a new MongoDB Manager instance
-    $manager = new Manager($mongoConnectionString);
+// Specify the database and collection
+$collection = "$dbName.Sessions";
 
-    // Ensure necessary fields are set in the $_GET array
-    if (!isset($_GET['SessionId']) || !isset($_GET['SessionName']) || !isset($_GET['Date']) || !isset($_GET['StartTime']) || !isset($_GET['EndTime']) || !isset($_GET['Duration']) || !isset($_GET['Blacklist']) || !isset($_GET['Whitelist'])) {
-        throw new Exception('Missing required fields in the input data');
+function redirectWithMessage($message, $url = '../sessions.php') {
+    echo "<script type='text/javascript'>alert('$message'); window.location.href = '$url';</script>";
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $sessionId = $_POST['session_id']; // Get the session ID from the form
+    $sessionName = $_POST['session_name'] ?? '';
+    $date = $_POST['date'] ?? '';
+    $startTime = $_POST['start_time'] ?? '';
+    $endTime = $_POST['end_time'] ?? '';
+    
+    // Validate input
+    if (empty($sessionId) || empty($sessionName) || empty($date) || empty($startTime) || empty($endTime)) {
+        redirectWithMessage('All fields must be filled out.');
     }
+    
+    // Create DateTime objects for validation
+    $startDateTime = new DateTime("$date $startTime");
+    $endDateTime = new DateTime("$date $endTime");
+    
+    // Check duration
+    if ($endDateTime < $startDateTime) {
+        redirectWithMessage('End time must be after start time.');
+    }
+    
+    // Calculate duration in minutes
+    $duration = ($endDateTime->getTimestamp() - $startDateTime->getTimestamp()) / 60; // Convert seconds to minutes
 
-    // Extract and validate fields
-    $sessionId = (int) $_GET['SessionId'];
-    $sessionName = trim($_GET['SessionName']);
-    $date = trim($_GET['Date']);
-    $startTime = trim($_GET['StartTime']);
-    $endTime = trim($_GET['EndTime']);
-    $duration = (int) $_GET['Duration'];
-
-    // Decode blacklist and whitelist arrays
-    $blacklist = json_decode($_GET['Blacklist'], true);
-    $whitelist = json_decode($_GET['Whitelist'], true);
-
-    // Validate and format date and time
-    $timezone = new DateTimeZone('Asia/Singapore'); // GMT+8
-    $startDateTime = new DateTime("$date $startTime", $timezone);
-    $endDateTime = new DateTime("$date $endTime", $timezone);
-
-    // Convert DateTime to UTC for MongoDB
-    $utcTimezone = new DateTimeZone('UTC');
-    $startDateTime->setTimezone($utcTimezone);
-    $endDateTime->setTimezone($utcTimezone);
-
-    // Prepare filter and update data
-    $filter = ['SessionId' => $sessionId];
+    // Prepare the update data
     $updateData = [
         '$set' => [
             'SessionName' => $sessionName,
             'StartTime' => new UTCDateTime($startDateTime->getTimestamp() * 1000),
             'EndTime' => new UTCDateTime($endDateTime->getTimestamp() * 1000),
-            'Duration' => $duration,
-            'BlacklistedApps' => $blacklist,
-            'WhitelistedApps' => $whitelist,
-            'Date' => $date // If you want to store the date separately
+            'Duration' => (int)$duration,
+            'BlacklistedApps' => explode(',', trim($_POST['blacklist'])), // Convert to array
+            'WhitelistedApps' => explode(',', trim($_POST['whitelist'])) // Convert to array
         ]
     ];
 
-    // Create a new BulkWrite instance
-    $bulkWrite = new BulkWrite();
+    // Create the bulk write object
+    $bulk = new BulkWrite;
+    $bulk->update(
+        ['SessionId' => (int)$sessionId], // Ensure sessionId is treated correctly (int)
+        $updateData
+    );
 
-    // Update the document in the MongoDB collection
-    $bulkWrite->update($filter, $updateData, ['multi' => false, 'upsert' => false]);
-    $manager->executeBulkWrite("$dbName.Sessions", $bulkWrite);
-
-} catch (MongoDBException $e) {
-    // Log the MongoDB exception
-    error_log("MongoDB Exception: " . $e->getMessage());
-    // Return an error response
-    http_response_code(500); // Internal Server Error
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'MongoDB Exception: ' . $e->getMessage()]);
-} catch (Exception $e) {
-    // Log any other exception
-    error_log("Exception: " . $e->getMessage());
-    // Return an error response
-    http_response_code(500); // Internal Server Error
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'Exception: ' . $e->getMessage()]);
+    try {
+        $result = $manager->executeBulkWrite($collection, $bulk);
+        redirectWithMessage('Session updated successfully!');
+    } catch (BulkWriteException $e) {
+        redirectWithMessage('Error updating session: ' . $e->getMessage());
+    } catch (Exception $e) {
+        redirectWithMessage('Unexpected error: ' . $e->getMessage());
+    }
+} else {
+    redirectWithMessage('Invalid request!');
 }
 ?>
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Update Success</title>
-</head>
-
-<body>
-    <script>
-        // Show an alert
-        alert('Session updated successfully');
-
-        // Go back to the previous page after the user clicks OK on the alert
-        window.history.back();
-    </script>
-</body>
-
-</html>
