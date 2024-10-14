@@ -11,6 +11,7 @@ $dbName = getenv('DB_NAME');
 
 // MongoDB connection string
 $mongoConnectionString = "mongodb://$db_user:$db_password@db:27017";
+
 try {
     $manager = new Manager($mongoConnectionString);
 
@@ -25,6 +26,15 @@ try {
 
     $collectionName = 'Users';
 
+    // Hash the plaintext password
+    if (isset($formData['passwordHash']) && !empty($formData['passwordHash'])) {
+        $hashedPassword = password_hash($formData['passwordHash'], PASSWORD_BCRYPT);
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Password is required']);
+        exit;
+    }
+
     $bulkWrite = new BulkWrite();
 
     $filter = ['UserId' => (int)$formData['userId']];
@@ -33,7 +43,7 @@ try {
             'UserType' => $formData['userType'],
             'UserName' => $formData['userName'],
             'Email' => $formData['userEmail'],
-            'PasswordHash' => $formData['passwordHash']
+            'PasswordHash' => $hashedPassword  // Use the hashed password here
         ]
     ];
 

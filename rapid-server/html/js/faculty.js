@@ -91,17 +91,25 @@ function setupPagination() {
 }
 
 function editUser(index) {
-    currentEditIndex = index;
+    currentEditIndex = index;  // Track the current editing index
     const user = faculty[index];
 
-    document.getElementById('editUserId').value = user.user_id;
-    document.getElementById('editUserType').value = user.user_type;
+    if (!user) {
+        console.error('User not found for index:', index);
+        return;
+    }
+
+    document.getElementById('editUserId').value = user.user_id;  // Correctly set the user_id
+    const userTypeSelect = document.getElementById('editUserType');
+    userTypeSelect.value = user.user_type;  // Ensure the user type is set
+
+    // Set other fields
     document.getElementById('editUserName').value = user.name;
     document.getElementById('editUserEmail').value = user.email;
-    document.getElementById('editPasswordHash').value = user.password_hash;
+    document.getElementById('editPassword').value = user.password_hash;
 
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-    editModal.show();
+    editModal.show();  // Show the modal
 }
 
 document.getElementById('editForm').addEventListener('submit', function(event) {
@@ -111,7 +119,7 @@ document.getElementById('editForm').addEventListener('submit', function(event) {
     const userType = document.getElementById('editUserType').value;
     const userName = document.getElementById('editUserName').value;
     const userEmail = document.getElementById('editUserEmail').value;
-    const passwordHash = document.getElementById('editPasswordHash').value;
+    const passwordHash = document.getElementById('editPassword').value;
 
     const formData = {
         userId: userId,

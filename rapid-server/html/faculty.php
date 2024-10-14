@@ -88,7 +88,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="addPasswordHash" class="form-label">Password Hash</label>
-                            <input type="text" class="form-control" id="addPasswordHash" name="password_hash" required>
+                            <input type="text" class="form-control" id="addPasswordHash" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Member</button>
                     </form>
@@ -113,7 +113,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="editUserType" class="form-label">User Type</label>
-                            <input type="text" class="form-control" id="editUserType" required>
+                            <select class="form-select" id="editUserType" required>
+                                <option value="invigilator">Invigilator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="editUserName" class="form-label">Name</label>
@@ -125,7 +128,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editPasswordHash" class="form-label">Password Hash</label>
-                            <input type="text" class="form-control" id="editPasswordHash" required>
+                            <input type="text" class="form-control" id="editPassword" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>

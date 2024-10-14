@@ -1,6 +1,4 @@
 <?php
-//session_start();
-
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Query;
 use MongoDB\Driver\Manager;
@@ -13,7 +11,7 @@ $db_password = getenv('DB_ROOT_PASSWORD');
 $dbName = getenv('DB_NAME');
 
 // Connect to MongoDB
-$manager = new MongoDB\Driver\Manager("mongodb://$db_user:$db_password@db:27017");
+$manager = new Manager("mongodb://$db_user:$db_password@db:27017");
 
 // Specify the database and collection
 $collectionName = "Users";
@@ -26,39 +24,41 @@ function alertAndRedirect($message) {
 
 // Check if the request is POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     // Check if all required form fields are present
-    if (isset($_POST['user_id'], $_POST['user_type'], $_POST['name'], $_POST['email'], $_POST['password_hash'])) {
+    if (isset($_POST['user_id'], $_POST['user_type'], $_POST['name'], $_POST['email'], $_POST['password'])) {
         // Sanitize and collect the form data
         $user_id = (int) $_POST['user_id'];
         $user_type = htmlspecialchars($_POST['user_type'], ENT_QUOTES, 'UTF-8');
         $name = htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
         $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-        $password = $_POST['password_hash'];
+        $plainPassword = $_POST['password'];
 
         if (!$email) {
             alertAndRedirect('Invalid email address!');
         }
 
+        // Hash the password using bcrypt with 10 rounds of salting
+        $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT, ['cost' => 10]);
+
         // Check if the User ID already exists
         $filter = ['UserId' => $user_id];
-        $query = new MongoDB\Driver\Query($filter);
+        $query = new Query($filter);
         $existingUser = $manager->executeQuery("$dbName.$collectionName", $query)->toArray();
 
         if (!empty($existingUser)) {
             alertAndRedirect('User ID is already in use!');
         }
-        
 
         // Check if the Email already exists
         $filterByEmail = ['Email' => $email];
-        $queryByEmail = new MongoDB\Driver\Query($filterByEmail);
+        $queryByEmail = new Query($filterByEmail);
         $existingUserByEmail = $manager->executeQuery("$dbName.$collectionName", $queryByEmail)->toArray();
 
         if (!empty($existingUserByEmail)) {
             alertAndRedirect('Email is already in use!');
         }
-        
+
         // Generate a unique _id and prepare the user data array
         $user = [
             '_id' => new ObjectId(),
@@ -66,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'UserType' => $user_type,
             'UserName' => $name,
             'Email' => $email,
-            'PasswordHash' => $password 
+            'PasswordHash' => $hashedPassword,
+            'isActive' => true
         ];
 
         // Queue the insert operation
@@ -74,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $bulk->insert($user);
 
         // Execute the bulk write operation
-        $writeConcern = new WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
+        $writeConcern = new WriteConcern(WriteConcern::MAJORITY, 1000);
+
         try {
             $result = $manager->executeBulkWrite("$dbName." . $collectionName, $bulk, $writeConcern);
             $insertedCount = $result->getInsertedCount();
