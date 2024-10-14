@@ -24,7 +24,7 @@ def verify_face():
 
     try:
         while True:
-            print("recog")
+            #print("recog")
             if not os.path.exists(first_image_path) or not os.path.exists(last_image_path):
                 print("Image files do not exist")
                 
@@ -40,13 +40,13 @@ def verify_face():
                     if result['verified']:
                         print("Faces match!")
                     else:
-                        server_data = {"type": "face verification", "content": "Different face detected.", "uuid": ""}
+                        server_data = {"type": "face verification", "content": "Different face detected."}
                         response = requests.post(url, json=server_data)
                         print("Faces do not match.")
                     
                     #os.remove(last_image_path)
                 except ValueError as e:
-                    server_data = {"type": "face verification", "content": "No face found in one image.", "uuid": ""}
+                    server_data = {"type": "face verification", "content": "No face found in one image."}
                     response = requests.post(url, json=server_data)
                     os.remove(last_image_path)
                     print(f"No face found in one or both images: {e}")

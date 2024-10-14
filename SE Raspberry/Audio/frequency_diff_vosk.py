@@ -3,8 +3,8 @@ def set_affinity(core_id):
     command = f"taskset -cp {core_id} {os.getpid()}"
     os.system(command)
 
-# Set the current process to run on core 2
-set_affinity(2)
+# Set the current process to run on core 0
+set_affinity(0)
 
 import pyaudio
 import struct
@@ -21,10 +21,6 @@ from queue import Queue
 
 url = "http://10.0.0.1/store_data"
 
-server_data = {
-    "type": "Audio",
-    "content": "Multiple speakers detected"
-}
 
 # Parameters
 BUFFER = 1024  # samples per frame
@@ -71,12 +67,16 @@ def recognize_speech():
         while True:
             data = frame_queue.get()
             if recognizer.AcceptWaveform(data):
+                #speech_recog_start = time.time()
                 result = json.loads(recognizer.Result())
+                #speech_recog_end = time.time()
+                #speech_recog_time = speech_recog_end - speech_recog_start
                 text = result.get("text", "")
                 print("Speech detected: " + text)
-                server_data = {"type": "Audio", "content": "Detected Speech: " + text, "uuid": ""}
-                response = requests.post(url, json=server_data)
-                print(f"Response status code: {response.status_code}")
+                #print("Time to recognise speech: ", speech_recog_time)
+                server_data = {"type": "audio speech", "content": "Detected Speech: " + text}
+                requests.post(url, json=server_data)
+                #print(f"Response status code: {response.status_code}")
     except Exception as e:
         print(f"Error recognizing speech: {e}")
 
@@ -88,19 +88,22 @@ recognizer_thread.start()
 
 try:
     while True:
-        start_time = time.time()
+       # start_time = time.time()
         data = stream.read(BUFFER, exception_on_overflow=False)
         data_int = struct.unpack(str(BUFFER) + 'h', data)
         filtered_data = sosfilt(sos, data_int)
         yf = fft(filtered_data)
         yf_magnitude = 2.0 / BUFFER * np.abs(yf[0:BUFFER // 2])
-        peaks, _ = find_peaks(yf_magnitude, height=threshold)
+        peaks, properties = find_peaks(yf_magnitude, height=threshold)
         xf = fftfreq(BUFFER, (1 / RATE))[:BUFFER // 2]
         peak_frequencies = xf[peaks]
-        
+        peak_magnitudes = properties["peak_heights"]
             
         if len(peak_frequencies) > 0 and not recording:
             average_frequency = np.average(peak_frequencies)
+            #average_magnitude = np.average(peak_magnitudes)
+            #print("average magnitude: ", average_magnitude)
+            #print("average frequency: ", average_frequency)
             frequency_buffer.append(average_frequency)
             if len(frequency_buffer) > moving_sample_size:
                 frequency_buffer.pop(0)
@@ -108,10 +111,13 @@ try:
             max_average_frequency = np.max(frequency_buffer)
             frequency_difference = max_average_frequency - min_average_frequency
 
-            print(f"Frequency Difference: {frequency_difference} Hz")
+            print(f"Frequency Difference: {frequency_difference} Hz \n")
             if frequency_difference > 100:
-                server_data = {"type": "Audio", "content": "Multiple Speakers Detected", "uuid": ""}
-                requests.post(url, json=server_data)
+                server_data = {"type": "audio", "content": "Multiple Speakers Detected"}
+                response = requests.post(url, json=server_data)
+                # Print the response content
+                print(response.status_code)  # Prints the status code (e.g., 200)
+                print(response.json())       # Prints the JSON response content (if the response is JSON)
                 recording_time = time.time()
                 print("Recording")
                 recording = True
@@ -121,10 +127,11 @@ try:
                 frame_queue.put(data)
             else:
                 recording = False
-                print("Ended")
+                #print("Ended")
         
-        end_time = time.time()
-        process_time = end_time - start_time
+        #end_time = time.time()
+        #process_time = end_time - start_time
+
 except KeyboardInterrupt:
     pass
 

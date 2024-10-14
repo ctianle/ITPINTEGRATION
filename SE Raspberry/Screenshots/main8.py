@@ -125,15 +125,13 @@ def process_ocr_and_classification():
             if conversation_percentage > 70 or any_high_risk_templates:
                 base64_image = encode_image_to_base64(all_results[folder_name]['original_image'])
                 send_data_to_server({
-                    'uuid': '',
                     'type': f'Screenshot image',
                     'content': f"{base64_image}"
                 })
 
                 if conversation_percentage > 70:
                     send_data_to_server({
-                        'uuid': '',
-                        'type': f"Conversation percentage",
+                        'type': f"Conversation percentage: {folder_name}",
                         'content': f"conversation_percentage={conversation_percentage:.2f}"
                     })
 
@@ -142,7 +140,6 @@ def process_ocr_and_classification():
                     matched_templates = [key for key, value in all_results[folder_name]['template_matching'].items() if key.endswith('_value') and value > threshold]
                     matched_templates = [key.replace('_value', '') for key in matched_templates]
                     send_data_to_server({
-                        'uuid': '',
                         'type': f"Templates matched",
                         'content': f"{','.join(matched_templates)}"
                     })
@@ -150,7 +147,7 @@ def process_ocr_and_classification():
     logging.info("All processing completed.")
 
 if __name__ == "__main__":
-    set_affinity(1)
+    set_affinity(2)
 
     logging.info(f"Processing images in: {input_folder}")
     process_rois()

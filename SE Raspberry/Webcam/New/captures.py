@@ -58,7 +58,7 @@ def capture_images():
             
             compressed_image_bytes = compress_image(image_data)
             image_base64 = base64.b64encode(compressed_image_bytes).decode('utf-8')
-            server_data = {"type": "camera image", "content": image_base64, "uuid": ""}
+            server_data = {"type": "camera image", "content": image_base64}
             requests.post(url, json=server_data)
             #print(f"Response: {response.json()}")
             
@@ -66,7 +66,6 @@ def capture_images():
             if not os.path.exists(last_image_filename):
                 cv2.imwrite(last_image_filename, image_data)
         
-            
             time.sleep(0.14)
             
     except KeyboardInterrupt:

@@ -114,7 +114,7 @@ def gaze_detect():
 
             if results.multi_face_landmarks:
                 if(len(results.multi_face_landmarks) > 1):
-                    server_data = {"type": "Gaze", "content": "Multiple faces detected", "uuid": ""}
+                    server_data = {"type": "Gaze", "content": "Multiple faces detected"}
                     requests.post(logs_url, json=server_data)
                 
                 if not first_captured:
@@ -287,7 +287,7 @@ def gaze_detect():
                                 data = response.json()
                                 screen_width = data.get("Width")
                                 screen_height = data.get("Height")
-                                #print(screen_width, screen_height)
+                                print(screen_width, screen_height)
 
                         else:
                             calibrated_x = screen_width - (((mean_gaze[0] - min_x) / (max_x - min_x)) * screen_width)
@@ -308,15 +308,11 @@ def gaze_detect():
                                     thickness = 2  # Thickness of the circle
                                     # Draw the circle
                                     cv2.circle(screenshot_image, center_coordinates, radius, color, thickness)
-
-                                    #for debugging
                                     output_filename = os.path.join(debug_directory, 'output_image_with_circle.jpg')
                                     cv2.imwrite(output_filename, screenshot_image)
-
-                                    #save image with circle
                                     compressed_image_bytes = compress_image(screenshot_image)
                                     image_base64 = base64.b64encode(compressed_image_bytes).decode('utf-8')
-                                    server_data = {"type": "gaze coordinates", "content": image_base64, "uuid": ""}
+                                    server_data = {"type": "gaze coordinates", "content": image_base64}
                                     requests.post(logs_url, json=server_data)
                                     os.remove(screenshot_path)
                                     
@@ -331,20 +327,20 @@ def gaze_detect():
                                                   abs(mean_gaze[1] - max_y))
         
                             if(distance < 200):
-                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : green", "uuid": ""}
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : green"}
                                 requests.post(logs_url, json=server_data)
                                 print("green")
                             elif(distance < 300):
-                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : yellow", "uuid": ""}
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : yellow"}
                                 requests.post(logs_url, json=server_data)
                                 print("yellow")
                             else:
-                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : red", "uuid": ""}
+                                server_data = {"type": "Gaze", "content": "User looking away from screen. Code : red"}
                                 requests.post(logs_url, json=server_data)
                                 print("red")
             
             else:
-                server_data = {"type": "Gaze", "content": "No faces detected", "uuid": ""}
+                server_data = {"type": "Gaze", "content": "No faces detected"}
                 requests.post(logs_url, json=server_data)
                 #print("no faces detected")
             
