@@ -9,6 +9,8 @@ session_start();
         ?>
         <link rel="stylesheet" href="css/index.css">
         <title>Login</title>
+        <!-- bcrypt CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
         <script type="text/javascript">
         // Display an alert if there is a login error
         <?php if (isset($_SESSION['login_error'])): ?>
@@ -30,7 +32,7 @@ session_start();
                     <div class="right col-lg-6 col-md-6 col-sm-6 col-12">
                         <div class="login-form">
                             <h2>Login</h2>
-                            <form action="process/login_process.php" method="post">
+                            <form id="loginForm" action="process/login_process.php" method="post">
                                 <p>
                                     <label for="email">Email: <span>*</span></label>
                                     <input type="text" id="email" name="email" placeholder="Enter Email" required>

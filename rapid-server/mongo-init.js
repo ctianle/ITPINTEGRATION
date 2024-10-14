@@ -174,7 +174,7 @@ db.Users.insertOne({
   UserType: 'admin', 
   UserName: 'exampleUser', 
   Email: 'user@example.com', 
-  PasswordHash: 'hashedpassword', 
+  PasswordHash: '$2a$10$mxrR.y1NFENZFX1V6yZJ8ebq1FxmGwuhOCPiY4o34odpJBZ0Kgy4q', 
   UserId: 1, 
   isActive: true 
 });
@@ -183,7 +183,7 @@ db.Users.insertOne({
   UserType: 'invigilator', 
   UserName: 'Invigilator', 
   Email: 'invigilator@example.com', 
-  PasswordHash: 'hashedpassword', 
+  PasswordHash: '$2a$10$o1UlWR7fSauwCkq4vr9KGeocx5tAcgRm/CR2xIlYLeXm0Od5fLFJe', 
   UserId: 2, 
   isActive: true 
 });

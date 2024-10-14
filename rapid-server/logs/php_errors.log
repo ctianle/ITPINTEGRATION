@@ -1,0 +1,1 @@
+[14-Oct-2024 12:58:22 Asia/Singapore] PHP Warning:  Cannot modify header information - headers already sent by (output started at /var/www/html/process/register_process.php:48) in /var/www/html/process/register_process.php on line 73

@@ -24,7 +24,7 @@ try {
         $password = $_POST['password'];
 
         // Create a query to find the user by email and password hash
-        $filter = ['Email' => $email, 'PasswordHash' => $password];
+        $filter = ['Email' => $email];
         $query = new Query($filter);
 
         // Execute the query
@@ -34,17 +34,30 @@ try {
         $user = current($cursor->toArray());
 
         if ($user) {
-            // Set session variables
-            $_SESSION['UserName'] = $user->UserName;
-            $_SESSION['UserId'] = $user->UserId;
-            // Set Session Role
-            $_SESSION['UserType'] = $user->UserType;
+
+            //Retrieve password hash from database
+            $storedPasswordHash = $user->PasswordHash;
+
+            //Verify that password matches the stored hash
+            if (password_verify($password, $storedPasswordHash)) {
+                // Set session variables
+                $_SESSION['UserName'] = $user->UserName;
+                $_SESSION['UserId'] = $user->UserId;
+                // Set Session Role
+                $_SESSION['UserType'] = $user->UserType;
+                
+                // Redirect to the overview page
+                header("Location: ../overview.php");
+                exit;
+            } else {
+                // Invalid login, redirect back to index with an error message
+                $_SESSION['login_error'] = "Invalid email or password.";
+                header("Location: ../index.php");
+                exit;
+            }
             
-            // Redirect to the overview page
-            header("Location: ../overview.php");
-            exit;
         } else {
-            // Invalid login, redirect back to the index page with an error message
+            // User not found, redirect back to the index page with an error message
             $_SESSION['login_error'] = "Invalid email or password.";
             header("Location: ../index.php");
             exit;
