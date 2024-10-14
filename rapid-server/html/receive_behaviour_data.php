@@ -138,10 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postData = file_get_contents('php://input');
 
     // Decode JSON data
-    $rawData = json_decode($postData, true);
-
-    $encryptedArray = $rawData['content'];
-    // $datatype = $rawData['type'];    
+    $encryptedArray = json_decode($postData, true);
+   
     //========================================
     // RSA Encryption (Decrypting Fernet Key)
     //========================================
@@ -192,10 +190,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bulk->insert($newData);
             $result = $manager->executeBulkWrite("$dbName.Behaviour_logs", $bulk);
 
-            if ($result->getInsertedCount() === 1) {
-                logError('Data inserted into MongoDB successfully');
-            } else {
-                logError('Failed to insert data into MongoDB');
+            if ($result->getInsertedCount() !== 1) {
+                logError('Failed to insert data into MongoDB.');
             }
 
             // Send response back to the PowerShell script

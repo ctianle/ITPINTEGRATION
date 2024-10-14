@@ -38,6 +38,9 @@ RUN a2enconf custom-config
 # Copy custom php.ini file
 COPY apache-php/php.ini /usr/local/etc/php/php.ini
 
+# Set the system timezone
+RUN ln -fs /usr/share/zoneinfo/Asia/Singapore /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+
 # Set working directory
 WORKDIR /var/www/html
 
