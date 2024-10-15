@@ -1,4 +1,9 @@
 <?php
+// Secure session cookie settings
+ini_set('session.cookie_httponly', 1);  // Prevent JavaScript from accessing the session cookie
+ini_set('session.cookie_secure', 1);    // Ensure cookies are only sent over HTTPS (ensure HTTPS is used)
+ini_set('session.cookie_samesite', 'Strict'); // Prevent CSRF by enforcing same-site cookie policy
+
 session_start();
 
 use MongoDB\Driver\Manager;
@@ -40,6 +45,8 @@ try {
 
             //Verify that password matches the stored hash
             if (password_verify($password, $storedPasswordHash)) {
+                // Regenerate session ID to prevent session fixation
+                session_regenerate_id(true);
                 // Set session variables
                 $_SESSION['UserName'] = $user->UserName;
                 $_SESSION['UserId'] = $user->UserId;
