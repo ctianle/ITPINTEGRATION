@@ -19,7 +19,8 @@ function getProcess() {
     $student_id = $_GET['student_id'];
     // MongoDB Query Setup
     $filter = [
-        'uuid' => ['$regex' => "^$student_id-"],
+        'UUID' => ['$regex' => "^$student_id-"],
+        
     ];
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 

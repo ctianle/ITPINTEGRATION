@@ -17,15 +17,15 @@ function getLogs()
     $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
     $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
     $student_id = $_GET['student_id'];
+    $session_id = (int)$_GET['session_id']; 
+    // MongoDB Query Setup
     // MongoDB Query Setup
     $filter = [
-        'uuid' => ['$regex' => "^$student_id-"],
+        'UUID' => ['$regex' => "^$student_id-"],
+        'ProctorSessionID' => $session_id,  // No need to wrap integers in quotes if it's a number
+        'datatype' => ['$not' => new MongoDB\BSON\Regex('image', 'i')]
     ];
-    // MongoDB Query Setup
-    $filter = [
-            'type' => ['$not' => new MongoDB\BSON\Regex('image', 'i')],
-            'uuid' => ['$regex' => "^$student_id-"],
-    ]; // Exclude documents where 'type' contains 'image'
+    // Exclude documents where 'type' contains 'image'
     $options = ['sort' => ['date_time' => -1]]; // Sort by date_time descending
 
     $query = new MongoDB\Driver\Query($filter, $options);
@@ -58,8 +58,8 @@ function getLogs()
         $formattedDate = $timestampUTC->format('Y-m-d H:i:s');
 
         $html .= '<tr>
-            <td>' . htmlspecialchars($row->uuid) . '</td>
-            <td>' . htmlspecialchars($row->type) . '</td>
+            <td>' . htmlspecialchars($row->UUID) . '</td>
+            <td>' . htmlspecialchars($row->datatype) . '</td>
             <td>' . htmlspecialchars($row->content) . '</td>
             <td>' . htmlspecialchars($formattedDate) . '</td>
         </tr>';

@@ -12,16 +12,15 @@ function getScreenshot()
 
     // Get URL parameters for pagination
     $student_id = $_GET['student_id'];
-    $session_id = $_GET['session_id'];
+    $session_id = (int)$_GET['session_id'];
     $limit = 10; // Number of screenshots per page
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Current page
     $offset = ($page - 1) * $limit; // Offset for the query
 
     // Query MongoDB for screenshots
     $filter = [
-        'uuid' => ['$regex' => "^$student_id-"],
-        //'StudentId' => (int) $student_id, // Uncomment and use as needed
-        //'SessionId' => (int) $session_id, // Uncomment and use as needed
+        'UUID' => ['$regex' => "^$student_id-"],
+        'ProctorSessionID' => $session_id,
     ];
     // Update this part for pagination
     $pageScreenshots = isset($_GET['page_screenshots']) ? (int)$_GET['page_screenshots'] : 1; // Current page for screenshots

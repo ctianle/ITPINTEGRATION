@@ -12,16 +12,15 @@ function getWebcam()
 
     // Get URL parameters for pagination
     $student_id = $_GET['student_id'];
-    $session_id = $_GET['session_id'];
+    $session_id = (int)$_GET['session_id'];
     $limit = 10; // Number of images per page
     $pageSnapshots = isset($_GET['page_snapshots']) ? (int)$_GET['page_snapshots'] : 1; // Current page
     $offsetSnapshots = ($pageSnapshots - 1) * $limit; // Offset for the query
 
     // Query MongoDB for webcam snapshots
     $filter = [
-        'uuid' => ['$regex' => "^$student_id-"],
-        //'StudentId' => ['$regex' => "^$student_id-"], // Uncomment and use as needed
-        //'SessionId' => (int) $session_id, // Uncomment and use as needed
+        'UUID' => ['$regex' => "^$student_id-"],
+        'ProctorSessionID' => $session_id,
     ];
     // Update the query for pagination
     $snapshotQuery = new MongoDB\Driver\Query($filter, [
