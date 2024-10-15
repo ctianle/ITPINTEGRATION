@@ -11,7 +11,7 @@ function fetchData(sessionId) {
             students = data.map(item => ({
                 id: item.student_id,
                 name: item.name,
-                avatar: `https://randomuser.me/api/portraits/${item.gender === 'male' ? 'men' : 'women'}/${item.student_id}.jpg`, // Adjust avatar URL as per your backend
+                avatar: `https://randomuser.me/api/portraits/${item.gender === 'male' ? 'men' : 'women'}/${item.student_id % 100}.jpg`,
                 status: getRandomStatus()
             }));
 
