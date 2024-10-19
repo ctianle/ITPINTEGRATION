@@ -155,23 +155,35 @@ function setupPagination() {
     });
 }
 
+function toLocalTime(sessionTime) {
+    const [hours, minutes] = sessionTime.split(':').map(Number);
+    const date = new Date();
+    // Create a date object assuming the time is in UTC
+    date.setUTCHours(hours, minutes);
+
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 // Assuming 'sessions' array contains session objects with details
 function displaySessionDetails(session) {
     const detailsContainer = document.getElementById('details-container');
     const blacklistedApps = session.BlacklistedApps.length > 0 ? session.BlacklistedApps.join(', ') : 'None';
     const whitelistedApps = session.WhitelistedApps.length > 0 ? session.WhitelistedApps.join(', ') : 'None';
 
+    const startTimeFormatted = toLocalTime(session.start_time);
+    const endTimeFormatted = toLocalTime(session.end_time);
+
     const html = `
         <div class="col-md-6">
             <p><strong>Session ID:</strong> ${session.session_id}</p>
             <p><strong>Date:</strong> ${session.date}</p>
-            <p><strong>Start Time:</strong> ${session.start_time}</p>
+            <p><strong>Start Time:</strong> ${startTimeFormatted}</p>
             <p><strong>Blacklisted Apps:</strong> ${blacklistedApps}</p>
         </div>
         <div class="col-md-6">
             <p><strong>Name:</strong> ${session.name}</p>   
             <p><strong>Duration:</strong> ${session.duration}</p>
-            <p><strong>End Time:</strong> ${session.end_time}</p>
+            <p><strong>End Time:</strong> ${endTimeFormatted}</p>
             <p><strong>Whitelisted Apps:</strong> ${whitelistedApps}</p>
         </div>
     `;
