@@ -1,4 +1,7 @@
-<?php session_start(); ?>
+<?php 
+$allowed_roles = ['admin'];
+include('auth_check.php');
+ ?>
 <html lang="en">
 <head>
     <?php include "component/essential.inc.php"; ?>
