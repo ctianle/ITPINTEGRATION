@@ -9,8 +9,6 @@ session_start();
         ?>
         <link rel="stylesheet" href="css/index.css">
         <title>Login</title>
-        <!-- bcrypt CDN -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
         <script type="text/javascript">
         // Display an alert if there is a login error
         <?php if (isset($_SESSION['login_error'])): ?>
