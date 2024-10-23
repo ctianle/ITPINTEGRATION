@@ -15,11 +15,11 @@ $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 ////////////////////////////////////////////////////////////////////////////
 // Display Interval Value via Specified UUID & Category (GET METHOD)
 ////////////////////////////////////////////////////////////////////////////
-
-if (isset($_GET["uuid"])) {
+error_log("IM HERE");
+if (isset($_GET["uuid"]) && !empty($_GET["uuid"])) {
 
     $UUID = $_GET["uuid"];
-
+    error_log("UUID : $UUID");
     ////////////////////////////////////////////////////////////////////////////
 
     // Verify if a record for the specified UUID exist in MongoDB Collection "ping"
@@ -32,6 +32,15 @@ if (isset($_GET["uuid"])) {
     $document = current($cursor->toArray());
 
     if ($document) {
+        // UUID exists, so update the last_connect field
+        $date_time = date('d-m-Y H:i:s');
+        $bulk = new MongoDB\Driver\BulkWrite();
+        $bulk->update(
+            ['uuid' => $UUID],              // Filter
+            ['$set' => ['last_connect' => $date_time]], // Update operation
+            ['upsert' => false]             // Don't create a new document if it doesn't exist
+        );
+        $manager->executeBulkWrite("$dbName.ping", $bulk);
         echo "Ping Received From " . htmlspecialchars($UUID);
     } else {
         $date_time = date('d-m-Y H:i:s');
@@ -41,6 +50,9 @@ if (isset($_GET["uuid"])) {
         $manager->executeBulkWrite("$dbName.ping", $bulk);
         echo "New Connection: " . htmlspecialchars($UUID) . "\n";
     }
+}
+else {
+    error_log("UUID is either not set or empty");
 }
 
 function logError($error) {
