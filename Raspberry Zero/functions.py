@@ -256,15 +256,15 @@ def sign_message(message, private_key_path=CLIENT_PRIVATE_KEY_PATH):
     return base64.b64encode(signature).decode('utf-8')
 
 # Function to generate a dynamic message for signing
-def generate_dynamic_message():
-    timestamp = int(time.time())
+def generate_dynamic_message(unix_time):
+    timestamp = unix_time
     uuid = generate_uuid()
     message = f"{uuid}.{timestamp}"
     return message
 
 # Function to combine and encrypt the signed message and certificate data
-def combine_and_encrypt(cert_data, private_key_path=CLIENT_PRIVATE_KEY_PATH):
-    message = generate_dynamic_message()
+def combine_and_encrypt(cert_data, unix_time, private_key_path=CLIENT_PRIVATE_KEY_PATH):
+    message = generate_dynamic_message(unix_time)
     signed_message = sign_message(message, private_key_path)
 
     combined_data = {

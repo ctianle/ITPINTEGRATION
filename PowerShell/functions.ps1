@@ -95,7 +95,20 @@ function Send_Signed_Cert {
 
 function Check_Cert {
     try {
-        $response = Invoke-RestMethod -Uri "$base_url/check_cert" -Method Get
+        # Get the current date and time in Singapore timezone
+        $singaporeTimeZone = [System.TimeZoneInfo]::FindSystemTimeZoneById("Singapore Standard Time")
+        $singaporeTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([System.DateTime]::UtcNow, $singaporeTimeZone.Id)
+
+        # Convert Singapore time to Unix timestamp (seconds since 1970)
+        $unixTime = [int][double]::Parse(($singaporeTime - [datetime]'1970-01-01T00:00:00Z').TotalSeconds)
+        
+        # Construct the URI with the current Unix time as a parameter
+        $uri = "$base_url/check_cert?time=$unixTime"
+        
+        # Send the request to the Flask server
+        $response = Invoke-RestMethod -Uri $uri -Method Get
+        
+        # Output a success message
         Write-Host "Checked for existing certificate on Flask server." -ForegroundColor Green
         return $response
     } catch {

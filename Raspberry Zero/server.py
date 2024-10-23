@@ -189,11 +189,23 @@ def receive_cert():
 # Check if a Certificate has been issued to this device before, and if yes, return encrypted cert with the encrypted key.
 @app.route('/check_cert', methods=['GET'])
 def check_cert():
+    # Get the 'time' parameter from the request (defaults to None if not provided)
+    unix_time = request.args.get('time')
+    
+    if not unix_time:
+        return jsonify({"status": "error", "message": "Missing time parameter"}), 400
+
+    # Ensure the time parameter is an integer
+    try:
+        unix_time = int(unix_time)
+    except ValueError:
+        return jsonify({"status": "error", "message": "Invalid time format"}), 400
+    
     if os.path.exists(CLIENT_SIGNED_CERT_PATH):
         with open(CLIENT_SIGNED_CERT_PATH, "r") as cert_file:
             cert_data = cert_file.read()
 
-        encrypted_combined_data, encrypted_session_key, signed_encrypted_combined_data = combine_and_encrypt(cert_data)
+        encrypted_combined_data, encrypted_session_key, signed_encrypted_combined_data = combine_and_encrypt(cert_data, unix_time)
 
         return jsonify({"status": "cert_exists", "combined_data": encrypted_combined_data, "fernet_key": encrypted_session_key, "signed_combined_data": signed_encrypted_combined_data})
     else:
