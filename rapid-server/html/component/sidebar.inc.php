@@ -48,6 +48,9 @@ if (session_status() === PHP_SESSION_NONE) {
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark">
                         <li><a class="dropdown-item" href="admin_index.php">Admin Index</a></li>
+                        <li><a class="dropdown-item" href="admin_behaviour_logs.php">Admin Behaviour Logs</a></li>
+                        <li><a class="dropdown-item" href="admin_screenshots.php">Admin Screenshots</a></li>
+                        <li><a class="dropdown-item" href="admin_snapshots.php">Admin Snapshots</a></li>
                         <li><a class="dropdown-item" href="admin_interval_defaults.php">Default Interval Configurations</a></li>
                         <li><a class="dropdown-item" href="admin_interval.php">Interval Configurations</a></li>
                         <li><a class="dropdown-item" href="upload.php">Upload Proctoring Script</a></li>
