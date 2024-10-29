@@ -60,7 +60,18 @@ $rows = $manager->executeQuery("$dbName.Behaviour_logs", $query);
                                                     <td><?= htmlspecialchars($row->UUID) ?></td>
                                                     <td><?= htmlspecialchars($row->datatype)?></td>
                                                     <td><?= htmlspecialchars($row->content) ?></td>
-                                                    <td><?= htmlspecialchars($row->timestamp)?></td>
+                                                    <td>
+                                                    <?php
+                                                    if ($row->timestamp instanceof MongoDB\BSON\UTCDateTime) {
+                                                        // Convert to DateTime object
+                                                        $dateTime = $row->timestamp->toDateTime();
+                                                        $dateTime->setTimezone(new DateTimeZone('UTC')); // Set to UTC
+                                                        echo htmlspecialchars($dateTime->format('d-m-Y H:i:s')); // Format the date
+                                                    } else {
+                                                        echo 'Invalid timestamp'; // Fallback in case of an unexpected type
+                                                    }
+                                                    ?>
+                                                    </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>

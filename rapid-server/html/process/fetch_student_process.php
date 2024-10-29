@@ -6,7 +6,8 @@
  * @return array An associative array containing a boolean indicating if data was found
  *               and the HTML content for the table.
  */
-function getProcess() {
+function getProcess() 
+{
     // MongoDB Connection & Credentials Setup
     $db_user = getenv('DB_ROOT_USERNAME');
     $db_password = getenv('DB_ROOT_PASSWORD');
