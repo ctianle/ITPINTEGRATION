@@ -210,7 +210,6 @@ def gaze_detect():
                             x_corners.append(mean_gaze[0])
                             y_corners.append(mean_gaze[1])
                             print("Second Corner Added", mean_gaze)
-                            requests.post(calibration_url, json=data)
                             Position += 1
                             data = {"Status" : "Ready", "Position" : Position}
                             requests.post(calibration_url, json=data)
