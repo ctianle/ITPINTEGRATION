@@ -60,22 +60,35 @@ $rows = $manager->executeQuery("$dbName.cert_data", $query);
                                                 <?php foreach ($rows as $row): ?>
                                                     <tr>
                                                         <td><?= htmlspecialchars($row->uuid) ?></td>
-                                                        <td><?= htmlspecialchars($row->certificate) ?></td>
+                                                        <td><?= nl2br($row->certificate) ?></td>
                                                         <td><?= htmlspecialchars($row->created_at) ?></td>
                                                         <td><?= htmlspecialchars($row->revoked ? 'Yes' : 'No') ?></td>
                                                         <td>
-                                                            <div
-                                                                class="action d-flex flex-column flex-md-row align-items-center">
-                                                                <button class="btn btn-warning btn-sm me-2"
-                                                                    style="min-width: 150px;"
-                                                                    onclick="toggleRevoked('<?= htmlspecialchars($row->uuid) ?>')">
-                                                                    <?= $row->revoked ? 'Mark Revoked as No' : 'Mark Revoked as Yes' ?>
-                                                                </button>
-                                                                <button class="btn btn-danger btn-sm"
-                                                                    onclick="deleteEntry('<?= htmlspecialchars($row->uuid) ?>')">
-                                                                    Delete
-                                                                </button>
-                                                            </div>
+                                                            <?php if (isset($row->uuid) && isset($row->certificate) && isset($row->created_at)): ?>
+                                                                <form action="cert_action.php" method="POST"
+                                                                    style="display:inline;">
+                                                                    <input type="hidden" name="uuid"
+                                                                        value="<?php echo htmlspecialchars($row->uuid); ?>">
+                                                                    <input type="hidden" name="certificate"
+                                                                        value="<?php echo htmlspecialchars($row->certificate); ?>">
+                                                                    <input type="hidden" name="action" value="revoke">
+                                                                    <button type="submit"
+                                                                        class="btn <?php echo isset($row->revoked) && $row->revoked ? 'btn-danger' : 'btn-primary'; ?>">
+                                                                        <?php echo isset($row->revoked) && $row->revoked ? 'Unrevoke' : 'Revoke'; ?>
+                                                                    </button>
+                                                                </form>
+                                                                <form action="cert_action.php" method="POST"
+                                                                    style="display:inline;">
+                                                                    <input type="hidden" name="uuid"
+                                                                        value="<?php echo htmlspecialchars($row->uuid); ?>">
+                                                                    <input type="hidden" name="certificate"
+                                                                        value="<?php echo htmlspecialchars($row->certificate); ?>">
+                                                                    <input type="hidden" name="action" value="delete">
+                                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                                </form>
+                                                            <?php else: ?>
+                                                                N/A
+                                                            <?php endif; ?>
 
                                                         </td>
                                                     </tr>
@@ -152,3 +165,4 @@ $rows = $manager->executeQuery("$dbName.cert_data", $query);
 // Close MongoDB connection
 $manager = null;
 ?>
+

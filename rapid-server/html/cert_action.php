@@ -26,7 +26,7 @@ if (isset($_POST['uuid']) && isset($_POST['certificate']) && isset($_POST['actio
     $uuidPattern = '/^[0-9a-fA-F\-]+$/';  // Example pattern, adjust as needed
 
     if (!preg_match($uuidPattern, $uuid)) {
-        echo "<script>alert('Invalid UUID format.'); window.location.href='cert_list.php';</script>";
+        echo "<script>alert('Invalid UUID format.'); window.location.href='admin_cert_data.php';</script>";
         exit;
     }
 
@@ -48,12 +48,12 @@ if (isset($_POST['uuid']) && isset($_POST['certificate']) && isset($_POST['actio
 
             if ($result->getModifiedCount() > 0) {
                 $status = $newStatus ? "revoked" : "unrevoked";
-                echo "<script>alert('Certificate with UUID $uuid has been $status.'); window.location.href='cert_list.php';</script>";
+                echo "<script>alert('Certificate with UUID $uuid has been $status.'); window.location.href='admin_cert_data.php';</script>";
             } else {
-                echo "<script>alert('Failed to update the status of the certificate with UUID $uuid.'); window.location.href='cert_list.php';</script>";
+                echo "<script>alert('Failed to update the status of the certificate with UUID $uuid.'); window.location.href='admin_cert_data.php';</script>";
             }
         } else {
-            echo "<script>alert('Certificate with UUID $uuid not found.'); window.location.href='cert_list.php';</script>";
+            echo "<script>alert('Certificate with UUID $uuid not found.'); window.location.href='admin_cert_data.php';</script>";
         }
     } elseif ($action === 'delete') {
         $bulk = new MongoDB\Driver\BulkWrite;
@@ -61,12 +61,12 @@ if (isset($_POST['uuid']) && isset($_POST['certificate']) && isset($_POST['actio
         $result = $manager->executeBulkWrite("$dbName.cert_data", $bulk);
 
         if ($result->getDeletedCount() > 0) {
-            echo "<script>alert('Certificate with UUID $uuid has been deleted.'); window.location.href='cert_list.php';</script>";
+            echo "<script>alert('Certificate with UUID $uuid has been deleted.'); window.location.href='admin_cert_data.php';</script>";
         } else {
-            echo "<script>alert('Failed to delete the certificate with UUID $uuid.'); window.location.href='cert_list.php';</script>";
+            echo "<script>alert('Failed to delete the certificate with UUID $uuid.'); window.location.href='admin_cert_data.php';</script>";
         }
     }
 } else {
-    echo "<script>alert('UUID, certificate, or action not provided.'); window.location.href='cert_list.php';</script>";
+    echo "<script>alert('UUID, certificate, or action not provided.'); window.location.href='admin_cert_data.php';</script>";
 }
 ?>
