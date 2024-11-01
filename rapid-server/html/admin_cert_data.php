@@ -44,7 +44,7 @@ $rows = $manager->executeQuery("$dbName.cert_data", $query);
                         <div class="col">
                             <div class="card" style="width:120%">
                                 <div class="card-body">
-                                    <h5 class="card-title">Processes</h5>
+                                    <h5 class="card-title">Students' Certificate</h5>
                                     <div id="paddingDiv">
                                     <table id="datatable" class="table table-striped" style="width:100%">
                                         <thead>
