@@ -1,0 +1,40 @@
+[Unit]
+Description=Webcam Service
+After=Audio.service
+
+[Service]
+User=raspberry
+ExecStartPre=/bin/sleep 40
+WorkingDirectory=/home/raspberry/Desktop/Webcam
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Webcam/venv/bin/activate>
+
+[Install]
+WantedBy=multi-user.target
+
+------------------------------------------------------
+[Unit]
+Description=Audio Service
+After=Screenshots.service
+
+[Service]
+User=raspberry
+ExecStartPre=/bin/sleep 1
+WorkingDirectory=/home/raspberry/Desktop/Audio
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Audio/venv/bin/activate >
+
+[Install]
+WantedBy=multi-user.target
+
+------------------------------------------------------
+[Unit]
+Description=Screenshots Service
+After=network.target
+
+[Service]
+User=raspberry
+WorkingDirectory=/home/raspberry/Desktop/Screenshots
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Screenshots/venv/bin/act>
+
+
+[Install]
+WantedBy=multi-user.target

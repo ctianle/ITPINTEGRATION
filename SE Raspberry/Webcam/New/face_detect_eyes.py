@@ -76,7 +76,15 @@ def gaze_detect():
     save_dir = 'captures'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-
+    
+    #clear previouss session screenshots
+    if os.path.isdir(screenshots_directory) and os.listdir(screenshots_directory):
+        for filename in os.listdir(screenshots_directory):
+        file_path = os.path.join(screenshots_directory, filename)
+        # Check if it's a file (not a subdirectory) and delete it
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            
     #delete later
     #picam2 = Picamera2()
     #picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (1640, 1232)}, transform=libcamera.Transform(vflip=1)))

@@ -1,4 +1,7 @@
 import os
+import time
+start_time = time.time()
+
 def set_affinity(core_id):
     command = f"taskset -cp {core_id} {os.getpid()}"
     os.system(command)
@@ -19,6 +22,7 @@ import json
 import sounddevice
 from queue import Queue
 
+
 url = "http://10.0.0.1/store_data"
 
 
@@ -37,6 +41,8 @@ def design_filter(lowfreq, highfreq, fs, order=3):
 
 # Design the filter
 sos = design_filter(75, 300, RATE, 3)
+
+xf = fftfreq(BUFFER, (1 / RATE))[:BUFFER // 2]
 
 # Initialize the pyaudio class instance
 audio = pyaudio.PyAudio()
@@ -61,6 +67,11 @@ recording = False
 frame_queue = Queue()
 
 print('stream started')
+end_time = time.time()
+process_time = end_time - start_time
+print(process_time)
+
+time.sleep(510) #wait for webcam to start
 
 def recognize_speech():
     try:
@@ -95,7 +106,6 @@ try:
         yf = fft(filtered_data)
         yf_magnitude = 2.0 / BUFFER * np.abs(yf[0:BUFFER // 2])
         peaks, properties = find_peaks(yf_magnitude, height=threshold)
-        xf = fftfreq(BUFFER, (1 / RATE))[:BUFFER // 2]
         peak_frequencies = xf[peaks]
         peak_magnitudes = properties["peak_heights"]
             
@@ -115,9 +125,9 @@ try:
             if frequency_difference > 100:
                 server_data = {"type": "audio", "content": "Multiple Speakers Detected"}
                 response = requests.post(url, json=server_data)
-                # Print the response content
-                print(response.status_code)  # Prints the status code (e.g., 200)
-                print(response.json())       # Prints the JSON response content (if the response is JSON)
+               
+                #print(response.status_code)  # Prints the status code (e.g., 200)
+                #print(response.json())       # Prints the JSON response content (if the response is JSON)
                 recording_time = time.time()
                 print("Recording")
                 recording = True
@@ -131,6 +141,7 @@ try:
         
         #end_time = time.time()
         #process_time = end_time - start_time
+        
 
 except KeyboardInterrupt:
     pass

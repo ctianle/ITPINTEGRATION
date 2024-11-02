@@ -1,17 +1,22 @@
 import time
+start_time = time.time()
+import platform
 import os
 import subprocess
-from shutil import move, rmtree
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-import threading
-import platform
-import resource
 
 def set_affinity(core_id):
     if platform.system() == 'Linux':
         command = f"taskset -cp {core_id} {os.getpid()}"
         subprocess.run(command, shell=True)
+        
+set_affinity(2)  # Set to core 2
+
+
+from shutil import move, rmtree
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import threading
+import resource
 
 class ImageHandler(FileSystemEventHandler):
     def __init__(self, script_to_run, input_folder, processing_folder, completed_folder):
@@ -85,18 +90,27 @@ class ImageHandler(FileSystemEventHandler):
                     print(f'Failed to delete {file_path}. Reason: {e}')
 
 if __name__ == "__main__":
-    set_affinity(1)  # Set to core 1
-
     input_folder = '/home/raspberry/flaskserver/images'
     processing_folder = './processing'
     completed_folder = './completed'
     script_to_run = 'main8.py'
-
+    
     # Ensure necessary directories exist
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(processing_folder, exist_ok=True)
     os.makedirs(completed_folder, exist_ok=True)
-
+    
+    #delete old screenshots data
+    for filename in os.listdir(input_folder):
+        file_path = os.path.join(input_folder, filename)
+        # Check if it's a file (not a subdirectory) and delete it
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+    
+    time.sleep(550) #wait for webcam and audio to start
+    end_time = time.time()
+    print(end_time - start_time)
+    
     event_handler = ImageHandler(script_to_run, input_folder, processing_folder, completed_folder)
     observer = Observer()
     observer.schedule(event_handler, path=input_folder, recursive=False)
