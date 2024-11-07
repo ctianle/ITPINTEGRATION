@@ -17,15 +17,12 @@ function fetchData() {
                 throw new Error('Data is not an array');
             }
 
-            // Process the JSON data here
-            console.log('Data processed:', data); // Log processed data for further inspection
             faculty = data.map(item => ({
                 _id: item._id,
                 user_id: item.UserId,
                 user_type: item.UserType,
                 name: item.UserName,
                 email: item.Email,
-                password_hash: item.PasswordHash
             }));
 
             // Example functions to display data
@@ -55,7 +52,6 @@ function displayTableData(page) {
             <td class="user_type">${row.user_type}</td>
             <td class="name">${row.name}</td>
             <td>${row.email}</td>
-            <td>${row.password_hash}</td>
             <td>
                 <div class="action d-flex flex-column flex-md-row align-items-center">
                     <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editUser(${start + index})">Edit</button>
@@ -106,7 +102,6 @@ function editUser(index) {
     // Set other fields
     document.getElementById('editUserName').value = user.name;
     document.getElementById('editUserEmail').value = user.email;
-    //document.getElementById('editPassword').value = user.password_hash;
 
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
     editModal.show();  // Show the modal
