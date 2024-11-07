@@ -26,14 +26,30 @@ function sendJsonResponse($status, $message) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
-    // Retrieve session ID from POST data or query string
-    $sessionId = isset($_POST['sessionId']) ? intval($_POST['sessionId']) : intval($_GET['sessionId']);
+
+    // Retrieve session ID from POST data
+    $sessionId = isset($_POST['sessionId']) ? filter_var($_POST['sessionId'], FILTER_VALIDATE_INT) : null;
+
+    // Validate session ID
+    if ($sessionId === false || $sessionId <= 0) {
+        sendJsonResponse('error', 'Invalid session ID! It must be a positive integer.');
+    }
     
     $file = $_FILES['file']['tmp_name'];
 
     // Validate the file
     if (!is_uploaded_file($file)) {
+        error_log("Error: Invalid file or not via HTTP POST.");
         sendJsonResponse('error', 'Invalid file!');
+    }
+
+    // Check file type to ensure it's a CSV
+    $fileType = mime_content_type($file);
+    // Allow additional valid CSV MIME types
+    $allowedTypes = ['application/csv'];
+
+    if (!in_array($fileType, $allowedTypes)) {
+        sendJsonResponse('error', 'Invalid file type! Only CSV files are allowed.');
     }
 
     // Open the file in read mode
@@ -41,17 +57,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     if ($handle !== FALSE) {
         $header = fgetcsv($handle, 1000, ","); // Get the first row as the header
 
+        if (empty($header) || count($header) < 3) {
+            sendJsonResponse('error', 'Invalid CSV format! Ensure the file has at least 3 columns.');
+        }
+
         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if (count($header) !== count($data)) {
+                error_log("Error: Data format mismatch detected in the CSV row.");
                 sendJsonResponse('error', 'Error: Data format mismatch!');
+            }
+
+            // Sanitize and validate each field
+            $studentId = filter_var($data[0], FILTER_VALIDATE_INT);
+            $studentName = htmlspecialchars(trim($data[1]), ENT_QUOTES, 'UTF-8');
+            $email = filter_var(trim($data[2]), FILTER_VALIDATE_EMAIL);
+
+            // Validate StudentId
+            if ($studentId === false || $studentId <= 0) {
+                error_log("Invalid Student ID detected: $data[0]");
+                sendJsonResponse('error', 'Invalid Student ID in the CSV. It must be a positive integer.');
+            }
+
+            // Validate StudentName
+            if (empty($studentName) || strlen($studentName) > 100) {
+                error_log("Invalid Student Name detected: $data[1]");
+                sendJsonResponse('error', 'Invalid Student Name. It must be non-empty and a maximum of 100 characters.');
+            }
+
+            // Validate Email
+            if ($email === false) {
+                error_log("Invalid Email detected: $data[2]");
+                sendJsonResponse('error', 'Invalid email address in the CSV.');
             }
 
             // Generate a unique _id
             $student = [
-                '_id' => new ObjectId(), 
-                'StudentId' => (int)$data[0], 
-                'StudentName' => $data[1], 
-                'Email' => $data[2], 
+                '_id' => new ObjectId(),
+                'StudentId' => $studentId,
+                'StudentName' => $studentName,
+                'Email' => $email,
                 'SessionId' => $sessionId
             ];
 
