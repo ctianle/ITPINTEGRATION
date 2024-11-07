@@ -37,7 +37,6 @@ include('auth_check.php');
                                                     <th scope="col">User Type</th>
                                                     <th scope="col">Name</th>
                                                     <th scope="col">Email</th>
-                                                    <th scope="col">Password Hash</th>
                                                     <th scope="col">Action</th>
                                                 </tr>
                                             </thead>
