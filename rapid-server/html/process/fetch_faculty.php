@@ -37,7 +37,6 @@ try {
 		'UserType' => $document->UserType,
 		'UserName' => $document->UserName,
 		'Email' => $document->Email,
-		'PasswordHash' => $document->PasswordHash,
 		'UserId' => $document->UserId
 	    ];
 	    $usersData[] = $user;
