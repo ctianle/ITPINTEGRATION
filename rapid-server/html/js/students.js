@@ -244,10 +244,33 @@ function changePage(page, sessionId) {
 }
 
 function deleteDocument(documentId, sessionId) {
-    const studentId = documentId;
-    window.location.href = `../process/delete_student.php?id=${studentId}&sessionId=${sessionId}`;
-}
+    // Prepare the data to send in the POST request
+    const data = {
+        studentId: documentId,
+        sessionId: sessionId
+    };
 
+    // Send the POST request using fetch
+    fetch('../process/delete_student.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Document deleted successfully');
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the document');
+    });
+}
 
 // Call fetchData on page load
 fetchData();

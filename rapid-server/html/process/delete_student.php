@@ -18,10 +18,26 @@ try {
     // Create a new MongoDB Manager instance
     $manager = new Manager($mongoConnectionString);
 
-    // Get the SessionId and StudentId from the request
-    $studentId = isset($_GET['id']) ? (int)$_GET['id'] : null;
-    $sessionId = isset($_GET['sessionId']) ? (int)$_GET['sessionId'] : null; // Ensure sessionId is also an integer
+    // Get the data from the request body
+    $data = json_decode(file_get_contents('php://input'), true);
 
+    // Validate studentId and sessionId
+    if (!isset($data['studentId']) || !is_numeric($data['studentId']) || (int)$data['studentId'] <= 0) {
+        http_response_code(400); // Bad Request
+        echo json_encode(['error' => 'Valid studentId is required and must be a positive number']);
+        exit;
+    }
+
+    if (!isset($data['sessionId']) || !is_numeric($data['sessionId']) || (int)$data['sessionId'] <= 0) {
+        http_response_code(400); // Bad Request
+        echo json_encode(['error' => 'Valid sessionId is required and must be a positive number']);
+        exit;
+    }
+
+    // Assign validated variables
+    $studentId = (int)$data['studentId'];
+    $sessionId = (int)$data['sessionId'];
+    
     // Specify the database and collection
     $collectionName = 'Students';
 

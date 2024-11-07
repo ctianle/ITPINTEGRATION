@@ -16,9 +16,9 @@ try {
 
     $userId = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-    if (!$userId) {
+    if (!$userId || !is_numeric($_GET['id']) || $userId <= 0) {
         http_response_code(400);
-        echo json_encode(['error' => 'UserId is required']);
+        echo json_encode(['error' => 'Invalid UserId']);
         exit;
     }
 

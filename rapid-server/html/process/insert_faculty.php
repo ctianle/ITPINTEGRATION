@@ -27,13 +27,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Check if all required form fields are present
     if (isset($_POST['user_id'], $_POST['user_type'], $_POST['name'], $_POST['email'], $_POST['password'])) {
+        
         // Sanitize and collect the form data
-        $user_id = (int) $_POST['user_id'];
+        $user_id = filter_var($_POST['user_id'], FILTER_VALIDATE_INT);
         $user_type = htmlspecialchars($_POST['user_type'], ENT_QUOTES, 'UTF-8');
         $name = htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
         $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
         $plainPassword = $_POST['password'];
 
+        // Validate user_id
+        if ($user_id === false || $user_id <= 0) {
+            alertAndRedirect('Invalid User ID! It must be a positive integer.');
+        }
+
+        // Validate user_type
+        if (empty($user_type) || strlen($user_type) > 50) {
+            alertAndRedirect('Invalid User Type! It must be a non-empty string with a maximum of 50 characters.');
+        }
+
+        // Validate name
+        if (empty($name) || strlen($name) > 100) {
+            alertAndRedirect('Invalid Name! It must be a non-empty string with a maximum of 100 characters.');
+        }
+        
+        // Validate email
         if (!$email) {
             alertAndRedirect('Invalid email address!');
         }

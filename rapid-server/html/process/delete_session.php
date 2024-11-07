@@ -20,15 +20,16 @@ try {
 
     // Get the SessionId from the request body
     $data = json_decode(file_get_contents('php://input'), true);
-    $sessionId = isset($_GET['id']) ? (int)$_GET['id'] : null;
 
-    
-    if (!$sessionId) {
+    // Validate the input
+    if (!isset($data['id']) || !is_numeric($data['id']) || (int)$data['id'] <= 0) {
         http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'SessionId is required']);
+        echo json_encode(['error' => 'SessionId is required and must be a valid positive number']);
         exit;
     }
 
+    $sessionId = (int)$data['id'];
+    
     // Specify the database and collection
     $collectionName = 'Sessions';
 

@@ -124,7 +124,25 @@ function editSession(index) {
 
 // Function to delete a session document
 function deleteDocument(documentId) {
-  window.location.href = `../process/delete_session.php?id=${documentId}`;
+  fetch('../process/delete_session.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id: documentId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('Document deleted successfully');
+    } else {
+      alert(`Error: ${data.error}`);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while deleting the document');
+  });
 }
 
 // Function to set up the dropdown menu sorting
