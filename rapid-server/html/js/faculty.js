@@ -106,7 +106,7 @@ function editUser(index) {
     // Set other fields
     document.getElementById('editUserName').value = user.name;
     document.getElementById('editUserEmail').value = user.email;
-    document.getElementById('editPassword').value = user.password_hash;
+    //document.getElementById('editPassword').value = user.password_hash;
 
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
     editModal.show();  // Show the modal
