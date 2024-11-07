@@ -18,7 +18,6 @@ $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 if (isset($_GET["uuid"]) && !empty($_GET["uuid"])) {
 
     $UUID = $_GET["uuid"];
-    error_log("UUID : $UUID");
     ////////////////////////////////////////////////////////////////////////////
 
     // Verify if a record for the specified UUID exist in MongoDB Collection "ping"
