@@ -122,39 +122,6 @@ $rows = $manager->executeQuery("$dbName.cert_data", $query);
             table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
         });
 
-        function toggleRevoked(uuid) {
-            // Make an AJAX call to toggle the revoked status
-            $.ajax({
-                url: 'process/toggle_revoked_status.php', // Your endpoint to handle the request
-                type: 'POST',
-                data: { uuid: uuid },
-                success: function (response) {
-                    // Optionally handle the response (e.g., update the table or notify the user)
-                    location.reload(); // Reload the page to see the changes
-                },
-                error: function () {
-                    alert('Error toggling revoked status');
-                }
-            });
-        }
-
-        function deleteEntry(uuid) {
-            if (confirm('Are you sure you want to delete this entry?')) {
-                // Make an AJAX call to delete the entry
-                $.ajax({
-                    url: 'process/delete_cert_entry.php', // Your endpoint to handle the deletion
-                    type: 'POST',
-                    data: { uuid: uuid },
-                    success: function (response) {
-                        // Optionally handle the response (e.g., update the table or notify the user)
-                        location.reload(); // Reload the page to see the changes
-                    },
-                    error: function () {
-                        alert('Error deleting entry');
-                    }
-                });
-            }
-        }
 
     </script>
 </body>
