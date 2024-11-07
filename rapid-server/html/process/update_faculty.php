@@ -24,6 +24,38 @@ try {
         exit;
     }
 
+    // Validate and sanitize userId
+    if (!isset($formData['userId']) || !filter_var($formData['userId'], FILTER_VALIDATE_INT) || $formData['userId'] <= 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid user ID. It must be a positive integer.']);
+        exit;
+    }
+    $userId = (int)$formData['userId'];
+
+    // Validate and sanitize userType
+    if (!isset($formData['userType']) || empty(trim($formData['userType']))) {
+        http_response_code(400);
+        echo json_encode(['error' => 'User type is required.']);
+        exit;
+    }
+    $userType = htmlspecialchars(trim($formData['userType']), ENT_QUOTES, 'UTF-8');
+
+    // Validate and sanitize userName
+    if (!isset($formData['userName']) || empty(trim($formData['userName'])) || strlen($formData['userName']) > 100) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid user name. It must be non-empty and no longer than 100 characters.']);
+        exit;
+    }
+    $userName = htmlspecialchars(trim($formData['userName']), ENT_QUOTES, 'UTF-8');
+
+    // Validate and sanitize userEmail
+    if (!isset($formData['userEmail']) || !filter_var(trim($formData['userEmail']), FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid email address.']);
+        exit;
+    }
+    $userEmail = filter_var(trim($formData['userEmail']), FILTER_SANITIZE_EMAIL);
+
     $collectionName = 'Users';
 
     // Hash the plaintext password
@@ -40,10 +72,10 @@ try {
     $filter = ['UserId' => (int)$formData['userId']];
     $updateData = [
         '$set' => [
-            'UserType' => $formData['userType'],
-            'UserName' => $formData['userName'],
-            'Email' => $formData['userEmail'],
-            'PasswordHash' => $hashedPassword  // Use the hashed password here
+            'UserType' => $userType,
+            'UserName' => $userName,
+            'Email' => $userEmail,
+            'PasswordHash' => $hashedPassword // Use the hashed password here
         ]
     ];
 

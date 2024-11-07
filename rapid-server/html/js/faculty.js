@@ -103,6 +103,9 @@ function editUser(index) {
     document.getElementById('editUserName').value = user.name;
     document.getElementById('editUserEmail').value = user.email;
 
+    // Clear the password field to ensure no previous data is shown
+    document.getElementById('editPassword').value = '';
+
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
     editModal.show();  // Show the modal
 }

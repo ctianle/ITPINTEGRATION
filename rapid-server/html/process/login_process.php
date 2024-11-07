@@ -25,9 +25,23 @@ try {
     // Check if form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Retrieve email and password from POST request
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+        $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+        $password = trim($_POST['password']);
 
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['login_error'] = "Invalid email format.";
+            header("Location: ../index.php");
+            exit;
+        }
+
+        // Validate password (ensure it's not empty and meets basic requirements)
+        if (empty($password)) {
+            $_SESSION['login_error'] = "Empty Password";
+            header("Location: ../index.php");
+            exit;
+        }
+        
         // Create a query to find the user by email and password hash
         $filter = ['Email' => $email];
         $query = new Query($filter);
