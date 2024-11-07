@@ -15,7 +15,6 @@ $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
 ////////////////////////////////////////////////////////////////////////////
 // Display Interval Value via Specified UUID & Category (GET METHOD)
 ////////////////////////////////////////////////////////////////////////////
-error_log("IM HERE");
 if (isset($_GET["uuid"]) && !empty($_GET["uuid"])) {
 
     $UUID = $_GET["uuid"];
