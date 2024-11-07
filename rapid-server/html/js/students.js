@@ -193,16 +193,45 @@ function editStudent(index) {
 
 document.getElementById('editForm').addEventListener('submit', function(event) {
     event.preventDefault();
+
+    // Gather form data
     const studentId = document.getElementById('editStudentId').value;
     const studentName = document.getElementById('editStudentName').value;
     const studentEmail = document.getElementById('editStudentEmail').value;
     const sessionId = document.getElementById('editSessionId').value;
 
-    // Construct the URL with query parameters
-    const url = `../process/update_student.php?studentId=${studentId}&name=${studentName}&email=${studentEmail}&sessionId=${sessionId}`;
+    // Construct the data object to send
+    const data = {
+        studentId: studentId,
+        name: studentName,
+        email: studentEmail,
+        sessionId: sessionId
+    };
 
-    // Redirect to the URL
-    window.location.href = url;
+    // Send a JSON POST request
+    fetch('../process/update_student.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update student data.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Handle success response
+        alert('Student information updated successfully.');
+        // Redirect to the students page or reload as needed
+        window.location.href = '../students.php'; // Replace with your actual URL
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating student information: ' + error.message);
+    });
 });
 
 function setupPagination(totalPages, sessionId) {
