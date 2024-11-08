@@ -62,3 +62,91 @@ We will be downloading the Milk-V Duo 256m ArchLinux Image from here: https://xy
 
 
 ## Setting up of RNDIS + HID.
+When the Milk-V Duo is plugged in, the rndis will auto start-up.
+Ssh into the Milk-V Duo using `ssh root@192.168.42.1`
+Password: `milkv`
+
+### Configuring internet access
+To continue we will need to have internet access to install packages such as nano. Depending on your OS, pick accordingly.
+
+#### Linux 
+##### On the Host PC (Ubuntu)
+Run the following commands
+1. `sysctl net.ipv4.ip_forward=1`
+
+2. `iptables -P FORWARD ACCEPT`
+
+3. `iptables -t nat -A POSTROUTING -s 192.168.42.0/24 -o <YOUR UBUNTU INTERFACE FACING INTERNET> -j MASQUERADE`
+
+##### On the Milk-V Duo
+Run the following commands
+1. `ip r add default via ip_of_host`/
+
+2. `echo "nameserver 8.8.8.8" >> /etc/resolv.conf`
+
+#### Windows (Internet sharing)
+Ensure that you are already connected to the internet.
+
+##### On the host
+1. In administrator mode on the powershell ensure `netsh interface ipv4 set interface <milk-v network> forwarding=enabled` is used to enable forwarding
+
+2. `route add 0.0.0.0 mask 0.0.0.0 192.168.137.1`
+
+##### On the milk-v Duo
+3. Delete the defaulted 42.2 route on the milk v duo, using `ip route del default via 192.168.42.2 dev usb0`
+
+4. Ensure default route is set on milk v duo example, `ip addr add 192.168.137.2/24 dev usb0` and `ip r add default via 192.168.137.1 dev usb0`
+
+5. Run `ip r` to view all default routes
+
+6. Enter `echo "nameserver 8.8.8.8" > /etc/resolv.conf`
+
+7. Ensure that the host is connected to internet and the wifi sharing is allowed on the same connection as the milk v duo
+
+8. The connection will be cut off, so ssh in using the new ip provided for it instead of the old one, for example, 192.168.137.1 instead of 192.168.42.1”
+
+### Installation of Nano
+1. Enable the Milk-V duo to update its time automatically. `sudo timedatectl set-ntp true`
+
+2. Once inside, run `pacman -Sy` or `pacman -Syy` to sync the database
+
+3. Run `pacman -S nano` to install nano package
+
+### Run_usb.sh
+1. Insert the codes of run_usb.sh into the milk-v at the path /etc/run_usb.sh.
+
+2. Do a `chmod +x run_usb.sh` to convert it to a executable.
+
+### Running the run_usb.sh script on startup
+#### Systemd
+1. Insert the run_usb.service into the system folder. `nano /etc/systemd/system/run_usb.service`
+
+#### udev rules
+1. Insert the 99-usb-gadget.rules into the path `nano /etc/udev/rules.d/99-usb-gadget.rules`
+
+2. Fill in the vendor id and product id accordingly to when the device is connected. 
+
+#### Reloading and starting the rules 
+1. Run the following commands to reload the udev rules and reload the service. The udev rules will run the systemd services.
+`udevadm control --reload-rules`
+`udevadm trigger`
+`systemctl daemon-reload`
+`systemctl enable run_usb.service`
+A symlink will be created.
+
+2. Run `systemctl start run_usb.service`. This starts the service.
+
+3. Run `systemctl status run_usb.service` to ensure the service is a success.
+
+## Testing
+### HID
+1. To check if the hid is successful, check that in the milk-v duo, the path /dev/hidg0 was created automatically.
+
+2. In the device manager, it shows HID Keyboard Device
+
+3. Insert the code from https://randomnerdtutorials.com/raspberry-pi-zero-usb-keyboard-hid/, save it as a pythonhid.py file and run it in the Milk-V Duo.
+
+### RNDIS
+1. In the device manager, it should be there under network adapters.
+
+2. Conduct a ping test.

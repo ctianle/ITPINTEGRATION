@@ -1,0 +1,12 @@
+[Unit]
+Description=Run USB script for HID + RNDIS
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/etc/run_usb.sh probe hid_rndis
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
