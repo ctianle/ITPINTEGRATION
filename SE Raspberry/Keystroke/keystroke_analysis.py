@@ -10,7 +10,7 @@ model_path = "text_classification_model_nb.pkl"
 classifier_model = joblib.load(model_path)
 
 # Define the path to the keystroke log file
-keystroke_log_path = "sample_keystroke_log.txt"
+keystroke_log_path = r"C:\\key.log"
 
 # Define the interval in seconds to check for new data
 poll_interval = 10
