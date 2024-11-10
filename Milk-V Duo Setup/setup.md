@@ -18,6 +18,7 @@ Alternatively for ARM users, do a `docker run -itd --platform linux/amd64 --name
 `/duo-buildroot-sdk/build/boards/cv181x/cv1812cp_milkv_duo256m_sd/linux/cvitek_cv1812cp_milkv_duo256m_sd_defconfig` and add these to the last line.
 
 CONFIG_ADVISE_SYSCALLS=n
+
 CONFIG_CGROUPS=y
 CONFIG_CGROUP_FREEZER=y
 CONFIG_CGROUP_PIDS=y
