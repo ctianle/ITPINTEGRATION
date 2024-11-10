@@ -14,8 +14,9 @@ Docker will be used to compile the kernel. Installation of docker is required. A
 
 Alternatively for ARM users, do a `docker run -itd --platform linux/amd64 --name duodocker -v $(pwd):/home/work milkvtech/milkv-duo:latest /bin/bash`
 
-4. Next open up `/duo-buildroot-sdk/build/boards/cv181x/cv1812cp_milkv_duo256m_sd/linux/cvitek_cv1812cp_milkv_duo256m_sd_defconfig` and add these to the last line.
-`
+4. Next open up
+`/duo-buildroot-sdk/build/boards/cv181x/cv1812cp_milkv_duo256m_sd/linux/cvitek_cv1812cp_milkv_duo256m_sd_defconfig` and add these to the last line.
+
 CONFIG_ADVISE_SYSCALLS=n
 CONFIG_CGROUPS=y
 CONFIG_CGROUP_FREEZER=y
@@ -38,18 +39,19 @@ CONFIG_FANOTIFY # NOT A TYPO
 CONFIG_USB_G_HID=y
 CONFIG_USB_CONFIGFS_F_HID=y
 CONFIG_USB_G_MULTI=y
-`
-5. Next, go to `duo-buildroot-sdk/device/milkv-duo256m-sd/genimage.cfg` and modify ONLY this part for the size:
-`
+
+6. Next, go to
+`duo-buildroot-sdk/device/milkv-duo256m-sd/genimage.cfg` and modify ONLY this part for the size:
+
 image rootfs.ext4 {
 	ext4 {
 		label = "rootfs"
 	}
 	size = 8G
 }
-`
 
-6. Now that all the configuration files are set, we can compile the image.
+
+7. Now that all the configuration files are set, we can compile the image.
 `docker exec -it duodocker /bin/bash -c "cd /home/work && cat /etc/issue && ./build.sh milkv-duo256m-sd"`
 The output of the image will be in the `out` folder.
 
