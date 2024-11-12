@@ -3,7 +3,6 @@ $allowed_roles = ['admin'];
 include('auth_check.php');
 ?>
 <html lang="en">
-
 <head>
     <?php
     include "component/admin_essential.inc.php";
@@ -12,21 +11,16 @@ include('auth_check.php');
     <title>ITP24 Admin Panel - Snapshots</title>
 </head>
 <?php
-//=============================================
-//     MongoDB Connection & Credentials Setup
-//=============================================
-// Initialise DB Variables.
+// MongoDB Connection & Credentials Setup
 $db_user = getenv('DB_ROOT_USERNAME');
 $db_password = getenv('DB_ROOT_PASSWORD');
 $dbName = getenv('DB_NAME');
-// MongoDB connection setup
 $mongoDBConnectionString = "mongodb://$db_user:$db_password@db:27017";
 $manager = new MongoDB\Driver\Manager($mongoDBConnectionString);
-//=============================================
-//   MongoDB Query and Data Display
-//=============================================
+
+// MongoDB Query and Data Display
 $filter = [];
-$options = ['sort' => ['timestamp' => -1]]; // Sort by date_time descending
+$options = ['sort' => ['timestamp' => -1]];
 $query = new MongoDB\Driver\Query($filter, $options);
 $rows = $manager->executeQuery("$dbName.Snapshots", $query);
 ?>
@@ -34,9 +28,7 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
 <body>
     <main class="container-fluid">
         <div class="row flex-nowrap">
-            <?php
-            include "component/sidebar.inc.php";
-            ?>
+            <?php include "component/sidebar.inc.php"; ?>
             <div class="col py-3">
                 <div class="container content">
                     <div class="row">
@@ -52,6 +44,7 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
                                                 <th>Data Type</th>
                                                 <th>Content</th>
                                                 <th>Date & Time</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -63,24 +56,21 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
                                                     <td>
                                                     <?php
                                                     if ($row->timestamp instanceof MongoDB\BSON\UTCDateTime) {
-                                                        // Convert to DateTime object
                                                         $dateTime = $row->timestamp->toDateTime();
-                                                        $dateTime->setTimezone(new DateTimeZone('UTC')); // Set to UTC
-                                                        echo htmlspecialchars($dateTime->format('d-m-Y H:i:s')); // Format the date
+                                                        $dateTime->setTimezone(new DateTimeZone('UTC'));
+                                                        echo htmlspecialchars($dateTime->format('d-m-Y H:i:s'));
                                                     } else {
-                                                        echo 'Invalid timestamp'; // Fallback in case of an unexpected type
+                                                        echo 'Invalid timestamp';
                                                     }
                                                     ?>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-primary btn-sm" onclick="viewImage('<?= htmlspecialchars($row->content) ?>')">View Image</button>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
-                                    <nav>
-                                        <ul class="pagination">
-                                            <!-- Add pagination here if necessary -->
-                                        </ul>
-                                    </nav>
                                     </div>
                                 </div>
                             </div>
@@ -90,6 +80,21 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
             </div>
         </div>
     </main>
+
+    <!-- Modal for displaying image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Snapshot Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" alt="Snapshot Image" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script defer src="js/index.js"></script>
     <script>
@@ -102,9 +107,15 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
         });
         table.buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)');
     });
+
+    // Function to display image in modal
+    function viewImage(base64Data) {
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = `data:image/png;base64,${base64Data}`;
+        $('#imageModal').modal('show');
+    }
     </script>
 </body>
-
 </html>
 
 <?php
