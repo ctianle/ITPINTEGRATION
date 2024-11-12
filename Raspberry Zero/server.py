@@ -263,7 +263,11 @@ def store_data():
 
     data_type = data['type']
     # content = data['content']
+    #Measuring time taken to encrypt data
+    start_time = datetime.now() 
     data['content'] = constructDataResponse(data['content'], data['type'], gen_key(), JwT_token)
+    end_time = datetime.now()
+    encryption_duration = (end_time - start_time).total_seconds()
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     file_name = f"{data_type}_{timestamp}.json"
     file_path = os.path.join(TEMP_STORAGE, file_name)
