@@ -1,12 +1,4 @@
 import os
-'''
-def set_affinity(core_id):
-    command = f"taskset -cp {core_id} {os.getpid()}"
-    os.system(command)
-
-# Set the current process to run on core 0
-set_affinity(0)
-'''
 import time
 import cv2
 from mediapipe import solutions
@@ -16,9 +8,7 @@ import json
 from multiprocessing import shared_memory
 import base64
 
-#delete later
-#from picamera2 import Picamera2
-#import libcamera    
+  
 def compress_image(image, scale_percent=50, quality=50):
     # Resize the image
     width = int(image.shape[1] * scale_percent / 100)
@@ -80,29 +70,18 @@ def gaze_detect():
     #clear previouss session screenshots
     if os.path.isdir(screenshots_directory) and os.listdir(screenshots_directory):
         for filename in os.listdir(screenshots_directory):
-        file_path = os.path.join(screenshots_directory, filename)
-        # Check if it's a file (not a subdirectory) and delete it
-        if os.path.isfile(file_path):
-            os.remove(file_path)
+            file_path = os.path.join(screenshots_directory, filename)
+            # Check if it's a file (not a subdirectory) and delete it
+            if os.path.isfile(file_path):
+                os.remove(file_path)
             
-    #delete later
-    #picam2 = Picamera2()
-    #picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (1640, 1232)}, transform=libcamera.Transform(vflip=1)))
-
-    #picam2.start()
-    #time.sleep(2)
-    
-    #time.sleep(492) #wait for capture, gaze and face_recog to start
 
     try:
         while True:
             #print("gaze")
+            #performance_start = time.time()
             image = np.ndarray(shape=(1232, 1640, 3), dtype=np.uint8, buffer=shm.buf)
             
-            #delete later
-            #image = picam2.capture_array()
-            
-            #performance_start = time.time()
             if image is None:
                 print("image is none")
                 continue
@@ -202,61 +181,58 @@ def gaze_detect():
                     
                     mean_gaze = np.array([(left_gaze[0] + right_gaze[0]) * 0.5, (left_gaze[1] + right_gaze[1]) * 0.5])
                     
-                    #print(mean_gaze)
-
-                    countdown = timer_duration - elapsed_time
-                    
-                    if(len(x_corners) < 4 and countdown <=0):
-                        if(len(x_corners) == 0):
+                    if not calculated:
+                        countdown = timer_duration - elapsed_time
+                        if(len(x_corners) < 4 and countdown <=0):
+                            if(len(x_corners) == 0):
+                                    x_corners.append(mean_gaze[0])
+                                    y_corners.append(mean_gaze[1])
+                                    print("First Corner Added", mean_gaze)
+                                    Position += 1
+                                    data = {"Status" : "Ready", "Position" : Position}
+                                    requests.post(calibration_url, json=data)
+                            elif(len(x_corners) == 1 and abs(mean_gaze[1] - y_corners[-1]) < 100):
                                 x_corners.append(mean_gaze[0])
                                 y_corners.append(mean_gaze[1])
-                                print("First Corner Added", mean_gaze)
+                                print("Second Corner Added", mean_gaze)
                                 Position += 1
                                 data = {"Status" : "Ready", "Position" : Position}
                                 requests.post(calibration_url, json=data)
-                        elif(len(x_corners) == 1 and abs(mean_gaze[1] - y_corners[-1]) < 100):
-                            x_corners.append(mean_gaze[0])
-                            y_corners.append(mean_gaze[1])
-                            print("Second Corner Added", mean_gaze)
-                            Position += 1
-                            data = {"Status" : "Ready", "Position" : Position}
-                            requests.post(calibration_url, json=data)
-                        elif(len(x_corners) == 2 and abs(mean_gaze[0] - x_corners[-1]) < 100):
-                            x_corners.append(mean_gaze[0])
-                            y_corners.append(mean_gaze[1])
-                            print("Third Corner Added", mean_gaze)
-                            Position += 1
-                            data = {"Status" : "Ready", "Position" : Position}
-                            requests.post(calibration_url, json=data)
-                        elif(len(x_corners) == 3 and abs(mean_gaze[1] - y_corners[-1]) < 100): 
-                            if(abs(x_corners[0] - mean_gaze[0]) < 100):
+                            elif(len(x_corners) == 2 and abs(mean_gaze[0] - x_corners[-1]) < 100):
                                 x_corners.append(mean_gaze[0])
                                 y_corners.append(mean_gaze[1])
+                                print("Third Corner Added", mean_gaze)
                                 Position += 1
                                 data = {"Status" : "Ready", "Position" : Position}
                                 requests.post(calibration_url, json=data)
+                            elif(len(x_corners) == 3 and abs(mean_gaze[1] - y_corners[-1]) < 100): 
+                                if(abs(x_corners[0] - mean_gaze[0]) < 100):
+                                    x_corners.append(mean_gaze[0])
+                                    y_corners.append(mean_gaze[1])
+                                    Position += 1
+                                    data = {"Status" : "Ready", "Position" : Position}
+                                    requests.post(calibration_url, json=data)
+                                else:
+                                    print("Last point does not match first point", mean_gaze)
+                                    reset_counter += 1
                             else:
-                                print("Last point does not match first point", mean_gaze)
+                                print("Difference too much. Try again or reset", mean_gaze)
                                 reset_counter += 1
-                        else:
-                            print("Difference too much. Try again or reset", mean_gaze)
-                            reset_counter += 1
-                        
-                        if(reset_counter == 5):
-                            print("Recalibrate")
-                            reset_counter = 0
-                            x_corners.clear()
-                            y_corners.clear()
-                            Position = 0
-                            data = {"Status" : "Ready", "Position" : Position}
-                            requests.post(calibration_url, json=data)
                             
-                        
-                        start_time = time.time()
-                        countdown = timer_duration
-                        
-                    elif (len(x_corners) == 4):
-                        if not calculated:
+                            if(reset_counter == 5):
+                                print("Recalibrate")
+                                reset_counter = 0
+                                x_corners.clear()
+                                y_corners.clear()
+                                Position = 0
+                                data = {"Status" : "Ready", "Position" : Position}
+                                requests.post(calibration_url, json=data)
+                                
+                            
+                            start_time = time.time()
+                            countdown = timer_duration
+                            
+                        elif (len(x_corners) == 4):
                             #min_x = (x_corners[0] + x_corners[3]) * 0.5
                             #max_x = (x_corners[1] + x_corners[2]) * 0.5
                             
@@ -266,8 +242,6 @@ def gaze_detect():
 
                             min_y= (y_corners[0] + y_corners[1]) * 0.5
                             max_y = (y_corners[2] + y_corners[3]) * 0.5
-                            
-                            center = np.array((min_x + max_x) * 0.5, (min_y + max_y) * 0.5) 
                             
                             print("min x:", min_x)
                             print("max x:", max_x)
@@ -287,7 +261,8 @@ def gaze_detect():
                             calibrated_image_filename = os.path.join(save_dir, f'calibrated.png')
                             cv2.imwrite(calibrated_image_filename, image)
                             calculated = True
-                        
+                    
+                    else:    
                         if (screen_width== 0 and screen_height == 0):
                             response = requests.get(resolution_url)
                             if response.status_code == 200:
@@ -349,19 +324,17 @@ def gaze_detect():
             else:
                 server_data = {"type": "Gaze", "content": "No faces detected"}
                 requests.post(logs_url, json=server_data)
-                #print("no faces detected")
+                print("no faces detected")
             
             #performance_end = time.time()
             #diff = performance_end - performance_start
-            #print(diff)
+            #print("gaze process time", diff)
             time.sleep(0.18)
             
     
     except KeyboardInterrupt:
         pass
      
-    #picam2.stop()
     shm.close()
     cv2.destroyAllWindows()
 
-#gaze_detect()

@@ -1,12 +1,4 @@
 import os
-
-#def set_affinity(core_id):
-#    command = f"taskset -cp {core_id} {os.getpid()}"
-#    os.system(command)
-
-# Set the current process to run on core 0
-#set_affinity(0)
-
 from deepface.DeepFace import verify, build_model
 import requests
 import json
@@ -51,9 +43,8 @@ def verify_face():
                     os.remove(last_image_path)
                     print(f"No face found in one or both images: {e}")
            
-            time.sleep(0.44)
+            time.sleep(0.38)
             
     except KeyboardInterrupt:
         pass
 
-#verify_face()

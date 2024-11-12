@@ -1,14 +1,4 @@
 import os
-
-'''
-def set_affinity(core_id):
-    command = f"taskset -cp {core_id} {os.getpid()}"
-    os.system(command)
-
-# Set the current process to run on core 0
-set_affinity(0)
-'''
-
 import time
 import cv2
 from multiprocessing import shared_memory
@@ -54,6 +44,7 @@ def capture_images():
     try:
         while True:
             #print("capture")
+            #performance_start = time.time()
             image_data = np.ndarray(shape=(1232, 1640, 3), dtype=np.uint8, buffer=shm.buf)
             
             compressed_image_bytes = compress_image(image_data)
@@ -65,8 +56,11 @@ def capture_images():
             last_image_filename = os.path.join(save_dir, f'last_image.png')
             if not os.path.exists(last_image_filename):
                 cv2.imwrite(last_image_filename, image_data)
-        
-            time.sleep(0.14)
+            
+            #performance_end = time.time()
+            #diff = performance_end - performance_start
+            #print("captures process time", diff)
+            time.sleep(0.98)
             
     except KeyboardInterrupt:
         pass

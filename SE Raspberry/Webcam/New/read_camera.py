@@ -1,13 +1,4 @@
 import os
-'''
-def set_affinity(core_id):
-    command = f"taskset -cp {core_id} {os.getpid()}"
-    os.system(command)
-
-# Set the current process to run on core 1
-set_affinity(0)
-'''
-
 import time
 from picamera2 import Picamera2
 import libcamera
@@ -27,12 +18,15 @@ def read_camera():
     picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (1640, 1232)}, transform=libcamera.Transform(vflip=1)))
 
     #time.sleep(492) #wait for capture, gaze and face_recog to start
-
     picam2.start()
     time.sleep(2)
-
+    
+    #frame_count = 0
+    #start_time = time.time()
+    
     try:
         while True:
+            #performance_start = time.time()
             #print("read")
             image = picam2.capture_array()
                 
@@ -43,7 +37,24 @@ def read_camera():
             else:
                 print("Unexpected image shape:", image.shape)
             
-            time.sleep(0.46)
+            
+             # Increment frame count
+            #frame_count += 1
+
+            # Calculate elapsed time
+            #elapsed_time = time.time() - start_time
+
+            # Print the framerate every second
+            #if elapsed_time >= 1.0:
+            #    print(f"Camera Read Framerate: {frame_count / elapsed_time:.2f} FPS")
+                # Reset for the next calculation
+            #    frame_count = 0
+            #    start_time = time.time()
+            
+            #performance_end = time.time()
+            #diff = performance_end - performance_start
+            #print("read camera process time", diff)
+            time.sleep(1.5)
     except KeyboardInterrupt:
         pass
 
