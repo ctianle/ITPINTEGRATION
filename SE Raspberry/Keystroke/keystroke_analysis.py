@@ -10,8 +10,7 @@ model_path = "text_classification_model_nb.pkl"
 classifier_model = joblib.load(model_path)
 
 # Define the path to the keystroke log file
-keystroke_log_path = r"C:\\key.log"
-
+keystroke_log_path = "/home/pi/received_logs/keystroke_log.log"
 # Define the interval in seconds to check for new data
 poll_interval = 10
 
@@ -116,36 +115,41 @@ def main():
     threshold = 0.2  # Define the threshold for copy-paste flagging
 
     while True:
-        new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
-            keystroke_log_path, last_position, chunk_size=50, overlap_size=25
-        )
+        # Check if the keystroke log file exists
+        if os.path.exists(keystroke_log_path):
+            new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
+                keystroke_log_path, last_position, chunk_size=50, overlap_size=25
+            )
 
-        # Update counts
-        total_copy_count += copy_count
-        total_paste_count += paste_count
-        total_keystrokes += keystrokes
+            # Update counts
+            total_copy_count += copy_count
+            total_paste_count += paste_count
+            total_keystrokes += keystrokes
 
-        # Classify new phrases if any
-        if new_phrases:
-            classify_phrases(new_phrases)
-            print(new_phrases)
+            # Classify new phrases if any
+            if new_phrases:
+                classify_phrases(new_phrases)
+                print(new_phrases)
 
-        # Calculate and print copy-paste ratio
-        total_copy_paste = total_copy_count + total_paste_count
-        copy_paste_ratio = total_copy_paste / total_keystrokes if total_keystrokes else 0
-        logging.debug(f"Copy actions: {total_copy_count}, Paste actions: {total_paste_count}")
-        logging.debug(f"Total keystrokes: {total_keystrokes}")
-        logging.debug(f"Copy-Paste Ratio: {copy_paste_ratio:.2%}")
+            # Calculate and print copy-paste ratio
+            total_copy_paste = total_copy_count + total_paste_count
+            copy_paste_ratio = total_copy_paste / total_keystrokes if total_keystrokes else 0
+            logging.debug(f"Copy actions: {total_copy_count}, Paste actions: {total_paste_count}")
+            logging.debug(f"Total keystrokes: {total_keystrokes}")
+            logging.debug(f"Copy-Paste Ratio: {copy_paste_ratio:.2%}")
 
-        # Flag and send to server if copy-paste ratio exceeds threshold
-        if copy_paste_ratio > threshold:
-            send_data_to_server({
-                'type': 'Keystroke',
-                'content': "Warning: High frequency of copy-paste actions detected."
-            })
+            # Flag and send to server if copy-paste ratio exceeds threshold
+            if copy_paste_ratio > threshold:
+                send_data_to_server({
+                    'type': 'Keystroke',
+                    'content': "Warning: High frequency of copy-paste actions detected."
+                })
+        else:
+            logging.warning("Keystroke log file not found.")
 
         # Pause before rechecking for new keystrokes
         time.sleep(poll_interval)
+
 
 if __name__ == "__main__":
     main()
