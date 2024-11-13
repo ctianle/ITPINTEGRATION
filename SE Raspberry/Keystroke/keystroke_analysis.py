@@ -1,16 +1,24 @@
+import os
+def set_affinity(core_id):
+    command = f"taskset -cp {core_id} {os.getpid()}"
+    os.system(command)
+
+set_affinity(2)
+
 import joblib
 import re
 import time
 import requests
 import logging
-import os
+    
 
 # Load the classification model
 model_path = "text_classification_model_nb.pkl"
 classifier_model = joblib.load(model_path)
 
 # Define the path to the keystroke log file
-keystroke_log_path = "/home/pi/received_logs/keystroke_log.log"
+keystroke_log_path = "keystroke_log.log"
+
 # Define the interval in seconds to check for new data
 poll_interval = 10
 
@@ -36,7 +44,6 @@ def process_new_keystrokes(log_path, start_pos, chunk_size=50, overlap_size=25):
 
             valid_characters = []
             new_phrases = []
-            ctrl_pressed = False
             copy_count = 0
             paste_count = 0
             total_keystrokes = 0
@@ -46,29 +53,16 @@ def process_new_keystrokes(log_path, start_pos, chunk_size=50, overlap_size=25):
                 if len(parts) != 3:
                     continue
 
-                typed_key = parts[1].strip().strip('[]"')
+                typed_key = parts[0].strip('"').replace("[", "").replace("]", "")
                 total_keystrokes += 1
 
-                # Check for Ctrl key press
-                if typed_key == 'Ctrl':
-                    ctrl_pressed = True
-                    continue
-
                 # Check for Ctrl+C (Copy)
-                if ctrl_pressed and typed_key == 'C':
+                if typed_key == 'Ctrlc' or typed_key == 'CtrlC':
                     copy_count += 1
-                    ctrl_pressed = False  # Reset ctrl_pressed after action
-                    continue
 
                 # Check for Ctrl+V (Paste)
-                if ctrl_pressed and typed_key == 'V':
+                if typed_key == 'Ctrlv' or typed_key == 'CtrlV':
                     paste_count += 1
-                    ctrl_pressed = False  # Reset ctrl_pressed after action
-                    continue
-
-                # Reset Ctrl flag if another key is detected
-                if ctrl_pressed and typed_key not in ['C', 'V']:
-                    ctrl_pressed = False
 
                 # Handle normal keys and add them to valid characters
                 if typed_key in ['SpaceBar', 'Key.space']:
@@ -115,41 +109,36 @@ def main():
     threshold = 0.2  # Define the threshold for copy-paste flagging
 
     while True:
-        # Check if the keystroke log file exists
-        if os.path.exists(keystroke_log_path):
-            new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
-                keystroke_log_path, last_position, chunk_size=50, overlap_size=25
-            )
+        new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
+            keystroke_log_path, last_position, chunk_size=50, overlap_size=25
+        )
 
-            # Update counts
-            total_copy_count += copy_count
-            total_paste_count += paste_count
-            total_keystrokes += keystrokes
+        # Update counts
+        total_copy_count += copy_count
+        total_paste_count += paste_count
+        total_keystrokes += keystrokes
 
-            # Classify new phrases if any
-            if new_phrases:
-                classify_phrases(new_phrases)
-                print(new_phrases)
+        # Classify new phrases if any
+        if new_phrases:
+            classify_phrases(new_phrases)
+            print(new_phrases)
 
-            # Calculate and print copy-paste ratio
-            total_copy_paste = total_copy_count + total_paste_count
-            copy_paste_ratio = total_copy_paste / total_keystrokes if total_keystrokes else 0
-            logging.debug(f"Copy actions: {total_copy_count}, Paste actions: {total_paste_count}")
-            logging.debug(f"Total keystrokes: {total_keystrokes}")
-            logging.debug(f"Copy-Paste Ratio: {copy_paste_ratio:.2%}")
+        # Calculate and print copy-paste ratio
+        total_copy_paste = total_copy_count + total_paste_count
+        copy_paste_ratio = total_copy_paste / total_keystrokes if total_keystrokes else 0
+        logging.debug(f"Copy actions: {total_copy_count}, Paste actions: {total_paste_count}")
+        logging.debug(f"Total keystrokes: {total_keystrokes}")
+        logging.debug(f"Copy-Paste Ratio: {copy_paste_ratio:.2%}")
 
-            # Flag and send to server if copy-paste ratio exceeds threshold
-            if copy_paste_ratio > threshold:
-                send_data_to_server({
-                    'type': 'Keystroke',
-                    'content': "Warning: High frequency of copy-paste actions detected."
-                })
-        else:
-            logging.warning("Keystroke log file not found.")
+        # Flag and send to server if copy-paste ratio exceeds threshold
+        if copy_paste_ratio > threshold:
+            send_data_to_server({
+                'type': 'Keystroke',
+                'content': "Warning: High frequency of copy-paste actions detected."
+            })
 
         # Pause before rechecking for new keystrokes
         time.sleep(poll_interval)
-
 
 if __name__ == "__main__":
     main()

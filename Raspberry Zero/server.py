@@ -263,11 +263,7 @@ def store_data():
 
     data_type = data['type']
     # content = data['content']
-    #Measuring time taken to encrypt data
-    start_time = datetime.now() 
     data['content'] = constructDataResponse(data['content'], data['type'], gen_key(), JwT_token)
-    end_time = datetime.now()
-    encryption_duration = (end_time - start_time).total_seconds()
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     file_name = f"{data_type}_{timestamp}.json"
     file_path = os.path.join(TEMP_STORAGE, file_name)
@@ -372,11 +368,9 @@ def upload_image():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 400
-    
+
 # Directory to store uploaded log files
-LOG_STORAGE = '/home/pi/received_logs'
-if not os.path.exists(LOG_STORAGE):
-    os.makedirs(LOG_STORAGE)
+KEYSTROKE_FOLDER = '/home/raspberry/Desktop/Keystrokes'
 
 # File name to overwrite each time a new log is uploaded
 LOG_FILE_NAME = 'keystroke_log.log'
@@ -392,7 +386,7 @@ def upload_log():
         log_data = base64.b64decode(log_data_base64).decode('utf-8')
 
         # Define the path where the log file will be saved
-        file_path = os.path.join(LOG_STORAGE, LOG_FILE_NAME)
+        file_path = os.path.join(KEYSTROKE_FOLDER, LOG_FILE_NAME)
 
         # Overwrite the log file with the new content
         with open(file_path, 'w') as log_file:
@@ -403,6 +397,6 @@ def upload_log():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": str(e)}), 400
-
+        
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
