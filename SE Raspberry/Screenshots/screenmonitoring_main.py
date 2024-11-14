@@ -143,8 +143,6 @@ if __name__ == "__main__":
     clear_folder(input_folder)
     clear_folder(completed_folder)
 
-    time.sleep(550) #wait for webcam and audio to start
-
     # Create the processor and start the observer
     processor = ImageProcessor(input_folder, roi_output_folder, completed_folder)
     event_handler = ImageHandler(processor, input_folder)
@@ -156,6 +154,8 @@ if __name__ == "__main__":
     cleanup_thread = threading.Thread(target=lambda: clear_folder(completed_folder))
     cleanup_thread.daemon = True
     cleanup_thread.start()
+
+    time.sleep(550) #wait for webcam and audio to start
     try:
         while True:
             time.sleep(1)
