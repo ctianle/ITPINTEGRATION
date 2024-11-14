@@ -1,4 +1,5 @@
 import os
+import time
 def set_affinity(core_id):
     command = f"taskset -cp {core_id} {os.getpid()}"
     os.system(command)
@@ -7,7 +8,7 @@ set_affinity(2)
 
 import joblib
 import re
-import time
+
 import requests
 import logging
     
@@ -24,6 +25,9 @@ poll_interval = 10
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def clear_keystrokes():
+    open(keystroke_log_path, "w").close()
 
 def send_data_to_server(data):
     url = "http://10.0.0.1/store_data"
@@ -107,7 +111,8 @@ def main():
     total_paste_count = 0
     total_keystrokes = 0
     threshold = 0.2  # Define the threshold for copy-paste flagging
-
+    
+    time.sleep(600) # wait for other services to start
     while True:
         new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
             keystroke_log_path, last_position, chunk_size=50, overlap_size=25
@@ -141,4 +146,5 @@ def main():
         time.sleep(poll_interval)
 
 if __name__ == "__main__":
+    clear_keystrokes()
     main()

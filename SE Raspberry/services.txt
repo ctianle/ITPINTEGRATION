@@ -6,7 +6,7 @@ After=Audio.service
 User=raspberry
 ExecStartPre=/bin/sleep 40
 WorkingDirectory=/home/raspberry/Desktop/Webcam
-ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Webcam/venv/bin/activate>
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Webcam/venv/bin/activate && exec python /home/raspberry/Desktop/Webcam/start.py'
 
 [Install]
 WantedBy=multi-user.target
@@ -18,9 +18,9 @@ After=Screenshots.service
 
 [Service]
 User=raspberry
-ExecStartPre=/bin/sleep 1
+ExecStartPre=/bin/sleep 30
 WorkingDirectory=/home/raspberry/Desktop/Audio
-ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Audio/venv/bin/activate >
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Audio/venv/bin/activate && exec python /home/raspberry/Desktop/Audio/frequency_diff_vosk.py'
 
 [Install]
 WantedBy=multi-user.target
@@ -28,13 +28,27 @@ WantedBy=multi-user.target
 ------------------------------------------------------
 [Unit]
 Description=Screenshots Service
+After=Keystrokes.service
+
+[Service]
+User=raspberry
+ExecStartPre=/bin/sleep 20
+WorkingDirectory=/home/raspberry/Desktop/Screenshots
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Screenshots/venv/bin/activate && exec python /home/raspberry/Desktop/Screenshots/screenmonitoring_main.py'
+
+
+[Install]
+WantedBy=multi-user.target
+
+-----------------------------------------------------
+[Unit]
+Description=Keystrokes Service
 After=network.target
 
 [Service]
 User=raspberry
-WorkingDirectory=/home/raspberry/Desktop/Screenshots
-ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Screenshots/venv/bin/act>
-
+WorkingDirectory=/home/raspberry/Desktop/Keystrokes
+ExecStart=/bin/bash -c 'source /home/raspberry/Desktop/Keystrokes/venv/bin/activate && exec python /home/raspberry/Desktop/Kystrokes/keystroke_analysis.py
 
 [Install]
 WantedBy=multi-user.target
