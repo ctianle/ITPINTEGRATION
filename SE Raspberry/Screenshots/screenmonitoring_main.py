@@ -148,14 +148,16 @@ if __name__ == "__main__":
     event_handler = ImageHandler(processor, input_folder)
     observer = Observer()
     observer.schedule(event_handler, path=input_folder, recursive=False)
-    observer.start()
+    
 
     # Start periodic cleanup in a separate thread
     cleanup_thread = threading.Thread(target=lambda: clear_folder(completed_folder))
     cleanup_thread.daemon = True
-    cleanup_thread.start()
-
+  
     time.sleep(550) #wait for webcam and audio to start
+    observer.start()
+    cleanup_thread.start()
+    
     try:
         while True:
             time.sleep(1)
