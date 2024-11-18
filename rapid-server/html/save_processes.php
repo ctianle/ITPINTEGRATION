@@ -1,5 +1,4 @@
 <?php
-session_start();
 $allowed_roles = ['admin'];
 include('auth_check.php');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
