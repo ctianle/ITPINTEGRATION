@@ -29,14 +29,11 @@ function sendJsonResponse($status, $message) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
-    // Retrieve session ID from POST data
-    $sessionId = isset($_POST['sessionId']) ? filter_var($_POST['sessionId'], FILTER_VALIDATE_INT) : null;
-
-    // Validate session ID
-    if ($sessionId === false || $sessionId <= 0) {
-        sendJsonResponse('error', 'Invalid session ID! It must be a positive integer.');
+    if (!isset($_POST['sessionId']) || !ctype_digit($_POST['sessionId']) || (int)$_POST['sessionId'] < 0) {
+        sendJsonResponse('error', 'Session ID is missing or invalid! It must be a non-negative integer.');
     }
-    
+    $sessionId = (int)$_POST['sessionId']; // Valid and safely cast
+
     $file = $_FILES['file']['tmp_name'];
 
     // Validate the file
