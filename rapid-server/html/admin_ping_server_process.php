@@ -1,4 +1,6 @@
 <?php
+$allowed_roles = ['admin'];
+include('auth_check.php');
 
 ///////////////////////////////////////////////
 // MongoDB Connection & Credentials Setup

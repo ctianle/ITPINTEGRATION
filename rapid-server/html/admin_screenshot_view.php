@@ -1,3 +1,7 @@
+<?php
+$allowed_roles = ['admin'];
+include('auth_check.php');
+?>
 <!DOCTYPE html>
 <html>
 <head>
