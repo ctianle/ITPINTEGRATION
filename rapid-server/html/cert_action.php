@@ -1,4 +1,7 @@
 <?php
+session_start();
+$allowed_roles = ['admin'];
+include('auth_check.php');
 require 'vendor/autoload.php';
 
 use MongoDB\Client as MongoDBClient;

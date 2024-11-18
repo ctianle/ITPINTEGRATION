@@ -1,3 +1,8 @@
+<?php
+session_start();
+$allowed_roles = ['admin'];
+include('auth_check.php');
+?>
 <!doctype html>
 <html lang="en">
 <head>

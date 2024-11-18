@@ -1,4 +1,5 @@
 <?php
+session_start();
 $allowed_roles = ['admin', 'invigilator'];
 include('auth_check.php');
 ?>
