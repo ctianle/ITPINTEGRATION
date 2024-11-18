@@ -193,45 +193,16 @@ function editStudent(index) {
 
 document.getElementById('editForm').addEventListener('submit', function(event) {
     event.preventDefault();
-
-    // Gather form data
     const studentId = document.getElementById('editStudentId').value;
     const studentName = document.getElementById('editStudentName').value;
     const studentEmail = document.getElementById('editStudentEmail').value;
     const sessionId = document.getElementById('editSessionId').value;
 
-    // Construct the data object to send
-    const data = {
-        studentId: studentId,
-        name: studentName,
-        email: studentEmail,
-        sessionId: sessionId
-    };
+    // Construct the URL with query parameters
+    const url = `../process/update_student.php?studentId=${studentId}&name=${studentName}&email=${studentEmail}&sessionId=${sessionId}`;
 
-    // Send a JSON POST request
-    fetch('../process/update_student.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to update student data.');
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Handle success response
-        alert('Student information updated successfully.');
-        // Redirect to the students page or reload as needed
-        window.location.href = '../students.php'; // Replace with your actual URL
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error updating student information: ' + error.message);
-    });
+    // Redirect to the URL
+    window.location.href = url;
 });
 
 function setupPagination(totalPages, sessionId) {
@@ -272,34 +243,37 @@ function changePage(page, sessionId) {
     setupPagination(totalPages, sessionId);
 }
 
-function deleteDocument(documentId, sessionId) {
-    // Prepare the data to send in the POST request
-    const data = {
-        studentId: documentId,
-        sessionId: sessionId
+function deleteDocument(studentId, sessionId) {
+    const payload = {
+        studentId: studentId,
+        sessionId: sessionId,
     };
 
-    // Send the POST request using fetch
     fetch('../process/delete_student.php', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload),
     })
-    .then(response => response.json())
+    .then(response => {
+        return response.text().then(text => {
+            if (!response.ok) {
+                throw new Error(text); // Throw an error with the response text
+            }
+            return JSON.parse(text); // Try to parse the text as JSON
+        });
+    })
     .then(data => {
-        if (data.success) {
-            alert('Document deleted successfully');
-        } else {
-            alert(`Error: ${data.error}`);
-        }
+        alert(data.message || 'Document deleted successfully!');
+        fetchData(); // Refresh the data after deletion
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while deleting the document');
+        console.error('Error deleting document:', error);
+        alert('Failed to delete the document. Please try again.');
     });
 }
+
 
 // Call fetchData on page load
 fetchData();

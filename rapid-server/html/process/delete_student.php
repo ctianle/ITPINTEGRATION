@@ -1,7 +1,5 @@
 <?php
-$allowed_roles = ['admin', 'invigilator'];
-include('../auth_check.php');
-
+session_start();
 
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
@@ -20,26 +18,30 @@ try {
     // Create a new MongoDB Manager instance
     $manager = new Manager($mongoConnectionString);
 
-    // Get the data from the request body
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Get the JSON input from the POST request
+    $input = json_decode(file_get_contents('php://input'), true);
+    $studentId = isset($input['studentId']) ? $input['studentId'] : null;
+    $sessionId = isset($input['sessionId']) ? $input['sessionId'] : null;
 
-    // Validate studentId and sessionId
-    if (!isset($data['studentId']) || !is_numeric($data['studentId']) || (int)$data['studentId'] <= 0) {
+    // Validate and sanitize inputs
+    if (!isset($studentId) || !ctype_digit((string)$studentId) || (int)$studentId < 0) {
+        // ctype_digit ensures it consists of only digits (valid non-negative integer)
         http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'Valid studentId is required and must be a positive number']);
+        echo json_encode(['error' => 'Invalid StudentId. It must be a non-negative integer.']);
         exit;
     }
 
-    if (!isset($data['sessionId']) || !is_numeric($data['sessionId']) || (int)$data['sessionId'] <= 0) {
+    if (!isset($sessionId) || !filter_var($sessionId, FILTER_VALIDATE_INT)) {
+        // Ensure sessionId is a valid integer
         http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'Valid sessionId is required and must be a positive number']);
+        echo json_encode(['error' => 'Invalid SessionId. It must be a valid integer.']);
         exit;
     }
 
-    // Assign validated variables
-    $studentId = (int)$data['studentId'];
-    $sessionId = (int)$data['sessionId'];
-    
+    // Convert validated values
+    $studentId = (int)$studentId;
+    $sessionId = (int)$sessionId;
+
     // Specify the database and collection
     $collectionName = 'Students';
 
@@ -49,35 +51,29 @@ try {
     // Prepare the filter to match the document to delete
     $filter = [
         'StudentId' => $studentId,
-        'SessionId' => $sessionId // Adjusted to include sessionId
+        'SessionId' => $sessionId
     ];
 
     // Delete the document from the collection
     $bulkWrite->delete($filter, ['limit' => 1]); // Limit to delete only one document
 
     // Execute the bulk write operation
-    $manager->executeBulkWrite("$dbName.$collectionName", $bulkWrite);
+    $result = $manager->executeBulkWrite("$dbName.$collectionName", $bulkWrite);
 
+    if ($result->getDeletedCount() === 0) {
+        http_response_code(404); // Not Found
+        echo json_encode(['error' => 'No document found matching the criteria.']);
+        exit;
+    }
+
+    // Respond with success
+    echo json_encode(['message' => 'Document deleted successfully.']);
 } catch (Exception $e) {
     // Log any exceptions
     error_log("Exception: " . $e->getMessage());
     // Return an error response
     http_response_code(500); // Internal Server Error
+    echo json_encode(['error' => 'An unexpected error occurred.']);
     exit;
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Delete Success</title>
-</head>
-<body>
-    <script>
-      // Show an alert
-        alert('Document deleted successfully');
-
-        // Redirect to the sessions page after the user clicks OK on the alert
-        window.location.href = '../students.php'; // Replace 'students.php' with the actual URL of your sessions page
-    </script>
-</body>
-</html>

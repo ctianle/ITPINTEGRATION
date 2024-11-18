@@ -122,9 +122,35 @@ function editSession(index) {
 }
 
 
-// Function to delete a session document
+// Function to delete a session
 function deleteDocument(documentId) {
-  window.location.href = `../process/delete_session.php?id=${documentId}`;
+  const payload = {
+      sessionId: documentId,
+  };
+
+  fetch('../process/delete_session.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+  })
+  .then(response => {
+      return response.text().then(text => {
+          if (!response.ok) {
+              throw new Error(text); // Throw an error with the response text
+          }
+          return JSON.parse(text); // Parse the response as JSON
+      });
+  })
+  .then(data => {
+      alert(data.message || 'Document deleted successfully!');
+      location.reload(); // Reload the page to reflect the changes
+  })
+  .catch(error => {
+      console.error('Error deleting document:', error);
+      alert('Failed to delete the document. Please try again.');
+  });
 }
 
 // Function to set up the dropdown menu sorting
