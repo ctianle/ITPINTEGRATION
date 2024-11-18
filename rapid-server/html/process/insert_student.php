@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             $email = filter_var(trim($data[2]), FILTER_VALIDATE_EMAIL);
 
             // Validate StudentId
-            if ($studentId === false || $studentId <= 0) {
+            if ($studentId === false || $studentId < 0) {
                 error_log("Invalid Student ID detected: $data[0]");
                 sendJsonResponse('error', 'Invalid Student ID in the CSV. It must be a positive integer.');
             }

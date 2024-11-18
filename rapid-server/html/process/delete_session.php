@@ -2,7 +2,6 @@
 $allowed_roles = ['admin', 'invigilator'];
 include('../auth_check.php');
 
-
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\WriteConcern;
@@ -22,16 +21,25 @@ try {
 
     // Get the SessionId from the request body
     $data = json_decode(file_get_contents('php://input'), true);
+    $sessionId = isset($_GET['id']) ? $_GET['id'] : null;
 
-    // Validate the input
-    if (!isset($data['id']) || !is_numeric($data['id']) || (int)$data['id'] <= 0) {
+    // Validate and sanitize the SessionId
+    if (!$sessionId) {
         http_response_code(400); // Bad Request
-        echo json_encode(['error' => 'SessionId is required and must be a valid positive number']);
+        echo json_encode(['error' => 'SessionId is required']);
         exit;
     }
 
-    $sessionId = (int)$data['id'];
-    
+    // Ensure SessionId is an integer
+    if (!filter_var($sessionId, FILTER_VALIDATE_INT)) {
+        http_response_code(400); // Bad Request
+        echo json_encode(['error' => 'Invalid SessionId format. It must be an integer.']);
+        exit;
+    }
+
+    // Convert to integer (safe since we validated it)
+    $sessionId = (int)$sessionId;
+
     // Specify the database and collection
     $collectionName = 'Sessions';
 
@@ -52,6 +60,7 @@ try {
     error_log("Exception: " . $e->getMessage());
     // Return an error response
     http_response_code(500); // Internal Server Error
+    echo json_encode(['error' => 'An unexpected error occurred.']);
     exit;
 }
 ?>
