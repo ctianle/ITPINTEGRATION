@@ -1,5 +1,5 @@
 <?php
-session_start();
+ 
 
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Manager;
