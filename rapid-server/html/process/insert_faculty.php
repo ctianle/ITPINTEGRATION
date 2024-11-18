@@ -1,4 +1,6 @@
 <?php
+$allowed_roles = ['admin', 'invigilator'];
+include('../auth_check.php');
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Query;
 use MongoDB\Driver\Manager;

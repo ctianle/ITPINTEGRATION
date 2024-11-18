@@ -1,4 +1,6 @@
 <?php
+$allowed_roles = ['admin', 'invigilator'];
+include('../auth_check.php');
 function getScreenshot()
 {
     // Initialise DB Variables.

@@ -1,5 +1,7 @@
 <?php
-session_start();
+$allowed_roles = ['admin', 'invigilator'];
+include('../auth_check.php');
+
 
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Manager;

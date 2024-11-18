@@ -1,5 +1,6 @@
 <?php
-
+$allowed_roles = ['admin', 'invigilator'];
+include('../auth_check.php');
 /**
  * Retrieves data from MongoDB and generates an HTML table with DataTables functionality.
  *

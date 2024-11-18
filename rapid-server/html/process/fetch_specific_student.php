@@ -1,5 +1,6 @@
 <?php
-
+$allowed_roles = ['admin', 'invigilator'];
+include('../auth_check.php');
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\Query;
 use MongoDB\Driver\Exception\Exception as MongoDBException;
