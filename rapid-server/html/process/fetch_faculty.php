@@ -29,8 +29,6 @@ try {
 
     // Iterate over the cursor and format the data
 	foreach ($cursor as $document) {
-	    // Log each document for debugging
-	    error_log("Document retrieved: " . json_encode($document));
 
 	    $user = [
 		'_id' => (string)$document->_id,
