@@ -4,7 +4,7 @@ ini_set('session.cookie_httponly', 1);  // Prevent JavaScript from accessing the
 ini_set('session.cookie_secure', 1);    // Ensure cookies are only sent over HTTPS (ensure HTTPS is used)
 ini_set('session.cookie_samesite', 'Strict'); // Prevent CSRF by enforcing same-site cookie policy
 
- 
+session_start();
 
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\Query;

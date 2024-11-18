@@ -1,5 +1,5 @@
 <?php
- 
+session_start();
 
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Manager;
