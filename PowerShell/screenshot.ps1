@@ -5,7 +5,7 @@ $scriptBlock = {
     #---------------------------------------------------------------------------------------------------------------------
     #Webserver for getting public key
 	$base_url = "http://10.0.0.1"
-	$key = 'http://218.212.196.215/get_public_key.php'
+	$key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'
 	
 	$display = Get-CimInstance Win32_VideoController
 	
@@ -133,7 +133,7 @@ $scriptBlock = {
 		if (Is_Connected -ne $null) {
 			Get_Screenshot
 			Write-Host "Get Screenshot"
-			Start-Sleep 30
+			Start-Sleep 60
 		}
 		else{
 			Write-Host "Stopped"

@@ -139,25 +139,23 @@ if __name__ == "__main__":
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(completed_folder, exist_ok=True)
 
-    # Clear old files in input and completed folders
-    clear_folder(input_folder)
-    clear_folder(completed_folder)
-
     # Create the processor and start the observer
     processor = ImageProcessor(input_folder, roi_output_folder, completed_folder)
     event_handler = ImageHandler(processor, input_folder)
     observer = Observer()
     observer.schedule(event_handler, path=input_folder, recursive=False)
     
-
     # Start periodic cleanup in a separate thread
     cleanup_thread = threading.Thread(target=lambda: clear_folder(completed_folder))
     cleanup_thread.daemon = True
-  
+    
     time.sleep(550) #wait for webcam and audio to start
+    # Clear old files in input and completed folders
+    clear_folder(input_folder)
+    clear_folder(completed_folder)
+    
     observer.start()
     cleanup_thread.start()
-    
     try:
         while True:
             time.sleep(1)

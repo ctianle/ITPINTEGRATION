@@ -113,6 +113,8 @@ def main():
     threshold = 0.2  # Define the threshold for copy-paste flagging
     
     time.sleep(600) # wait for other services to start
+    clear_keystrokes()
+    
     while True:
         new_phrases, copy_count, paste_count, keystrokes, last_position = process_new_keystrokes(
             keystroke_log_path, last_position, chunk_size=50, overlap_size=25
@@ -146,5 +148,4 @@ def main():
         time.sleep(poll_interval)
 
 if __name__ == "__main__":
-    clear_keystrokes()
     main()

@@ -60,7 +60,7 @@ $scriptBlock = {
             }
 
             Process-FileQueue
-            Start-Sleep -Seconds 5
+            Start-Sleep -Seconds 1
         }
     }
 

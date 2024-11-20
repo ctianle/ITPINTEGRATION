@@ -1,6 +1,6 @@
 # Base URLs
 $Global:ServerUrl = "https://rapid.tlnas.duckdns.org"
-$Global:base_url = "http://10.0.0.1:5000"
+$Global:base_url = "http://10.0.0.1"
 
 $Global:c2_root_ca_url = "$ServerUrl/get_root_ca.php"
 $Global:c2_signing_url = "$ServerUrl/sign_csr.php"
