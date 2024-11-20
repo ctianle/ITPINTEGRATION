@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (completedCount > 0) {
                 xValues.push("Completed");
                 yValues.push(completedCount);
-                barColors.push("#74B72E"); // Completed color
+                barColors.push("#808080"); // Completed color
             }
             if (plannedCount > 0) {
                 xValues.push("Planned");
