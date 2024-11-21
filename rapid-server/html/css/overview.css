@@ -25,7 +25,7 @@ table, th{
     width: 30%;
 }
 .table.psessions .complete{
-    background-color: #74B72E ;
+    background-color: #808080 ;
     border-radius: 5px;
 }
 .table.usessions .ongoing{

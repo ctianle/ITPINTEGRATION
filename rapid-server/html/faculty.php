@@ -130,7 +130,7 @@ include('auth_check.php');
                         </div>
                         <div class="mb-3">
                             <label for="editPasswordHash" class="form-label">Password (Enter new Password in PlainText)</label>
-                            <input type="text" class="form-control" id="editPassword" required>
+                            <input type="password" class="form-control" id="editPassword" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
                     </form>
