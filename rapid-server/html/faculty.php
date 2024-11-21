@@ -90,7 +90,7 @@ include('auth_check.php');
                         </div>
                         <div class="mb-3">
                             <label for="addPasswordHash" class="form-label">Password (PlainText)</label>
-                            <input type="text" class="form-control" id="addPasswordHash" name="password" required>
+                            <input type="password" class="form-control" id="addPasswordHash" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Member</button>
                     </form>
