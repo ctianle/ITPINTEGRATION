@@ -52,7 +52,7 @@ $rows = $manager->executeQuery("$dbName.Snapshots", $query);
                                                 <tr>
                                                     <td><?= htmlspecialchars($row->UUID) ?></td>
                                                     <td><?= htmlspecialchars($row->datatype)?></td>
-                                                    <td><?= htmlspecialchars(substr($row->content, 0, 20)) . (strlen($row->content) > 10 ? '...' : '') ?></td>
+                                                    <td><?= (strlen($row->content) > 10 ? '...' : '') . htmlspecialchars(substr($row->content, -20)) ?></td>
                                                     <td>
                                                     <?php
                                                     if ($row->timestamp instanceof MongoDB\BSON\UTCDateTime) {
