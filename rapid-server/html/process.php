@@ -318,7 +318,7 @@ $bulk->insert([
     'data' => $data,
     'date_time' => $date_time
 ]);
-$manager->executeBulkWrite("$dbName.proctoring", $bulk);
+$manager->executeBulkWrite("$dbName.Processes", $bulk);
 echo "Proctoring Data inserted successfully.\n";
 
 //=============================================
