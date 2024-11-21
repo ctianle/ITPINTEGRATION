@@ -8,10 +8,16 @@ $resolution_url = "http://10.0.0.1/update_resolution"
 $Position = -1
 $PiReady = $false
 
-$display = Get-CimInstance Win32_VideoController
+# Get all video controllers
+$displays = Get-CimInstance Win32_VideoController
 
-$actual_width = $display.CurrentHorizontalResolution -as [int]
-$actual_height = $display.CurrentVerticalResolution -as [int]
+# Filter for the active display (non-null resolution)
+$activeDisplay = $displays | Where-Object {
+    $_.CurrentHorizontalResolution -ne $null -and $_.CurrentVerticalResolution -ne $null
+}
+
+$actual_width = $activeDisplay.CurrentHorizontalResolution -as [int]
+$actual_height = $activeDisplay.CurrentVerticalResolution -as [int]
 
 function New-Window {
     [xml]$xaml = @"

@@ -6,13 +6,25 @@ $scriptBlock = {
     #Webserver for getting public key
 	$base_url = "http://10.0.0.1"
 	$key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'
-	
-	$display = Get-CimInstance Win32_VideoController
-	
-	$width = $display.CurrentHorizontalResolution -as [int]
-	$height = $display.CurrentVerticalResolution -as [int]
-	
-	Write-Host "Resolution (ignoring scaling): ${width}x${height}"
+
+	# Get all video controllers
+    $displays = Get-CimInstance Win32_VideoController
+
+    # Filter for the active display (non-null resolution)
+    $activeDisplay = $displays | Where-Object {
+        $_.CurrentHorizontalResolution -ne $null -and $_.CurrentVerticalResolution -ne $null
+    }
+
+    # If an active display is found, retrieve resolution details
+    if ($activeDisplay) {
+        $width = $activeDisplay.CurrentHorizontalResolution -as [int]
+        $height = $activeDisplay.CurrentVerticalResolution -as [int]
+
+        Write-Host "Active Graphics Card: $($activeDisplay.Name)"
+        Write-Host "Resolution (ignoring scaling): ${width}x${height}"
+    } else {
+        Write-Host "No active graphics card detected or no resolution available."
+    }
 	
     #---------------------------------------------------------------------------------------------------------------------
     #                                                      Basic Functions

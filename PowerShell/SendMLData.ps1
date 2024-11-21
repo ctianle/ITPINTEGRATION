@@ -1,9 +1,9 @@
 $raspberryPiUrl = "http://10.0.0.1/retrieve_data"
-$snapshotsUrl = "http://218.212.196.215/receive_snapshots_data.php"
-$screenshotsUrl = "http://218.212.196.215/receive_screenshots_data.php"
-$behaviourUrl = "http://218.212.196.215/receive_behaviour_data.php"
+$snapshotsUrl = "https://rapid.tlnas.duckdns.org/receive_snapshots_data.php"
+$screenshotsUrl = "https://rapid.tlnas.duckdns.org/receive_screenshots_data.php"
+$behaviourUrl = "https://rapid.tlnas.duckdns.org/receive_behaviour_data.php"
 $base_url = "http://10.0.0.1"
-$key = 'http://218.212.196.215/get_public_key.php'
+$key = 'https://rapid.tlnas.duckdns.org/get_public_key.php'
 
 while ($true) {
     try {
