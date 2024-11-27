@@ -32,7 +32,7 @@ foreach ($rows as $row) {
     $now_time = strtotime($date_time);
     $time_difference = $now_time - $last_connect_time;
 
-    $logfilelocation = "/var/logs/myapp/Heartbeat/" . $row->uuid . ".log";
+    $logfilelocation = "/var/www/html/Heartbeat/" . $row->uuid . ".log";
 
     if ($time_difference >= 10 && $time_difference < 30) {
         $file = escapeshellarg($logfilelocation);
