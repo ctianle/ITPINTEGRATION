@@ -89,7 +89,7 @@ include('auth_check.php');
                             <input type="email" class="form-control" id="addUserEmail" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="addPasswordHash" class="form-label">Password (PlainText)</label>
+                            <label for="addPasswordHash" class="form-label">Password</label>
                             <input type="password" class="form-control" id="addPasswordHash" name="password" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Member</button>
