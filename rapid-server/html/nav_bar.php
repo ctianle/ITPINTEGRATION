@@ -25,8 +25,6 @@
             <li><a class="dropdown-item" href="rsa_key_generation.php">RSA Asymmetric Key Pair Generation</a></li>
             <li><a class="dropdown-item" href="admin_ping_dynamic.php">Connection Status (Heartbeat - Dynamic)</a></li>
             <li><a class="dropdown-item" href="admin_ping_static.php">Connection Status (Heartbeat - Static)</a></li>
-            <li><a class="dropdown-item" href="admin_ping_server.php">Heartbeat Server</a></li>
-            <li><a class="dropdown-item" href="admin_ping_server_logs.php">Heartbeat Server Logs</a></li>
             <li><a class="dropdown-item" href="kill_processes_admin.php">Kill Processes</a></li>
           </ul>
         </li>
