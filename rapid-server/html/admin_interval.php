@@ -39,7 +39,6 @@ include('auth_check.php');
                                         $query = new MongoDB\Driver\Query($filter, $options);
                                         $rows = $manager->executeQuery("$dbName.Processes", $query);
                                         ?>
-
                                         <table id="datatable" class="table table-striped" style="width:100%">
                                             <thead>
                                                 <tr>
@@ -48,6 +47,8 @@ include('auth_check.php');
                                                     <th>Category</th>
                                                     <th>Data</th>
                                                     <th>Date & Time</th>
+                                                    <th>Edit</th>
+                                                    <th>Delete</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -58,6 +59,22 @@ include('auth_check.php');
                                                         <td><?= htmlspecialchars($row->category) ?></td>
                                                         <td><?= htmlspecialchars($row->data) ?></td>
                                                         <td><?= htmlspecialchars($row->date_time) ?></td>
+                                                        <td>
+                                                            <form action="admin_interval_edit.php" method="POST">
+                                                                <input type="hidden" name="uuid" value="<?= htmlspecialchars($row->uuid) ?>">
+                                                                <input type="hidden" name="trigger_count" value="<?= htmlspecialchars($row->trigger_count) ?>">
+                                                                <input type="hidden" name="category" value="<?= htmlspecialchars($row->category) ?>">
+                                                                <input type="hidden" name="data" value="<?= htmlspecialchars($row->data) ?>">
+                                                                <input type="hidden" name="date_time" value="<?= htmlspecialchars($row->date_time) ?>">
+                                                                <button class="btn btn-primary" type="submit">Edit</button>
+                                                            </form>
+                                                        </td>
+                                                        <td>
+                                                            <form action="admin_interval_delete.php" method="POST">
+                                                                <input type="hidden" name="uuid" value="<?= htmlspecialchars($row->uuid) ?>">
+                                                                <button class="btn btn-danger" type="submit">Delete</button>
+                                                            </form>
+                                                        </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             </tbody>

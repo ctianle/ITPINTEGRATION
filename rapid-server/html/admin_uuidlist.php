@@ -55,7 +55,7 @@ include('auth_check.php');
 
                                                     // Query MongoDB for distinct UUIDs from proctoring collection
                                                     $command = new MongoDB\Driver\Command([
-                                                        'distinct' => 'proctoring',
+                                                        'distinct' => 'Processes',
                                                         'key' => 'uuid',
                                                     ]);
                                                     $cursor = $manager->executeCommand("$dbName", $command);
