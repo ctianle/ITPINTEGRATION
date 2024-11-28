@@ -57,12 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if all required form fields are present
     if (isset($_POST['user_id'], $_POST['user_type'], $_POST['name'], $_POST['email'], $_POST['password'])) {
         
-        // Sanitize and collect the form data
+        // Collect and input validate
         $user_id = filter_var($_POST['user_id'], FILTER_VALIDATE_INT);
-        $user_type = htmlspecialchars($_POST['user_type'], ENT_QUOTES, 'UTF-8');
-        $name = htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8');
-        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-        $plainPassword = $_POST['password'];
+        $user_type = $_POST['user_type']; 
+        $name = $_POST['name']; 
+        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL); 
+        $plainPassword = $_POST['password']; 
+        
 
         // Validate user_id
         if ($user_id === false || $user_id <= 0) {

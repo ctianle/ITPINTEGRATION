@@ -48,14 +48,14 @@ function displayTableData(page) {
     paginatedData.forEach((row, index) => {
         tableBody.innerHTML += `
         <tr>
-            <th scope="row">${row.user_id}</th>
-            <td class="user_type">${row.user_type}</td>
-            <td class="name">${row.name}</td>
-            <td>${row.email}</td>
+            <th scope="row">${escapeHTML(row.user_id)}</th>
+            <td class="user_type">${escapeHTML(row.user_type)}</td>
+            <td class="name">${escapeHTML(row.name)}</td>
+            <td>${escapeHTML(row.email)}</td>
             <td>
                 <div class="action d-flex flex-column flex-md-row align-items-center">
                     <button type="button" class="btn btn-primary btn-sm mb-2 mb-md-0 me-md-2" onclick="editUser(${start + index})">Edit</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteDocument('${row.user_id}')">Delete</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteDocument('${escapeHTML(row.user_id)}')">Delete</button>
                 </div>
             </td>
         </tr>
@@ -163,6 +163,15 @@ function deleteDocument(userId) {
         console.error('Error deleting user:', error);
         // Handle error display or fallback behavior here
     });
+}
+
+function escapeHTML(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 fetchData(); // Initial fetch on page load
