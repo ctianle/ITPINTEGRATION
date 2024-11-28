@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Collect and input validate
         $user_id = filter_var($_POST['user_id'], FILTER_VALIDATE_INT);
-        $user_type = $_POST['user_type']; 
-        $name = $_POST['name']; 
+        $user_type = sanitizeMongoInput($_POST['user_type']);
+        $name = sanitizeMongoInput($_POST['name']); 
         $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL); 
         $plainPassword = $_POST['password']; 
         
@@ -137,5 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } else {
     alertAndRedirect('Invalid request method!');
+}
+
+function sanitizeMongoInput($input) {
+    return str_replace(['$', '{', '}'], ['\$'], $input);
 }
 ?>
